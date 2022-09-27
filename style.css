@@ -48,17 +48,21 @@ body {
     padding-bottom: 50px;
   }
 
-
   table {
     width: 100%;
   }
 
   .table-shop, .table-shop td, .table-shop th{
-      border: 1px solid black;
-      border-collapse: collapse;
-      padding: 20px;
-      
-      
-      
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 20px;
+  }
 
+  .table-shop tr:nth-child(even){
+    background-color: lightgray;
+  }
+
+  .table-judul{
+    background-color: black;
+    color: #eeeeee;
   }
