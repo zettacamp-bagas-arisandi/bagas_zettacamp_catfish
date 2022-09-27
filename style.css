@@ -53,3 +53,12 @@ body {
     width: 100%;
   }
 
+  .table-shop, .table-shop td, .table-shop th{
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 20px;
+      
+      
+      
+
+  }

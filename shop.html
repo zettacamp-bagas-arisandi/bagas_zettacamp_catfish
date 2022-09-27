@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <title>Shopping List</title>
+</head>
+<body>
+<!-- navigation start -->
+<div class="navbar">
+    <a href="index.html">Home</a>
+    <a href="contact.html">Contact</a>
+    <a href="about.html" >About</a>
+    <a href="shop.html" class="active">Shop List</a>
+</div>
+<!-- naviagtion end -->
+
+<!--- content start--->
+<div class="container box">
+
+    <!--- Table start -->
+    <table class="table-shop" >
+        <caption>
+            <h2>Shop List</h2>
+            <p>
+                This is what i want to buy in the future.
+            </p>
+        </caption>
+        <!-- Baris 1 Start-->
+        <tr>
+            <th>
+                Images
+            </th>
+            <th >
+                Name    
+            </th>
+            <th style="width:750px">
+                Description
+            </th>
+            <th>
+                Amount
+            </th>
+            <th style="width:170px">
+                Price
+            </th>
+            <th style="width:170px">
+                Total
+            </th>
+        </tr>
+        <!-- Baris 1 End-->
+
+        <!-- Baris 2 Start-->
+        <tr>
+            <td align="center">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIUAAACTCAMAAACXiyqIAAAANlBMVEVHcEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAR2LVAAAAEnRSTlMAjIKUbayapZ94YrnK2+9QFTHDDf3sAAAJ6UlEQVR4nO2aiZbiuA6G2/uWkPD+LzvavAQIZaqXuveciBpgupnyxy/pt+LMr19XXHHFFVdcccUVV1xxxRVXXPH/E/u23ff9pyEyx3a//yDKlm1ugbL8BMSeLQW8dJZ/LsuWhcHKGwax/1SWKoWtr/JvRAKv/6Zwt3H13GESPORdIpa/CbHbnJ+E6FFZUtLa/j2ULQ8A+bA+AaQaBKJ0+huyoBTZbs9SwJ+mjoAELZRS6c+ibNINTxTblqggGAEfTAAMiKG8MfpPyUJVASD3RzFAeMSAp4rRdIAw/GyMj39Clg3tAR64JCdiq30B+oAWWx4wlFYVY4gYowdZvo+yN6OqlYFrc1uwDvTUElIxDGN4Dz/wBM8xhGi+KctmWQsUQ9pC3iTMSavOnhCEMJoZCAEioho+wmsAlo9l2Xt3Zs5JkpRQe9SiSIMUCJGzaNExkCQgDYA454K5fySFJIRSwf5AOMmORQEY2XJtkhbZeoJQuotBAC2cm5eiWjSR4DfH1bFExClEDFRiy00LZVKmnHhrWY3oDxgghivTYhxNAlNBDgkK8JueDsaoXmFqYQBGrPngoiAIeszWxiiF+FSqKtj2DhCoKOxWa1P6FFtDWwVSKIaIFQLEKPoDKdKQERSDy+Hg3MhAGHmrZgEUijliyjHY5IWiQgS3zCZkT0k2rSZGll0r9YR0707Z1row6N/cqJCTaFM8YLhQpotT9B9AaPU8qtDygaUJFNW+u19oKE1l1YgBIOs2LQWvagdFUu/O3Lax0a9G3zTsmVid1pJjtVYtywdSSA02y7bdqnR1bj0YlpYdRCXCUL62qbcpjBlZ8qwUehhf2khFJiFijPlQXQtgAD+BtrVWNcvSKgwZceusFLkRiFPKOxaDanKcbFQtTN1GU3hXHcsfWjUss206SHEQpIohEE0JEYI7OikQirdSxoDN3feqcOusY2VN6zSE3p9oDCkdteANHXoVR6JEJcFbOmdEU3G2hBQ/L8UBoyaHl6c9Q7YOIkAlNA2osoEoaJDEQqAWyVKDSHWus46VqfbTIwhrAWbNlQkvKnFZigy8f2j4HGyy8HnuEBhvdNUCHKtMS1EjPUeuYoCl46SD5UAXalALKlnYO2pow1L4oE1oGMusY2XFCPJ8VAQQUAzaOFCCRAwWymHoDxWBybQJJ4xmMSsF5Vo4BKKBIIKymAhqho0vnbVpSQFB0Ke0ELQRR0CmHStjsSl9iOoR8IA1FTVnBs0QI4FNJJ7VoSpheY1qwEvisiAxPnWsnSAGjlR/RJitTv0bZiOxVZEgsDDaFVoLG3dsY1aVYtaxMhmQfqGHvKIG8hkcdHt/eEwS73s43IAmJrb4zLF2vrASjFcgifdw7lBtsCATb6TomCgENkedLLg4pTqnHQvH+MbBnqQfwlLlmDr1W+qQahXUI2icgGCsDlUJwph1rN0Iw5iXR4460ECAYycsS03zhEEGFWkDwdEG6mMccKZnrOwNiWHUMTGHB4nB84zNxlB/aFCAJ7M+V0Qx70oxPWN50VY9xYgBX94QhYyZia/gaLNRvH9wc/C0Vz1r1ryzUKhWHX35IVI+Xpl7q8U1vR+liGHcyWbNe4/e99+tHhXR9YfEMDzxy4SpPckQWYd2QWZSahPnrHnTeOTNqMeL3JAYVQUZtg0ZNgZsoKNzw3QhGCXNSzFymHOODmFoK+2BvhkGjDpmuWXSsXJsGMfEPCenCeHRL2w9JMBcpEQYR+sGKSbNew984HGUo7aMOTykIrA5tQ90Wezl0jil7tvCgMcWZVYKMboXegxVIkQsBOzxcPEFelBzRIM1AUxyYnIwbzMrhVDElmPzIlpJ1BzgdItZiGzbEY37QQuUYtK8c6MYScxLFMGgpWHzgMTwxkWWHXRsv6ldFcY5iF+E/URxoojhq1D+/sBguKYiXQzGEAffZikmHSs7LqNXHFQDJxgwUeF0q7kmdVJjMtqMFeYg9gr+IisdZnzQiA1JUOAJuI/xYQmL0UrzO1KER5InjkPICSK4FlwPyy4O3imN0RmCc5Nt2glCHPV4SyJfG4eZoHi+C7Bx1JrotWnnIDbn3HgieQQ5I8FV0TQSrlpnCUsYSg9SzDqWC+vttpZaTQ9ynHFwL/IhSYDLRfr6hn4DVGuQw7Rp887O3W4L/LMuhw77ioXL0Cpc1cqFoGTC6lpp044F09jNLQuQ3G634uSM9FmRRw7WDmZzGC6iC2qY71QynI9p897wAnKFnIAYEMtSho55JmEWemWPQteCdsX66BhJ8+HmdJvi0TSWMnFAVkpZThrmgEIY9CEH1QgZwcGqhVdyxgptM3M74l4cB84iiFFKOTTMOYl8DC9kWxZwYTnvJilgPsTL6/zFPZpOwSDrrRwZ3ulBfw8dQSun1FPpRIpi+X4rTuv2Hcm2Vg46LCeYF/FWDM5CUp2B1SgmMwWd1cdgzkn2shII1EbPzqMeJ4rQX5vkqR9IDFezUqXoFLAFApk/Jbl7bA4uztcgJ4rwV4fCVIjgZP0gKS6BpEgCQVMJKlSiPXGRu+YmgXY9IXmpCH1nGLeSqqUgpUl3hVKlqFp4unkGDbAs4YRkv9tg1goS3khyCPgkuJbj8qwIvJhOY0JQDb6FRxgQp5r8uqcHkANJs6Y2UfWvb2AiZ0VEioCjiNKcEVUpWAzGgGVMPimT3ZZbJwlfSFLb3KEYretxqZRdxpW9aVr0lDDGgn592sH75t4WSdfGtTTA6FdlIIolaHBkaDyUzD9QVIjFqfTW0ba4zoCEUYABg77n4gyY2koeEHgLqhTIUTwWzVcOz52z3tBQzsrVjW0xSgE7ATyv+F8XXc0IW8pHh1qUiOXi3cwx6D0tDHLaN4/rixSoREl2M4V1hz+R0sUbVwX2GBCmrNM3efc8VusTyDNBoaoIzoRldXR6gN9kCexdKEvw0KdlXdIHd92xWsNDtfLeeSrGil2IB+YFS/C24jSKCYBkrLHcioE/1R8h1NwYmYWWAeQJgigh7UlnUAKgsU08HQRpA1UJv8FjttR3EARE9yLprdFsShC4QWCc9iAJlATf2jKQJReAYvktBI7dPoIc1ChMs8BVG3THEuXw2gAX6LDATLd+8n9gvAORar1VkCA6tJ8Fy6LUe24qgDTw4QUG7OXMsL8Vm7/VQZXc8JAUKH48rOYDyEizNUDhpvHn/w+3uxJLa93Z8lHkFk6iQkRW0EJ91pYfgJClLb0y6bWsdoOwigd7RFjfbxa/HbgBt+YoBFGWvGU0Cr7EuX3PGD4GyUtpKcGELK6OD6DCP0GguC/YL1IVsmljX/y+MXzIoVcGKTjSrz+BICBQqtC42A5o0z+BwIF+toAY8ecQOO6zN4WuuOKKK6644oorrrjiiiuuuOJ/NP4DAXi8bCz3Pc8AAAAASUVORK5CYII=" width="180px">
+            </td>
+            <td>
+                <strong>ASUS</strong> ROG Zephyrus G14 Laptop
+            </td>
+            <td>
+                <p>
+                    Even though it is specifically designed for gamers, 
+                    in fact it is also very suitable for graphics, multimedia, and even editing.
+                    Many reviews are satisfied with the performance.
+                </p>
+                    <b>Details:</b>
+                <ul>
+                    <li>CPU: AMD Ryzen™ 9 6900HS 8C 16T</li>
+                    <li>RAM: 16 GB DDR5-4800 (Max: 24 GB)</li>
+                    <li>VGA: AMD Radeon™ RX 6800S 8 GB GDDR6</li>
+                    <li>HDD: 1 TB M.2 PCIe 4.0 NVMe SSD</li>
+                    <li>Display: 14” IPS WQXGA (2560×1600), Refresh Rate 120Hz, 100% DCI-P3</li>
+                </ul>
+            </td>
+            <td>
+                1 Pcs
+            </td>
+            <td>
+                Rp 18.900.000
+            </td>
+            <th>
+                Rp 18.900.000
+            </th>
+        </tr>
+        <!-- Baris 2 End-->
+
+         <!-- Baris 3 Start-->
+         <tr>
+             <td align="center">
+                 <img src="data:image/png;base64,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" width="180px">
+             </td>
+            <td>
+                <strong>SONY</strong> WH1000XM5 Headphone
+                <ul>
+                    <li>Black Edition</li>
+                    <li>Gray Edition</li>
+                </ul>
+                
+            </td>
+            <td>
+                <p>
+                    This Headphone is wireless with Noise Cancelling technology.
+                </p>
+                    <b>Details:</b>
+                <ul>
+                    <li>Industry-leading noise cancellation1</li>
+                    <li>Multi Noise Sensor technology</li>
+                    <li>Incomparable noise cancelling</li>
+                    <li>Multiple microphones, in case that can be:</li>
+                        <ul style="list-style-type:square;">
+                            <li>focused on your voice</li>
+                            <li>Equipped with four beamforming microphones</li>
+                            <li>Improved signal-to-noise ratio</li>
+                        </ul>
+                    <li>All day comfort with a noiseless design</li>
+                </ul>
+            </td>
+            <td>
+                2 Pcs
+            </td>
+            <td >
+                Rp 4.995.000
+            </td>
+            <th>
+                Rp 9.990.000
+            </th>
+        </tr>
+        <!-- Baris 3 End-->
+
+         <!-- Baris 4 Start-->
+         <tr>
+             <td align="center">
+                 <img src="https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQts6X2RYQL9N7KJh1-0G1WDsWbXhXRpph3xTPfJdwoQL-mAIkn8MAv6nUXwYrsSx55jNooJleLGQ&usqp=CAc" width="180px">
+             </td>
+            <td>
+                <strong>SADES</strong> Thyrsus Keyboard
+            </td>
+            <td>
+                <p>
+                    Mechanical Keyboard with side LED, it's durable to use have cool RGB light and multimedia function.
+                </p>
+                    <b>Details:</b>
+                <ul>
+                   <li>Number of Keys: 104 keys (Fullsize)</li>
+                    <li>Dimension : 445*163*40mm</li>
+                    <li>Cable Length : 1.8m</li>
+                    <li>Switch : Kailh Blue Switch</li>
+                    <li>Polling Rate : 1000 MHz</li>
+                    <li>N-Key Rollover : YES</li>
+                    <li>USB Braided Cable</li>
+                    <li> 
+                        COMPATIBILITY: 
+                        <ul style="list-style-type:square;">
+                        <li>Win XP</li>
+                        <li>Win 7</li>
+                        <li>WIN 8</li>
+                        <li>Win 10</li>
+                        <li>Win Vista</li>
+                        </ul>
+                    </li>
+                </ul>
+            </td>
+            <td>
+                1 Pcs
+            </td>
+            <td >
+                Rp 580.000
+            </td>
+            <th>
+                Rp 580.000
+            </th>
+        </tr>
+        <!-- Baris 4 End-->
+
+         <!-- Baris 5 Start-->
+         <tr>
+            <td align="center">
+                <img src="https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQJPrrIcZVdcZq4J4KfaOg0jgq_v9cPr3-bRBO8JZd04umvaoyo_BTGoIqtAywPkC6JQdtSBs4vi1A&usqp=CAc" width="130px">
+            </td>
+           <td>
+               <strong>Logitech </strong> G502 Mouse
+           </td>
+           <td>
+               <p>
+                 This Mouse is wireless with Lightspeed Hero Sensor, effective for gaming, designing, or editing.
+               </p>
+                   <b>Details:</b>
+                   <ul>
+                    </li>
+                        <li>Ultra-fast and reliable</li>
+                        <li>HERO 16K sensor and is POWERPLAY compatible </li>
+                        <li>Retains the same beloved shape—and achieves a 7-gram weight reduction</li>
+                    </ul>
+           </td>
+           <td>
+               1 Pcs
+           </td>
+           <td >
+               Rp 2.500.000
+           </td>
+           <th>
+               Rp 2.500.000
+           </th>
+       </tr>
+       <!-- Baris 5 End-->
+
+       <!-- Baris 6 Start-->
+       <tr>
+        <th colspan="5">
+            Total Cost for All Item 
+        </th>
+        </td>
+        <th> Rp. 31.970.000
+        </td>
+       </tr>
+       <!-- Baris 6 Start-->
+
+        <!--- Table end -->
+    </table>
+
+</div>
+<!--- content end-->
+
+<!-- footer start-->
+<footer>
+    <p>Bagas Arisandi &copy; 2022</p>
+</footer>
+<!-- footer end-->
+</body>
+</html>
