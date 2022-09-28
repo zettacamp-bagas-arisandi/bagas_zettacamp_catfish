@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <title>Multimedia</title>
+</head>
+<body>
+<!-- navigation start -->
+<div class="navbar">
+    <a href="index.html">Home</a>
+    <a href="contact.html">Contact</a>
+    <a href="about.html" >About</a>
+    <a href="shop.html">Shop List</a>
+    <a href="#" class="active">Multimedia</a>
+</div>
+<!-- naviagtion end -->
+
+<!--- content start--->
+<div class="flex-container box">
+<div>
+<table>
+    <caption>
+        <h2>Multimedia</h2>
+        <p>
+            This page is about multimedia contents, such as music, video, and other object.
+        </p>
+    </caption>
+<!-- baris 1 start -->
+    <tr>
+        <td>
+            <h2>Music</h2>
+            <p>
+                Do you know <strong>Polyphia</strong>? This is one of my favorite song from the band.
+            </p>
+            <audio src="assets/media/crush.mp3" controls></audio>
+        </td>        
+    </tr>
+    <!-- baris 1 end -->
+
+    <!-- baris 2 start -->
+    <tr>
+        <td>
+            <h2>Video</h2>
+            <p>
+                <strong>Agung Hapsah</strong> is one of my favorite youtubers and this is one of his video that i love. 
+            </p>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/7Ltl7_0ttpQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </td>
+    </tr>
+    <!-- baris 2 end -->
+
+     <!-- baris 3 start -->
+     <tr>
+        <td>
+            <h2>Other </h2>
+            <p>
+                Last time i am read the online document(.pdf) is about <strong>Sherlock Holmes</strong>.
+            </p>
+            <object data="assets/media/05. Lima Butir Biji Jeruk.pdf" type="application/pdf" width="560" height="315" ></object>
+        </td>
+    </tr>
+    <!-- baris 3 end -->
+    
+</table>
+
+</div>
+
+<div>
+    <table cellspacing="15">
+    <caption >
+    <h2>Form</h2>
+    <p>
+        Try to fill this form and then click the submit button.
+    </p>
+    </caption>
+    <form onsubmit="alert('Submited')">
+    <!-- baris 1 start -->
+        <tr>
+            <td>
+                <label for="firstName">
+                    First Name
+                </label>
+            </td>
+            <td>
+                <input type="text" name="firstName" placeholder="Your first name">
+            </td>
+        </tr>
+    <!-- baris 1 end -->
+
+    <!-- baris 2 start -->
+        <tr>
+            <td>
+                <label for="lastName">
+                    Last Name
+                </label>
+            </td>
+            <td>
+                <input type="text" name="lastName" placeholder="Your last name">
+            </td>
+        </tr> 
+    <!-- baris 2 end -->
+
+    <!-- baris 3 start -->
+        <tr>
+            <td>
+                <label for="bio">
+                    Biography
+                </label>
+            </td>
+
+            <td >
+                <textarea name="bio" placeholder="Your biography" rows="10" cols="21"></textarea>
+            </td>
+        </tr>      
+    <!-- baris 3 end -->
+
+    <!-- baris 4 start --> 
+        <tr>
+            <td>
+                <label for="gender"> 
+                Gender
+                </label>
+            </td>
+
+            <td>
+                <input type="radio" value="Male"> 
+                <label for="male">Male</label>
+                <input type="radio" value="Female">
+                <label for="female">Female</label>
+            </td>
+        </tr>     
+    <!-- baris 4 end -->
+
+    <!-- baris 5 start -->
+        <tr>
+            <td>
+                <label for="email">
+                    Email
+                </label>
+            </td>
+            <td>
+                <input type="email" name="email" placeholder="your@email.com">
+            </td>
+        </tr>
+    <!-- baris 5 end -->  
+
+    <!-- baris 6 start --> 
+        <tr>
+            <td>
+                <label for="telp">
+                    Telephone
+                </label>
+            </td>
+
+            <td>
+                <input type="tel" name="tel" placeholder="+62">
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label for="age">
+                    Age
+                </label>
+            </td>
+            <td>
+                <input type="number" name="age" placeholder="Your age">
+            </td>
+        </tr>
+    <!-- baris 6 end -->   
+
+    <!-- baris 7 start -->
+        <tr>
+            <td>
+                <label for="url">
+                    Url Social Media
+                </label>
+            </td>
+
+            <td>
+                <input type="url" name="url" placeholder="Your url">
+            </td>
+        </tr>
+    <!-- baris 7 end -->
+
+    <!-- baris 8 start -->
+        <tr>
+            <td></td>
+            <td>
+                <label for="submit">
+                    <input type="submit" value="Submit">
+                </label>
+            </td>
+        </tr>
+    <!-- baris 8 end -->    
+    </form>    
+    </table>
+</div>
+</div>
+<!--- content end-->
+
+<!-- footer start-->
+<footer>
+    <p>Bagas Arisandi &copy; 2022</p>
+</footer>
+<!-- footer end-->
+</body>
+</html>

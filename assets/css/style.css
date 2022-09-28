@@ -3,7 +3,6 @@ body {
   background-color: #eeeeee;
 }
 
-
 /* The navbar container */
 .navbar {
     overflow: hidden;
@@ -66,3 +65,14 @@ body {
     background-color: black;
     color: #eeeeee;
   }
+
+  .flex-container {
+    display: flex;
+  }
+  
+  .flex-container > div {
+    width: 100%;
+    margin: 50px;
+
+  }
+
