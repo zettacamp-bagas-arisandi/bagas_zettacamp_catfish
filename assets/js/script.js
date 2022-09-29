@@ -1,8 +1,3 @@
-var loadFile = function(event) {
-    var image = document.getElementById('img_');
-    image.src = URL.createObjectURL(event.target.files[0]);
-};
-
 
 function displayInput() {
             
@@ -28,7 +23,7 @@ function displayInput() {
     var comment = document.getElementById("comment").value;
 
     // img
-    // var img = 'C:/Users/Lenovo G40/Documents/Bootcamp/bagas_zettacamp_catfish/assets/img/' + document.getElementById("img_upload").value.substring(12);
+    var img = 'C:/Users/Lenovo G40/Documents/Bootcamp/bagas_zettacamp_catfish/assets/img/' + document.getElementById("img_upload").value.substring(12);
 
     // display
     document.getElementById("fullName_").innerHTML = fullName;
@@ -37,6 +32,6 @@ function displayInput() {
     document.getElementById("age_").innerHTML = age; 
     document.getElementById("url_").innerHTML = url;
     document.getElementById("comment_").innerHTML = comment; 
-    //document.getElementById("img_").src = img; 
+    document.getElementById("img_").src = img; 
 
 };
