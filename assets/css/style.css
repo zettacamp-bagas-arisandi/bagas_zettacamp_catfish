@@ -76,3 +76,8 @@ body {
 
   }
 
+input[type=text]
+input[type=email]
+{
+  width: 70%;
+}

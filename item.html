@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="assets/js/script.js"></script>
+    <title>Form item</title>
+</head>
+<body>
+
+<!-- header start -->
+<header>
+    <nav>
+        <div class="navbar">
+            <a href="#" class="active">Form item</a>
+            <a href="item_list.html">Item List</a>
+        </div>
+    </nav>
+</header>
+<!-- header end -->
+
+
+<!--- content start--->
+<main>
+<!-- section A start -->
+<section class="box">
+    <table style="width: 65%;" align="center" border="0" cellspacing="20">
+        <form>
+        <caption>
+            <h2>Form input</h2>
+            <p>Please input your data here.</p>
+        </caption>
+        <!--Baris 1 start-->
+        <tr>
+            <td> 
+                <label for="firstName">
+                    First Name
+                </label>
+            </td>
+            
+            <td>
+                <input type="text" id="firstName" placeholder="Your first name" required>
+            </td>
+
+            <td>
+                <label for="lastName">
+                    Last Name
+                </label>
+            </td>
+
+            <td>
+                <input type="text" id="lastName" placeholder="Your last name" required>
+            </td>
+        </tr>
+        <!--Baris 1 end-->
+
+        <!--Baris 2 start-->
+        <tr>
+            <td>
+                <label for="gender">
+                    Gender
+                </label>
+            </td>
+
+            <td>
+                <input type="radio" id="gender" value="Male"> 
+                <label for="male">Male</label>
+                <input type="radio" id="gender" value="Female">
+                <label for="female">Female</label>
+            </td>
+
+            <td>
+                <label for="age">
+                    Age
+                </label>
+            </td>
+
+            <td>
+                <input type="number" id="age">
+            </td>
+
+        </tr>
+        <!--Baris 2 end-->
+
+        <!--Baris 3 start-->
+        <tr>
+            <td>
+                <label for="email">
+                    Email
+                </label>
+            </td>
+
+            <td>
+                <input type="email" id="email">
+            </td>
+
+            <td>
+                <label for="url">
+                    Url Social Media
+                </label>
+                
+            </td>
+
+            <td>
+                <input type="url" id="url">
+            </td>
+        </tr>
+        <!--Baris 3 end-->
+        
+        <!--Baris 4 start-->
+        <tr>
+            <td>
+                <label for="comment">
+                    Comment
+                </label>
+            </td>
+
+            <td rowspan="3">
+                <textarea id="comment" placeholder="Your comment here.." cols="20" rows="10"></textarea>
+            </td>
+            <td>
+                <label for="img_upload">
+                    Upload Images
+                </label>
+            </td>
+            <td>
+                <input type="file" id="img_upload" accept="image/*">
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+        </tr>
+        <!--Baris 4 end-->
+
+        <!--Baris 5 start-->
+       
+        <tr><td>&nbsp;</td></tr>
+        <tr>
+            <td align="left" colspan="4">
+                <input type="button" name="submit" value="Submit" onclick="displayInput()" style="width: 90%; padding:5px;">
+            </td>
+            <td></td>
+        </tr>
+        <!--Baris 5 end-->
+        </form>
+    </table>
+</section>
+<!-- section A end-->
+
+<!---Section B start-->
+<section class="box">
+    <table style="width: 65%;" align="center" border="0" cellspacing="20">
+        <caption>
+            <h2>Display your input.</h2>
+            <p>This section will show up your input <strong><em>after click the submit button</em></strong>.</p>
+        </caption>
+        <tr>
+            <td>
+                Your Full name
+            </td>
+            <td>
+                <span id="fullName_"></span>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                Your Gender
+            </td>
+            <td>
+                <span id="gender_"></span>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                Your Age
+            </td>
+            <td>
+                <span id="age_"></span>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                Your email
+            </td>
+            <td>
+                <span id="email_"></span>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                Your url Social Media
+            </td>
+            <td>
+                <span><a id="url_"></a></span>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                Your comments
+            </td>
+            <td>
+                <span id="comment_"></span>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                Your Images
+            </td>
+            <td>
+                <span><img id="img_" width="250px"></span>
+            </td>
+        </tr>
+    </table>
+    
+    
+    
+    
+    
+   
+    
+</section>
+<!---Section B end-->
+</main>
+<!--- content end-->
+
+<!-- footer start-->
+<footer>
+    <p>Bagas Arisandi &copy; 2022</p>
+</footer>
+<!-- footer end-->
+</body>
+</html>
