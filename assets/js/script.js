@@ -23,7 +23,7 @@ function displayInput() {
     var comment = document.getElementById("comment").value;
 
     // img
-    var img = 'C:/Users/Lenovo G40/Documents/Bootcamp/bagas_zettacamp_catfish/assets/img/' + document.getElementById("img_upload").value.substring(12);
+    var img = './assets/img/' + document.getElementById("img_upload").value.substring(12);
 
     // display
     document.getElementById("fullName_").innerHTML = fullName;
