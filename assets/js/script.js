@@ -6,7 +6,8 @@ function displayInput() {
     var fullName = firstName + " " + lastName;
 
     // gender
-    var gender = document.getElementById("gender").value;
+    var gender = document.querySelector('input[name="gender"]:checked').value;
+    
 
     // email
     var email = document.getElementById("email").value;
@@ -22,7 +23,6 @@ function displayInput() {
 
     // img
     var img = 'C:/Users/Lenovo G40/Documents/Bootcamp/bagas_zettacamp_catfish/assets/img/' + document.getElementById("img_upload").value.substring(12);
-
 
     // display
     document.getElementById("fullName_").innerHTML = fullName;
