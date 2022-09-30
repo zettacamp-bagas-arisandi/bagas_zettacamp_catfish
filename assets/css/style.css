@@ -96,9 +96,11 @@ body{
 
       .box{
         border-style: solid;
-        margin: 50px;
+        border-width:0px;
+        margin: 20px;
         padding: 20px;
         background-color: #eee;
+        border-radius: 30px;
       }
 
     .table-songlist{
