@@ -1,0 +1,130 @@
+* {
+    box-sizing: border-box;
+    margin:auto;
+  }
+
+body{
+    background-color: gray;
+}
+
+/* The navbar container */
+  .navbar {
+      overflow: hidden;
+      background-color: #333;
+      margin: auto;
+     
+    }
+    
+    /* Navbar links */
+    .navbar a {
+      float: left;
+      display: block;
+      color: #f2f2f2;
+      text-align: center;
+      padding: 20px;
+      text-decoration: none;
+    }
+    
+    /* Links - change color on hover */
+    .navbar a:hover {
+      background-color: #f2f2f2;
+      color: black;
+    }
+  
+    /* Active page */
+    .active {
+      background-color: grey;
+    }
+  
+   footer {
+      text-align: center;
+      background-color: #333;
+      color: #f2f2f2;
+      padding: 25px;
+      
+      width:100%;
+      bottom:0;
+      
+    }
+      .columns {
+        padding: 10px;
+      }
+      
+      .price {
+        list-style-type: none;
+        border: 1px solid #eee;
+        margin: 0;
+        padding: 0;
+      }
+      
+      .price:hover {
+        box-shadow: 0 8px 12px 0 rgba(0,0,0,0.2)
+      }
+      
+      .price .header {
+        background-color: #111;
+        color: white;
+        font-size: 25px;
+      }
+      
+      .price li {
+        border-bottom: 1px solid #eee;
+        padding: 20px;
+        text-align: center;
+      }
+      
+      .price .grey {
+        background-color: #eee;
+        font-size: 20px;
+      }
+      
+      .button {
+        background-color: #333;
+        border: none;
+        color: white;
+        padding: 10px 25px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 18px;
+      }
+      
+      @media only screen and (max-width: 600px) {
+        .columns {
+          width: 100%;
+        }
+      }
+
+      .box{
+        border-style: solid;
+        margin: 50px;
+        padding: 20px;
+        background-color: #eee;
+      }
+
+    .table-songlist{
+        border-collapse: collapse;
+        width: 80%;
+    }
+      .table-songlist th{
+        padding: 10px;
+        color: #eee;
+        background-color: black;
+      }
+
+    .table-songlist td{
+       text-align: center;
+    }
+
+    .table-songlist-album{
+        border-collapse: collapse;
+        width: 100%;
+    }
+      .table-songlist-album th{
+        padding: 10px;
+        color: #eee;
+        background-color: black;
+      }
+
+    .table-songlist-album td{
+       text-align: center;
+    }
