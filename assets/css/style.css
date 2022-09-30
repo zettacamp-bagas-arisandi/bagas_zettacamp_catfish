@@ -41,7 +41,6 @@ body{
       background-color: #333;
       color: #f2f2f2;
       padding: 25px;
-      
       width:100%;
       bottom:0;
       
@@ -86,10 +85,21 @@ body{
         text-align: center;
         text-decoration: none;
         font-size: 18px;
+        border-radius: 15px;
+      }
+
+      .button:hover{
+        background-color: #eeee;
+        color: black;
+        text-decoration: none;
+        border-radius: 20px;
+        border-width: 1px;
+        border-style: solid;
+
       }
       
       @media only screen and (max-width: 600px) {
-        .columns {
+        table {
           width: 100%;
         }
       }
@@ -101,6 +111,7 @@ body{
         padding: 20px;
         background-color: #eee;
         border-radius: 30px;
+        box-shadow: 0 8px 12px 0 rgba(0,0,0,1)
       }
 
     .table-songlist{
