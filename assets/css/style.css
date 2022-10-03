@@ -3,11 +3,15 @@ html, body{
     background-color: lightslategray;
 }
 
+h2 {
+    text-decoration-line: underline;
+}
+
 main{
     border-style: solid; 
     border-width:0px; 
-    margin: 10px; 
-    padding: 25px; 
+    margin: 15px; 
+    padding: 70px; 
     background-color: lightgoldenrodyellow; 
     border-radius: 30px; 
     box-shadow: 0 5px 10px 0 rgba(0,0,0,1);
