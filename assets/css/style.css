@@ -1,0 +1,38 @@
+html, body{
+    height: 100%;
+    background-color: lightslategray;
+}
+
+main{
+    border-style: solid; 
+    border-width:0px; 
+    margin: 10px; 
+    padding: 25px; 
+    background-color: lightgoldenrodyellow; 
+    border-radius: 30px; 
+    box-shadow: 0 5px 10px 0 rgba(0,0,0,1);
+}
+
+img {
+    width: 215px;
+    float: left;
+    border-radius: 5%;
+    margin-right: 30px;
+}
+
+.bigger {
+    font-size: large;
+    color: navy;
+    font-weight: bold;
+}
+
+.smaller{
+    font-size: small;
+    color: maroon;
+    font-weight: bold;
+
+}
+
+ul li {
+    list-style: none;
+}
