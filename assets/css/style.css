@@ -26,11 +26,11 @@ body{
     padding: 10px;
 }
 
-.card-details h4{
+.card-details > h4{
     text-align: center;
 }
 
-.card-details > p {
+.card-details p {
     font-size: 14px;
     text-align: left;
 }
@@ -64,10 +64,12 @@ img{
     width:250px;
     height:310px;
     transition: 0.3s;
+    
 }
 
 img:hover{
     width:280px;
     height:340px;
+   
 }
 
