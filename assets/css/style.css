@@ -1,6 +1,6 @@
 *{
     box-sizing: border-box; 
-    width: 100vw;
+    
     max-width:100%; 
     margin: 0px;
     text-decoration: none;
@@ -67,31 +67,26 @@ h1{
 .card-details > p::first-letter{
     color: #395B64;
     font-size: x-large;
-  }
+}
+
 
 .button {
     background-color: #2C3333;
     color: #E7F6F2;
-    border: none;
-    padding: 10px 10px;
+    padding: 10px 50px;
     text-align: center;
     font-size: 1rem;
     cursor: pointer;
     width: 200px;
-    border-radius: 25px;
+    border-radius: 10px;
+    
   }
 
-  button:hover{
+  .button:hover{
     background-color: #395B64;
   }
 
-
-  .button > a {
-    color: #E7F6F2;
-  }
-
-
-  footer{
+footer{
     padding: 25px;
     margin: 0px;
     text-align: center;
