@@ -143,11 +143,6 @@ footer{
     border: 1px solid #A5C9CA;
   }
 
-  img{
-    width: 275px;
-    height: 180px;
-  }
-
 .main{
     display: flex;
     justify-content: center;
@@ -155,27 +150,23 @@ footer{
 }
 
   .container-stock{
-    padding: 10px;
     width: 46%;
     height: 720px;
     overflow: auto;
   }
 
-  .item-list{
+ li.item-list{
     display: flex;
-    padding: 10px;
     border: 1px solid black;
-    
 }
 
-  .item-list-img{
+  img.item-list-img{
     width: 130px;
     height: 100px;
-    padding: 10px;
+
   }
 
   .item-list-p{
-    padding: 10px;
     margin: 10px;
     font-size: 0.9rem;
   }
