@@ -47,8 +47,9 @@
 }
 /* box model class */
 
-h1{
-    position: fixed;
+header{
+    position: sticky;
+    position: -webkit-sticky;
     right: 0;
     left: 0;
     top: 0;
