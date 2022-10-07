@@ -6,11 +6,6 @@
     max-width: 100%;
 }
 
-@media only screen and (max-width: 600px){
-    body{
-        width: 80vw;
-    }
-}
 body{
     background-color: whitesmoke;
 }
@@ -50,13 +45,13 @@ section.container{
 }
 
 .media{
-    width: 50%;   
+    width: 50vw;   
     padding-left: 5%;
 }
 
 .text-home{
-    width: 50%;
-    padding: 5% 5% 5% 0%;
+    width: 30vw;
+    padding: 2vw;
 }
 .text-home > h1 {
     color: #041C32;
@@ -108,7 +103,7 @@ section.container{
   }
 
   .card > img {
-    width: 300px;
+    width: 100vw;
   }
 
   footer{
@@ -156,7 +151,7 @@ span > a.home:hover, .btn:hover, .btn-submit:hover{
     padding: 10px 10px;
     border: 1px solid #041C32; 
     transition: 0.3s;
-    width: 20vw;
+    width: 30vw;
 }
 
 .btn{
@@ -197,6 +192,41 @@ input:invalid {
     color: white;
   }
 
-input:disabled{
-    color: maroon;
+input:disabled:hover{
+    background-color: maroon;
+
+}
+
+@media only screen and (max-width: 600px){
+
+    *{
+        max-width: 100vw;
+    }
+    input[type=text], input[type=number], input[type=email], textarea{
+        color: #041C32;
+        width: 50vw;
+    }
+
+    .container{
+        width: 100% !important;
+    }
+
+    .media, .text-home{
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+    .container-2{
+        margin: 0px;
+        width: 100% !important;
+    }
+
+    .card{
+        width: 100vw !important;
+    }
+
+    table{
+        width: 100% !important;
+    }
 }
