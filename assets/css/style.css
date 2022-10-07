@@ -1,0 +1,13 @@
+*{
+    margin: 0;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+header{
+    background-color: #04293A;
+    color: white;
+    position: sticky;
+    height: 25px;   
+    width: 100vw;
+}
