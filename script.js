@@ -46,16 +46,16 @@ function purchaseBook(title, author, discount, tax, price, status, stock, purcha
             actualPur++;
             stock--;
 
-            if (stock == 0){
+            if (stock < 1){
                 console.log("=> Barang habis");
+                stock = 0;
                 break;
             }
+            
         }
         
-        if (stock > 0) {
-            console.log("=> Masih bisa dibeli");
-        }
-
+        stock > 0 ? "=> Masih bisa dibeli" : "=> Belum tersedia lagi";
+    
         console.log("============================");
         console.log("Purchase: ", purchase, "pcs");
         console.log("Actual Purchase: ", actualPur, "pcs");
