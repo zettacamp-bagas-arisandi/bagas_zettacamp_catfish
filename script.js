@@ -1,20 +1,12 @@
-function purchaseBook(titleBook, authorBook, discountBook, taxBook, priceBook, statusBook) {
-    
-    // Detail of book
-    const title = titleBook;
-    const author = authorBook;
-    let price = priceBook;
-    let status = statusBook;
+function purchaseBook(title, author, discount, tax, price, status) {
 
-    // Discount
-    const discount = discountBook;
+    // Amount of Discount
     let amDiscount = discount / 100 * price; 
     
     // Price after discount
     const priceDiscount = price - amDiscount;
 
-    // Tax
-    const tax = taxBook;
+    // Amount of Tax
     let amTax = tax / 100 * price;
 
     // Price after tax
