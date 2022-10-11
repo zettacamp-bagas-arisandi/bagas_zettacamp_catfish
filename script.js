@@ -25,16 +25,16 @@ function purchaseBook(title, author, discount, tax, price, status, stock, purcha
     console.log("============================");
     console.log("Book Title: ", title);
     console.log("Author: ", author);
-    console.log("Price: Rp.", price);
+    console.log("Price: Rp.", price.toLocaleString("id-ID"));
     console.log("Stock:", stock, "pcs");
     console.log("Discount: ", discount + "%");
-    console.log("Amount of Discount: Rp.", amDiscount);
-    console.log("Price after Disc: Rp.", priceDiscount);
+    console.log("Amount of Discount: Rp.", amDiscount.toLocaleString("id"));
+    console.log("Price after Disc: Rp.", priceDiscount.toLocaleString("id"));
     console.log("Tax: ", tax + "%");
-    console.log("Amount of Tax: Rp.", amTax);
-    console.log("Price after Tax: Rp.", priceTax)
+    console.log("Amount of Tax: Rp.", amTax.toLocaleString("id"));
+    console.log("Price after Tax: Rp.", priceTax.toLocaleString("id"));
     console.log("============================");
-    console.log("Price Total: Rp.", priceTax);
+    console.log("Price Total: Rp.", totalPrice.toLocaleString("id"));
     console.log("============================");
 
     // Jika onsale true
@@ -55,19 +55,20 @@ function purchaseBook(title, author, discount, tax, price, status, stock, purcha
         if (stock > 0) {
             console.log("=> Masih bisa dibeli");
         }
+
         console.log("============================");
         console.log("Purchase: ", purchase, "pcs");
         console.log("Actual Purchase: ", actualPur, "pcs");
-        console.log("Total Price: Rp.", totalPricePur);
+        console.log("Total Price: Rp.", totalPricePur.toLocaleString("ID"));
         console.log("Stock Update:", stock);
     
         console.log("============================");
      
     // Jika onsale false
     } else {
-            console.log("=> Status buku ini tidak dijual")
+            console.log("=> Status buku ini tidak dijual");
         }     
 }
 
 // panggil function
-purchaseBook('Enigma 2', 'Sam', 10, 5, 5000, true, 3, 11);
+purchaseBook('Enigma 2', 'Sam', 10, 5, 5000, true, 5, 11);
