@@ -20,16 +20,16 @@ function purchaseBook(title, author, discount, tax, price, status) {
     console.log("============================");
     console.log("Book Title: ", title);
     console.log("Author: ", author);
-    console.log("Price: Rp.", price);
+    console.log("Price: Rp.", price.toLocaleString("id-ID"));
     console.log("On Sale: ", status);
     console.log("Discount: ", discount + "%");
-    console.log("Amount of Discount: Rp.", amDiscount);
-    console.log("Price after Disc: Rp.", priceDiscount);
+    console.log("Amount of Discount: Rp.", amDiscount.toLocaleString("id-ID"));
+    console.log("Price after Disc: Rp.", priceDiscount.toLocaleString("id-ID"));
     console.log("Tax: ", tax + "%");
     console.log("Amount of Tax: Rp.", amTax);
-    console.log("Price after Tax: Rp.", priceTax)
+    console.log("Price after Tax: Rp.", priceTax.toLocaleString("id-ID"))
     console.log("============================");
-    console.log("Total Price: Rp.", totalPrice);
+    console.log("Total Price: Rp.", totalPrice.toLocaleString("id-ID"));
     console.log("============================");
 }
 
