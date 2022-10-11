@@ -29,7 +29,7 @@ function purchaseBook(title, author, discount, tax, price, status) {
     console.log("Amount of Tax: Rp.", amTax);
     console.log("Price after Tax: Rp.", priceTax)
     console.log("============================");
-    console.log("Total Price After: Rp.", totalPrice);
+    console.log("Total Price: Rp.", totalPrice);
     console.log("============================");
 }
 
