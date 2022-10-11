@@ -1,1 +1,1 @@
-tes
+Javascript day 2
