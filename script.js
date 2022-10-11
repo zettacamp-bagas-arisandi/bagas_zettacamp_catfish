@@ -25,13 +25,13 @@ function purchaseBook(title, author, discount, tax, price, status, stock, purcha
     console.log("============================");
     console.log("Book Title: ", title);
     console.log("Author: ", author);
-    console.log("Price: ", price);
-    console.log("Stock:", stock);
+    console.log("Price: Rp.", price);
+    console.log("Stock:", stock, "pcs");
     console.log("On Sale: ", status);
     console.log("Discount: ", discount + "%");
-    console.log("Amount of Discount: ", amDiscount);
+    console.log("Amount of Discount: Rp.", amDiscount);
     console.log("Tax: ", tax + "%");
-    console.log("Amount of Tax: ", amTax);
+    console.log("Amount of Tax: Rp.", amTax);
     console.log("Price after: ", totalPrice);
     console.log("============================");
    
@@ -51,13 +51,13 @@ function purchaseBook(title, author, discount, tax, price, status, stock, purcha
     if (stock > 0) {
         console.log("=> Masih bisa dibeli");
     }
-    console.log("Total Purchase: ", purchase);
-    console.log("Actual Purchase: ", actualPur);
-    console.log("Total Price: ", totalPricePur);
+    console.log("Purchase: ", purchase, "pcs");
+    console.log("Actual Purchase: ", actualPur, "pcs");
+    console.log("Total Price: Rp.", totalPricePur);
     console.log("Stock Update:", stock);
    
     console.log("============================");
 }
 
 // panggil function
-purchaseBook('Enigma 2', 'Sam', 10, 5, 5000, true, 10, 12);
+purchaseBook('Enigma 2', 'Sam', 10, 5, 5000, true, 10, 9);
