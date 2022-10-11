@@ -1,13 +1,13 @@
 function purchaseBook(title, author, discount, tax, price, status, stock, purchase) {
 
     // Amount of Discount
-    let amDiscount = discount / 100 * price; 
+    const amDiscount = discount / 100 * price; 
     
     // Price after discount
     const priceDiscount = price - amDiscount;
 
     // Amount of Tax
-    let amTax = tax / 100 * price;
+    const amTax = tax / 100 * price;
 
     // Price after tax
     const priceTax = price + amTax;
@@ -32,31 +32,38 @@ function purchaseBook(title, author, discount, tax, price, status, stock, purcha
     console.log("Amount of Discount: Rp.", amDiscount);
     console.log("Tax: ", tax + "%");
     console.log("Amount of Tax: Rp.", amTax);
-    console.log("Price after: ", totalPrice);
+    console.log("Price after: Rp.", totalPrice);
     console.log("============================");
-   
-    // looping untuk pembeian
-    for(let i = 1; i <= purchase; i++){
-        console.log("Barang dibeli",i);
-        totalPricePur = totalPrice * i;
-        actualPur++;
-        stock--;
 
-        if (stock == 0){
-            console.log("=> Barang habis");
-            break;
+    // Jika onsale true
+    if (status == true){
+        // looping untuk pembeian
+        for(let i = 1; i <= purchase; i++){
+            console.log("Barang dibeli",i);
+            totalPricePur = totalPrice * i;
+            actualPur++;
+            stock--;
+
+            if (stock == 0){
+                console.log("=> Barang habis");
+                break;
+            }
         }
-    }
+        
+        if (stock > 0) {
+            console.log("=> Masih bisa dibeli");
+        }
+        console.log("Purchase: ", purchase, "pcs");
+        console.log("Actual Purchase: ", actualPur, "pcs");
+        console.log("Total Price: Rp.", totalPricePur);
+        console.log("Stock Update:", stock);
     
-    if (stock > 0) {
-        console.log("=> Masih bisa dibeli");
-    }
-    console.log("Purchase: ", purchase, "pcs");
-    console.log("Actual Purchase: ", actualPur, "pcs");
-    console.log("Total Price: Rp.", totalPricePur);
-    console.log("Stock Update:", stock);
-   
-    console.log("============================");
+        console.log("============================");
+     
+    // Jika onsale false
+    } else {
+            console.log("=> Status buku ini tidak dijual")
+        }     
 }
 
 // panggil function
