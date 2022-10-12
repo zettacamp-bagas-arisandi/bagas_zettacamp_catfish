@@ -1,4 +1,5 @@
-function purchaseBook(title, author, discount, tax, price, status, stock, purchase) {
+
+function purchaseBook(title, author, discount, tax, price, status, stock, purchase, credit) {
 
     // Amount of Discount
     const amDiscount = discount / 100 * price; 
@@ -51,24 +52,54 @@ function purchaseBook(title, author, discount, tax, price, status, stock, purcha
                 stock = 0;
                 break;
             }
-            
         }
         
-        stock > 0 ? "=> Masih bisa dibeli" : "=> Belum tersedia lagi";
-    
         console.log("============================");
         console.log("Purchase: ", purchase, "pcs");
         console.log("Actual Purchase: ", actualPur, "pcs");
         console.log("Total Price: Rp.", totalPricePur.toLocaleString("ID"));
         console.log("Stock Update:", stock);
-    
         console.log("============================");
+
+        // ketentuan cicilan toc
+        if (credit < 13){
+            console.log("Jika ingin dicicil", credit, "bulan");
+
+            // harga cicilan/bulan berdasarkan harga buku terakhir
+            let creditPrice = totalPricePur / credit;
+
+            // Array kosong untuk di push
+            let toc = [];
+
+            // var kosong untuk update harga total
+            let tocCr = 0;
+
+            // array untuk bulan
+            let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"];
+
+            for (let i = 0; i < credit; i++){
+                tocCr += creditPrice;
+                toc.push( {
+                    bulan: months[i],
+                    cicilan: Math.round(creditPrice),
+                    total: Math.round(tocCr)
+                } );
+
+            };
+
+            console.log([...toc]);
+        } else {
+            console.log("Tidak bisa dicicil lebih dari 12 bulan")
+        }
+            
      
     // Jika onsale false
     } else {
             console.log("=> Status buku ini tidak dijual");
         }     
+
+   
 }
 
 // panggil function
-purchaseBook('Enigma 2', 'Sam', 10, 5, 5000, true, 5, 11);
+purchaseBook('Enigma 2', 'Sam', 10, 5, 10000, true, 5, 11, 12);
