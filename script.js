@@ -65,7 +65,7 @@ function purchaseBook(title, author, discount, tax, price, status, stock, purcha
 
             // array untuk bulan
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"];
-            let currMonth = 10-1;
+            let currMonth = 9;
         
             console.log(`Rincian cicilan ${credit} bulan, dimulai dari bulan ${months[currMonth]}`);
 
