@@ -112,4 +112,4 @@ function purchaseBook(title, author, discount, tax, price, status, stock, purcha
 }
 
 // panggil function
-purchaseBook('Enigma 2', 'Sam', 10, 5, 100000, true, 5, 11, 20);
+purchaseBook('Enigma 2', 'Sam', 10, 5, 100000, true, 5, 11, 3);
