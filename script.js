@@ -62,8 +62,13 @@ function purchaseBook(title, author, discount, tax, price, status, stock, purcha
         console.log("============================");
 
         // ketentuan cicilan toc
-        if (credit < 13){
-            console.log("Jika ingin dicicil", credit, "bulan");
+
+            // array untuk bulan
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"];
+            let currMonth = 10-1;
+            let totalMonth = currMonth + credit;
+        
+            console.log(`Rincian cicilan ${credit} bulan, dimulai dari bulan ${months[currMonth]}`);
 
             // harga cicilan/bulan berdasarkan harga buku terakhir
             let creditPrice = totalPricePur / credit;
@@ -74,24 +79,30 @@ function purchaseBook(title, author, discount, tax, price, status, stock, purcha
             // var kosong untuk update harga total
             let tocCr = 0;
 
-            // array untuk bulan
-            let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"];
+            // implement desctructuring dan spread
+            const [...a] = months;
 
+            // looping for pushing the 
             for (let i = 0; i < credit; i++){
                 tocCr += creditPrice;
+
+                // control month berdasarkan bulan sekarang
+                if (currMonth > 11){
+                    currMonth = 0;
+                }
+
+                // array func, untuk push ke array object
                 toc.push( {
-                    bulan: months[i],
+                    bulan: a[currMonth],
                     cicilan: Math.round(creditPrice),
                     total: Math.round(tocCr)
                 } );
 
+                //
+                currMonth++;
             };
 
             console.log([...toc]);
-        } else {
-            console.log("Tidak bisa dicicil lebih dari 12 bulan")
-        }
-            
      
     // Jika onsale false
     } else {
@@ -102,4 +113,4 @@ function purchaseBook(title, author, discount, tax, price, status, stock, purcha
 }
 
 // panggil function
-purchaseBook('Enigma 2', 'Sam', 10, 5, 10000, true, 5, 11, 12);
+purchaseBook('Enigma 2', 'Sam', 10, 5, 10000, true, 5, 11, 3);
