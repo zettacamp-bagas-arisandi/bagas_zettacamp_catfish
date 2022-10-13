@@ -144,6 +144,6 @@ function byDuration(song, duration){
 
 // show all data
 console.log("==============================================");
-byGenre(song, "Rock");
+byGenre(song, "EDM");
 byArtist(song, "Ipang");
 byDuration(song, 50);
