@@ -1,6 +1,6 @@
 // Song list
 
-const song = [
+let list = [
     {
         title: "Till It Hurts",
         artist: "Yellow Claw",
@@ -93,19 +93,21 @@ const song = [
     },
 ];
 
+const song = list.sort(() => Math.random() - 0.5);
+
 // sort by artist
 function byArtist(song, artist){
     console.log(`Menampilkan list dari ${artist}`);
-    const sort = song.filter( param => param.artist == artist );
-    console.log(sort);
+    const result = song.filter( param => param.artist == artist );
+    console.log(result);
     console.log("==============================================");
 }
 
 // sort by genre
 function byGenre(song, genre){
     console.log(`Menampilkan list dari ${genre}`);
-    const sort = song.filter( param => param.genre == genre);
-    console.log(sort);
+    const result = song.filter( param => param.genre == genre);
+    console.log(result);
     console.log("==============================================");
 }
 
