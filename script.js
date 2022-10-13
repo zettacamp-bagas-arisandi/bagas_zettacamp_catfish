@@ -93,7 +93,7 @@ let list = [
     },
 ];
 
-const song = list.sort(() => Math.random() - 0.5);
+const song = list.sort( () => Math.random() - 0.1);
 
 // sort by artist
 function byArtist(song, artist){
@@ -113,7 +113,7 @@ function byGenre(song, genre){
 
 // by duration < 1 hour
 function byDuration(song, duration){
-
+    
     console.log(`Menampilkan list yang durasinya kurang dari ${duration} menit`)
 
     // cek total durasi dari list yang tersedia 
