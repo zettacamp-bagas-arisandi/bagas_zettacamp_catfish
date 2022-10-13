@@ -121,7 +121,7 @@ function byDuration(song, duration){
     let newPlaylist= [];
     let newPlaylistDur = 0;
 
-    // loop untuk push ke playlist baru berdasarkan durasi < 60
+    // loop untuk push ke playlist baru berdasarkan durasi 
     for (const n of song){
         totalDuration += n.duration;
 
@@ -146,4 +146,4 @@ function byDuration(song, duration){
 console.log("==============================================");
 byGenre(song, "EDM");
 byArtist(song, "Ipang");
-byDuration(song, 50);
+byDuration(song, 60);
