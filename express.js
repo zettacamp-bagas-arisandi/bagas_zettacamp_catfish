@@ -1,6 +1,6 @@
 const express = require("express");
 const path = require('path');
-//const book = require('./app.js')
+const book = require('./data.txt')
 
 const app = express();
 const port = 4000;
@@ -19,7 +19,7 @@ function authentication(req, res, next){
         let auth = new Buffer.from(authheader.split(' ')[1],'base64').toString().split(':');
         let user = auth[0];
         let pass = auth[1];
-        console.log(auth)
+        //console.log(auth)
         if (user == userSet && pass == passSet) {
  
             // If Authorized user
@@ -30,22 +30,21 @@ function authentication(req, res, next){
             res.end();
         }
     }
-    
-  
-   
 }
 
-
+// middleware
 app.use(authentication);
 
 app.get('/', (req,res) => {
     res.send(`Welcome admin ${userSet}!`);
-    res.end;
 });
 
 app.get('/book', (req,res) => {
-    res.sendFile('/book.js' , { root : __dirname});
-    res.end;
+    res.sendFile('/data.txt' , { root : __dirname});
+ });
+
+app.get('*', (req,res) => {
+    res.send("Path tidak ditemukan..");
  });
 
 

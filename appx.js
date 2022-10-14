@@ -116,10 +116,6 @@ function purchaseBook(book) {
             };
 
             console.log([...toc]);
-            fs.writeFile("data.txt", JSON.stringify(toc, null, 1), function (err) {
-                if (err) throw err;
-                console.log('Saved!');
-            });
      
     // Jika onsale false
     } else {

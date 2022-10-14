@@ -1,0 +1,1 @@
+{"bulan":"Okt","cicilan":28500,"total":28500}
