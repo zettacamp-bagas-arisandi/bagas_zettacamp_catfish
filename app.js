@@ -1,4 +1,3 @@
-
 function purchaseBook(title, author, discount, tax, price, status, stock, purchase, credit) {
 
     // Amount of Discount
@@ -102,14 +101,14 @@ function purchaseBook(title, author, discount, tax, price, status, stock, purcha
             };
 
             console.log([...toc]);
+        
      
     // Jika onsale false
     } else {
-            console.log("=> Status buku ini tidak dijual");
-        }     
-
-   
-}
+        console.log("=> Status buku ini tidak dijual");
+    };
+       
+};
 
 // panggil function
 purchaseBook('Enigma 2', 'Sam', 10, 5, 100000, true, 5, 11, 3);
