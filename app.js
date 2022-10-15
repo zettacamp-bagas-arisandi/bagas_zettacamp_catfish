@@ -1,19 +1,31 @@
-function purchaseBook(title, author, discount, tax, price, status, stock, purchase, credit) {
+let book = {
+    title  : 'Enigma 2',
+    author  : 'sam',
+    discount : 10,
+    tax : 5,
+    price : 100000,
+    status : true,
+    stock : 11,
+    purchase: 3
+};
+
+
+function purchaseBook(book,credit) {
 
     // Amount of Discount
-    const amDiscount = discount / 100 * price; 
+    const amDiscount = book.discount / 100 * book.price; 
     
     // Price after discount
-    const priceDiscount = price - amDiscount;
+    const priceDiscount = book.price - amDiscount;
 
     // Amount of Tax
-    const amTax = tax / 100 * price;
+    const amTax = book.tax / 100 * book.price;
 
     // Price after tax
-    const priceTax = price + amTax;
+    const priceTax = book.price + amTax;
     
     // Total price after tax and discount
-    const totalPrice = price + amTax - amDiscount;
+    const totalPrice = book.price + amTax - amDiscount;
 
     // Total price amount of purchases 
     let totalPricePur = 0;
@@ -23,30 +35,30 @@ function purchaseBook(title, author, discount, tax, price, status, stock, purcha
 
     // Show all data
     console.log("============================");
-    console.log("Book Title: ", title);
-    console.log("Author: ", author);
-    console.log("Price: Rp.", price.toLocaleString("id-ID"));
-    console.log("Stock:", stock, "pcs");
-    console.log("Discount: ", discount + "%");
-    console.log("Amount of Discount: Rp.", amDiscount.toLocaleString("id"));
-    console.log("Price after Disc: Rp.", priceDiscount.toLocaleString("id"));
-    console.log("Tax: ", tax + "%");
-    console.log("Amount of Tax: Rp.", amTax.toLocaleString("id"));
-    console.log("Price after Tax: Rp.", priceTax.toLocaleString("id"));
+    console.log("Book Title: ", book.title);
+    console.log("Author: ", book.author);
+    console.log("Price: Rp.", book.price.toLocaleString('ID'));
+    console.log("Stock:", book.stock, "pcs");
+    console.log("Discount: ", book.discount + "%");
+    console.log("Amount of Discount: Rp.", amDiscount.toLocaleString('ID'));
+    console.log("Price after Disc: Rp.", priceDiscount.toLocaleString('ID'));
+    console.log("Tax: ", book.tax + "%");
+    console.log("Amount of Tax: Rp.", amTax.toLocaleString('ID'));
+    console.log("Price after Tax: Rp.", priceTax.toLocaleString('ID'));
     console.log("============================");
-    console.log("Price Total: Rp.", totalPrice.toLocaleString("id"));
+    console.log("Price Total: Rp.", totalPrice.toLocaleString('ID'));
     console.log("============================");
 
     // Jika onsale true
-    if (status == true){
+    if (book.status == true){
         // looping untuk pembeian
-        for(let i = 1; i <= purchase; i++){
+        for(let i = 1; i <= book.purchase; i++){
             console.log("Barang dibeli",i);
             totalPricePur = totalPrice * i;
             actualPur++;
-            stock--;
+            book.stock--;
 
-            if (stock < 1){
+            if (book.stock < 1){
                 console.log("=> Barang habis");
                 stock = 0;
                 break;
@@ -54,10 +66,10 @@ function purchaseBook(title, author, discount, tax, price, status, stock, purcha
         }
         
         console.log("============================");
-        console.log("Purchase: ", purchase, "pcs");
+        console.log("Purchase: ", credit, "pcs");
         console.log("Actual Purchase: ", actualPur, "pcs");
-        console.log("Total Price: Rp.", totalPricePur.toLocaleString("ID"));
-        console.log("Stock Update:", stock);
+        console.log("Total Price: Rp.", totalPricePur.toLocaleString('ID'));
+        console.log("Stock Update:", book.stock);
         console.log("============================");
 
         // ketentuan cicilan toc
@@ -101,14 +113,14 @@ function purchaseBook(title, author, discount, tax, price, status, stock, purcha
             };
 
             console.log([...toc]);
-        
      
     // Jika onsale false
     } else {
         console.log("=> Status buku ini tidak dijual");
     };
-       
+
 };
 
 // panggil function
-purchaseBook('Enigma 2', 'Sam', 10, 5, 100000, true, 5, 11, 3);
+purchaseBook(book,10);
+module.exports = book;

@@ -1,6 +1,6 @@
 const express = require("express");
 const path = require('path');
-const book = require('./data.txt')
+const book = require('./app.js')
 
 const app = express();
 const port = 4000;
@@ -40,7 +40,10 @@ app.get('/', (req,res) => {
 });
 
 app.get('/book', (req,res) => {
-    res.sendFile('/data.txt' , { root : __dirname});
+    //res.sendFile('/b.txt' , { root : __dirname});
+   
+    res.send(book);
+   
  });
 
 app.get('*', (req,res) => {
