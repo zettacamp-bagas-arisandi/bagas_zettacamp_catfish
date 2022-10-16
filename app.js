@@ -122,5 +122,5 @@ function purchaseBook(book,credit) {
 };
 
 // panggil function
-purchaseBook(book,10);
+// purchaseBook(book,10);
 module.exports = book;
