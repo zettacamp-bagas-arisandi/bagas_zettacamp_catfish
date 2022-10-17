@@ -1,10 +1,15 @@
-function test1(a,b){
-    return a + b;
+function x(){
+    let book ={
+        nama: "asdwa",
+        price: 2211 
+    }
+return book;
 }
 
-async function tes2t(a,b){
-    let result = await test1(2,3)
-    console.log(result)
+async function tampilx(){
+    const xVar = await x();
+   // console.log(xVar);
 }
 
-tes2t()
+const tampil = tampilx()
+console.log(tampil)
