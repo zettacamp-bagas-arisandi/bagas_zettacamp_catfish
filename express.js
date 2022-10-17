@@ -144,7 +144,7 @@ async function termOfCredit(credit, addPrice = 100){
             if (user == userSet && pass == passSet) {
      
                 // If Authorized user
-                console.log(`${userSet} berhasil terotentikasi..`);
+                // console.log(`${userSet} berhasil terotentikasi..`);
                 next();
             } else {
                 res.send("Kamu tidak terotentikasi..");
