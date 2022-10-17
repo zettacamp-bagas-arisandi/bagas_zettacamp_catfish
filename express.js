@@ -25,7 +25,7 @@ app.get('/book', (req,res) => {
  });
 
 app.get('/async', async(req,res) => {
-    const getPurchaseBook = await purchaseBook(book, 7);
+    await purchaseBook(book, 7);
     res.send(bookCredit);
 });
 
@@ -83,7 +83,7 @@ async function termOfCredit(credit, addPrice = 100){
         currMonth++;
             };
 
-            console.log(toc);
+            // console.log(toc);
             return toc;
     }
 
@@ -121,8 +121,8 @@ async function purchaseBook(book,credit) {
         };
 
         bookCredit = await termOfCredit(credit);
-        // console.log(bookCredit);
-        
+        console.log(bookCredit);
+
         // Jika onsale false
         } else {
             console.log("=> Status buku ini tidak dijual");
