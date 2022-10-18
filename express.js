@@ -34,7 +34,6 @@ async function readFileTxt(){
 
 // event
 const events = require('events');
-const { resolve } = require("path");
 const eventEmitter = new events.EventEmitter();
 //Assign the event handler to an event:
 eventEmitter.on('rf', readFileTxt);
