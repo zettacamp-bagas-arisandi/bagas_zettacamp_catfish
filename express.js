@@ -1,5 +1,6 @@
 const express = require("express");
-const book = require('./app.js')
+const book = require('./app.js');
+const fs = require('fs');
 
 const app = express();
 const port = 4000;
@@ -11,6 +12,38 @@ const passSet = 'admin123';
 
 // set variabel for calculating later
 let amDiscount, priceDiscount, amTax ,priceTax, totalPrice, totalPricePur, actualPur = 0;
+
+// deklarasi promise
+const promise = true;
+const myPromise = new Promise((resolve, reject) =>{
+    if (promise === true){
+        resolve('Resolved!');
+    } else {
+        reject('Not Resolved!');
+    }
+});
+
+// event handler
+async function readFileTxt(){
+    fs.readFile('data.txt', 'utf8', function(err, data){
+        console.log(data);
+    });
+    console.log(`File terbaca`);
+}
+
+
+// event
+const events = require('events');
+const eventEmitter = new events.EventEmitter();
+//Assign the event handler to an event:
+eventEmitter.on('rf', readFileTxt);
+
+
+async function event(name){
+    // fire
+    eventEmitter.emit(name);
+}
+
 
 // middleware
 app.use(authentication);
@@ -29,17 +62,35 @@ app.get('/async', async(req,res) => {
     res.send(bookCredit);
 });
 
+app.get('/noawait', (req, res) =>{
+    myPromise
+    .then((data) => {
+        console.log(data);
+        event('rf');
+        res.send('Without Await');
+    })
+    .catch((err) => console.log(err));
+});
+
+app.get('/await', async(req, res) =>{
+    try{
+        await event('rf');
+        res.send('With Await');
+    }catch(err){
+        console.log(err);
+    }
+});
+
 app.get('*', (req,res) => {
     res.send("Path tidak ditemukan..");
- });
+});
 
 
 app.listen(port);
 console.log(`Server running at port:${port}`);
 
 
-
-
+// function purchases book
 async function termOfCredit(credit, addPrice = 100){
 
     // array untuk bulan
@@ -129,7 +180,8 @@ async function purchaseBook(book,credit) {
         };
     };
 
-    
+ 
+// function authentication    
 function authentication(req, res, next){
     let authheader = req.headers.authorization;
     //console.log(req.headers.authorization);
