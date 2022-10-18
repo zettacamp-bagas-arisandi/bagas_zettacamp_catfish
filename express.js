@@ -34,6 +34,7 @@ async function readFileTxt(){
 
 // event
 const events = require('events');
+const { resolve } = require("path");
 const eventEmitter = new events.EventEmitter();
 //Assign the event handler to an event:
 eventEmitter.on('rf', readFileTxt);
@@ -69,7 +70,10 @@ app.get('/noawait', (req, res) =>{
         event('rf');
         res.send('Without Await');
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+        console.log(err);
+        res.end();
+    });
 });
 
 app.get('/await', async(req, res) =>{
@@ -78,6 +82,7 @@ app.get('/await', async(req, res) =>{
         res.send('With Await');
     }catch(err){
         console.log(err);
+        res.end();
     }
 });
 

@@ -1,5 +1,14 @@
-const fs = require('fs').promises;
-    const file = fs.readFile('data.txt', { encoding: 'utf8' });
-        .then{
-            console.log('Text')
-        }
+const janjiX = true;
+const janji = new Promise ((resolve,reject) => {
+    if(janjiX === true){
+        resolve('Ok')
+    } else {
+        reject('Not OK')
+    }
+})
+
+// try{
+//     console.log('OKOK')
+// }catch(err){
+//     console.log(err)
+// }
