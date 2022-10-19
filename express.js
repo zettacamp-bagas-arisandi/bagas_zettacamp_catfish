@@ -184,7 +184,6 @@ async function purchaseBook(book,credit) {
         };
     };
 
- 
 // function authentication    
 function authentication(req, res, next){
     let authheader = req.headers.authorization;
