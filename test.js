@@ -18,17 +18,17 @@ myFunction('Judul Buku 2')
 
 
 
-// app.post("/booksetmap", express.urlencoded({extended:true}) ,(req,res)=>{
-//     const {title} = req.body;
-//     if(!title){
-//         res.send("book kosong")
-//     }
-//     if(setBook.has(title)){
-//         res.send(`judul buku ada yang duplikat: ${title}, ${mapBook.get(title)}`);
-//     }else{
-//         mapBook.set(title,{...books,title})
-//         setBook.add(title);
-//         console.log(setBook)
-//         res.send(mapBook.get(title));
-//         }
-//     });
+app.post("/booksetmap", express.urlencoded({extended:true}) ,(req,res)=>{
+    const {title} = req.body;
+    if(!title){
+        res.send("book kosong")
+    }
+    if(setBook.has(title)){
+        res.send(`judul buku ada yang duplikat: ${title}, ${mapBook.get(title)}`);
+    }else{
+        mapBook.set(title,{...books,title})
+        setBook.add(title);
+        console.log(setBook)
+        res.send(mapBook.get(title));
+        }
+    });
