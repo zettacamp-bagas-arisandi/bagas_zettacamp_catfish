@@ -1,5 +1,5 @@
 const express = require("express");
-const book = require('./app.js');
+const books = require('./book.js');
 const fs = require('fs');
 
 const app = express();
@@ -31,7 +31,6 @@ async function readFileTxt(){
     console.log(`File terbaca`);
 }
 
-
 // event
 const events = require('events');
 const eventEmitter = new events.EventEmitter();
@@ -39,10 +38,15 @@ const eventEmitter = new events.EventEmitter();
 eventEmitter.on('rf', readFileTxt);
 
 
-async function event(name){
-    // fire
-    eventEmitter.emit(name);
-}
+/////////////// SET MAP /////////////////
+let setBook = new Set([books[0].title, books[1].title, books[2].title]);
+let mapBook = new Map();
+    mapBook.set(books[0].title, books[0]);
+    mapBook.set(books[1].title, books[1]);
+    mapBook.set(books[2].title, books[2]);
+////////////////////////////////////////
+
+
 
 
 // middleware
@@ -54,11 +58,11 @@ app.get('/', (req,res) => {
 });
 
 app.get('/book', (req,res) => {
-    res.send(book);
+    res.send([...mapBook]);
  });
 
 app.get('/async', async(req,res) => {
-    await purchaseBook(book, 7);
+    await purchaseBook(1, 7);
     res.send(bookCredit);
 });
 
@@ -85,7 +89,29 @@ app.get('/await', async(req, res) =>{
     }
 });
 
-app.get('*', (req,res) => {
+/////// ROUTE TASK HARI INI///////
+app.get("/checkbook", express.urlencoded({extended:true}), (req,res) =>{
+    const {title} = req.body;
+    if(setBook.has(title) ){
+        res.send(mapBook.get(title));
+    }else{
+        res.send(`${title} tidak ada`);
+    }
+});
+
+app.post("/addbook", express.urlencoded({extended:true}), (req,res) =>{
+    const {title} = req.body;
+    if(setBook.has(title) ){
+        res.send(`${title} sudah ada, tidak bisa ditambahkan`);
+    }else{
+        setBook.add(title);
+        mapBook.set(title,{...books[0],title});
+        // console.log(`${title} ditambahkan`);
+        res.send(mapBook.get(title));
+    }
+});
+
+app.use('*', (req,res) => {
     res.send("Path tidak ditemukan..");
 });
 
@@ -93,6 +119,11 @@ app.get('*', (req,res) => {
 app.listen(port);
 console.log(`Server running at port:${port}`);
 
+// fire the event
+async function event(name){
+    // fire
+    eventEmitter.emit(name);
+}
 
 // function purchases book
 async function termOfCredit(credit, addPrice = 100){
@@ -155,8 +186,8 @@ function calculateToc(book){
     totalPrice = book.price + amTax - amDiscount;
     }
 
-async function purchaseBook(book,credit) {
-
+async function purchaseBook(indexBook,credit) {
+    const book = books[indexBook];
     // Jika onsale true
     if (book.status == true){
         calculateToc(book);
@@ -206,5 +237,16 @@ function authentication(req, res, next){
             res.send("Kamu tidak terotentikasi..");
             res.end();
         }
+    }
+}
+
+// cek
+function myFunction(title){
+    
+
+    if( setBook.has(title) ){
+        res.send(mapBook.get(title))
+    }else{
+        console.log(`${title} tidak ada`)
     }
 }
