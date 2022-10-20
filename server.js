@@ -13,7 +13,7 @@ app.get('/list', (req,res) =>{
     res.send(file.list);
 });
 
-app.get('/token', urlencodedParser, (req,res) =>{
+app.post('/token', urlencodedParser, (req,res) =>{
     const user = req.body.username;
     const pass = req.body.password;
     const token = generateAccessToken({ username: user, password: pass });
