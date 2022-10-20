@@ -39,14 +39,13 @@ eventEmitter.on('rf', readFileTxt);
 
 
 /////////////// SET MAP /////////////////
-let setBook = new Set([books[0].title, books[1].title, books[2].title]);
+let setBook = new Set();
 let mapBook = new Map();
-    mapBook.set(books[0].title, books[0]);
-    mapBook.set(books[1].title, books[1]);
-    mapBook.set(books[2].title, books[2]);
-////////////////////////////////////////
 
-
+for (const [idx, val] of books.entries()){
+    setBook.add([books[idx].title])
+    mapBook.set(books[idx].title, books[idx]);
+}
 
 
 // middleware
@@ -89,7 +88,7 @@ app.get('/await', async(req, res) =>{
     }
 });
 
-/////// ROUTE TASK HARI INI///////
+///////////////////////// ROUTE TASK HARI INI///////////////////////////
 app.get("/checkbook", express.urlencoded({extended:true}), (req,res) =>{
     const {title} = req.body;
     if(setBook.has(title) ){
@@ -110,7 +109,7 @@ app.post("/addbook", express.urlencoded({extended:true}), (req,res) =>{
         res.send(mapBook.get(title));
     }
 });
-
+//////////////////////////////////////////////////////////////////////////
 app.use('*', (req,res) => {
     res.send("Path tidak ditemukan..");
 });
@@ -237,16 +236,5 @@ function authentication(req, res, next){
             res.send("Kamu tidak terotentikasi..");
             res.end();
         }
-    }
-}
-
-// cek
-function myFunction(title){
-    
-
-    if( setBook.has(title) ){
-        res.send(mapBook.get(title))
-    }else{
-        console.log(`${title} tidak ada`)
     }
 }
