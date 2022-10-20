@@ -1,6 +1,5 @@
 const express = require('express');
 const file = require('./script.js');
-// console.log(list.byGenre(list.list, 'EDM'))
 const jwt = require("jsonwebtoken");
 
 const bodyParser = require('body-parser');
@@ -59,7 +58,7 @@ app.post('/byartist', authenticateToken, urlencodedParser, (req,res) => {
 
 app.post('/randomlist', authenticateToken, urlencodedParser, (req,res) => {
     const duration = req.body.duration;
-    const result = file.byDuration(file.list, duration);
+    const result = file.byDurationNew(duration);
     res.send(result);
 })
 
@@ -75,25 +74,34 @@ console.log(`Server running at port:${port}`);
 function generateAccessToken(payload) {
     return jwt.sign(payload, 'zetta', { expiresIn: '1h' });
   }
+
 function authenticateToken(req, res, next) {
+    const user = 'bagas';
+    const pass = 12345;
   
-  //Get the request header that was sent
-  const auth = req.headers['authorization'];
-  /*
-  auth = "Bearer <token>"
-  so get the token by split and at index 1
-  */
-  const token = auth.split(' ')[1];
+    //Get the request header that was sent
+    const auth = req.headers['authorization'];
+    
+    const token = auth.split(' ')[1];
+    const getUser = jwt.decode(token).username;
+    const getPass = jwt.decode(token).password;
 
-  // if there isn't any token, send unauthorised status
-  if (token == null) return res.sendStatus(401) ;
+    if(getUser == user && getPass == pass){
 
-  //verify the token with the secret key
-  jwt.verify(token, 'zetta', (err, user) => {
+        // if there isn't any token, send unauthorised status
+        if (token == null) return res.send(err.message) ;
 
-    //if user is not in the database
-    if (err) return res.sendStatus(403);
-    //else access is granted
-    return next();
-  })
+            //verify the token with the secret key
+            jwt.verify(token, 'zetta', (err) => {
+
+            // if secret key not valid
+            if (err) return res.send(err.message);
+            //else access is granted
+
+            return next();
+            
+        })
+    }else{
+        res.send('Cek kembali username atau password anda')
+    }
 }

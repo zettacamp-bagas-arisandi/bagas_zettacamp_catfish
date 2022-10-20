@@ -5,95 +5,94 @@ let list = [
         title: "Till It Hurts",
         artist: "Yellow Claw",
         genre: "EDM",
-        duration: 5
+        duration: '05:30'
     },
     {
         title: "Both Of Us",
         artist: "Yellow Claw",
         genre: "EDM",
-        duration: 5
+        duration: '05:10'
     },
     {
         title: "Lunatic",
         artist: "Weird Genius",
         genre: "EDM",
-        duration: 4
+        duration: '04:30'
     },
     {
         title: "LATHI",
         artist: "Weird Genius",
         genre: "EDM",
-        duration: 6
+        duration: '03:10'
     },
     {
         title: "Sweet Scar",
         artist: "Weird Genius",
         genre: "EDM",
-        duration: 4
+        duration: '05:25'
     },
     {
         title: "Kingslayer",
         artist: "BMTH",
         genre: "Rock",
-        duration: 6
+        duration: '06:30'
     },
     {
         title: "ABC feat. Sophia",
         artist: "Polyphia",
         genre: "Rock",
-        duration: 5
+        duration: '03:55'
     },
     {
         title: "Euphoria",
         artist: "Polyphia",
         genre: "Rock",
-        duration: 4
+        duration: '05:30'
     },
     {
         title: "Beraksi",
         artist: "Kotak",
         genre: "Rock",
-        duration: 4
+        duration: '05:20'
     },
     {
         title: "Terbang",
         artist: "Kotak",
         genre: "Rock",
-        duration: 3
+        duration: '04:30'
     },
     {
         title: "Golden Hour",
         artist: "Jvke",
         genre: "Pop",
-        duration: 3
+        duration: '05:38'
     },
     {
         title: "Tentang Cinta",
         artist: "Ipang",
         genre: "Pop",
-        duration: 4
+        duration: '03:50'
     },
     {
         title: "Kita",
         artist: "Sheila On 7",
         genre: "Pop",
-        duration: 5
+        duration: '04:30'
     },
     {
         title: "Seberapa Pantas",
         artist: "Sheila On 7",
         genre: "Pop",
-        duration: 4
+        duration: '05:30'
     },
     {
         title: "Sahabat",
         artist: "Ipang",
         genre: "Pop",
-        duration: 4
+        duration: '05:50'
     },
 ];
 
-const song = list.sort( () => Math.random() - 0.1);
 
 // sort by artist
 function byArtist(song, artist){
@@ -146,9 +145,56 @@ function byDuration(song, duration){
     return{random: newPlaylist, total: newPlaylistDur}
 }
 
+// by duration new
+function byDurationNew(duration){
+    // sort by random
+    const song = list.sort( () => Math.random() - 0.1);
+    // parameter duration
+    let dur = duration * 60;
+    // untuk Split by duration
+    let arrDur = [];
+    // untuk playlist baru
+    let newPlaylist = [];
+    // hitung durasi dari semua song
+    let totalDetik = 0;
+    // hotung durasi dari semua song di playlist baru
+    let totalDetikNew = 0;
+
+    // status
+    let stsMenit = 0;
+    let stsDetik = 0;
+
+
+    // looping sebanyak jumlah array dalam list
+    for (const item of song){
+        arrDur = item.duration.split(':');
+        let detik = ( parseInt(arrDur[0]*60) + parseInt(arrDur[1]) );
+        totalDetik += detik;
+        
+        // pushing ke array playlist baru 
+        if (totalDetik < dur){
+            totalDetikNew += detik;
+            newPlaylist.push(item);
+        }else{
+            break;
+        }
+    }
+
+    // looping sebanyak total detik
+    for (let i = 0; i < totalDetikNew; i++){
+        stsDetik++;
+        if (stsDetik > 59){
+            stsMenit++;
+            stsDetik = 0;
+        }
+    }
+    return {Total: `${stsMenit} menit, ${stsDetik} detik`, randomList:newPlaylist}
+    // console.log(`${totalDetikNew} => ${stsMenit} : ${stsDetik}`)
+}
+
 // show all data
 // console.log("==============================================");
 // byGenre(song, "EDM");
 // byArtist(song, "Ipang");
 // byDuration(song, 60);
-module.exports = { list, byGenre , byArtist, byDuration}
+module.exports = { list, byGenre , byArtist, byDuration, byDurationNew}

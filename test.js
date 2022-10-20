@@ -147,23 +147,40 @@ function byDuration(song, duration){
 }
 
 
-function cek(){ 
-   let dur = [];
-   let x = 0;
-   let total = 0;
+function cek(duration){ 
+   let dur = duration * 60;
+   let newPlaylist = [];
+   let x = [];
+   let totalDetik = 0;
+   let totalDetikNew = 0;
     for( const n of list){
-    x = n.duration.split(":");
-    let menit = parseInt(x[0])*60;
-    let detik = parseInt(x[1]);
-    dur.push(x[0]*60+x[1])
-    console.log(menit)
-   }
-   console.log(dur);
+        x = n.duration.split(":");
+        let detik = (parseInt(x[0])*60 )+ parseInt(x[1]);
+        totalDetik += detik;
+        if (totalDetik < dur){
+            totalDetikNew += detik;
+            newPlaylist.push(n);
+            }else{
+                break;
+            }
+        }
+    console.log([newPlaylist, totalDetikNew])
+    return [newPlaylist, totalDetikNew]
 }
-cek();
-// show all data
-// console.log("==============================================");
-// byGenre(song, "EDM");
-// byArtist(song, "Ipang");
-// byDuration(song, 60);
+
+function test(x){
+let menit = 0;
+let detik = 0;
+    for (let n = 0; n < x; n++){
+        detik++;
+        if (detik > 59){
+            menit++
+            detik = 0;
+            //console.log('Menit add')
+        }
+    }
+    console.log(`${menit}:${detik}`)
+}
+//console.log(cek(10)[1]);
+test(cek(60)[1]);
 module.exports = { list, byGenre , byArtist, byDuration}
