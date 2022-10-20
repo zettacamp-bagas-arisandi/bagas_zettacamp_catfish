@@ -5,91 +5,91 @@ let list = [
         title: "Till It Hurts",
         artist: "Yellow Claw",
         genre: "EDM",
-        duration: 5
+        duration: '05:30'
     },
     {
         title: "Both Of Us",
         artist: "Yellow Claw",
         genre: "EDM",
-        duration: 5
+        duration: '05:10'
     },
     {
         title: "Lunatic",
         artist: "Weird Genius",
         genre: "EDM",
-        duration: 4
+        duration: '04:30'
     },
     {
         title: "LATHI",
         artist: "Weird Genius",
         genre: "EDM",
-        duration: 6
+        duration: '04:10'
     },
     {
         title: "Sweet Scar",
         artist: "Weird Genius",
         genre: "EDM",
-        duration: 4
+        duration: '05:25'
     },
     {
         title: "Kingslayer",
         artist: "BMTH",
         genre: "Rock",
-        duration: 6
+        duration: '06:30'
     },
     {
         title: "ABC feat. Sophia",
         artist: "Polyphia",
         genre: "Rock",
-        duration: 5
+        duration: '03:55'
     },
     {
         title: "Euphoria",
         artist: "Polyphia",
         genre: "Rock",
-        duration: 4
+        duration: '05:30'
     },
     {
         title: "Beraksi",
         artist: "Kotak",
         genre: "Rock",
-        duration: 4
+        duration: '05:20'
     },
     {
         title: "Terbang",
         artist: "Kotak",
         genre: "Rock",
-        duration: 3
+        duration: '04:30'
     },
     {
         title: "Golden Hour",
         artist: "Jvke",
         genre: "Pop",
-        duration: 3
+        duration: '05:38'
     },
     {
         title: "Tentang Cinta",
         artist: "Ipang",
         genre: "Pop",
-        duration: 4
+        duration: '03:50'
     },
     {
         title: "Kita",
         artist: "Sheila On 7",
         genre: "Pop",
-        duration: 5
+        duration: '04:30'
     },
     {
         title: "Seberapa Pantas",
         artist: "Sheila On 7",
         genre: "Pop",
-        duration: 4
+        duration: '05:30'
     },
     {
         title: "Sahabat",
         artist: "Ipang",
         genre: "Pop",
-        duration: 4
+        duration: '05:50'
     },
 ];
 
@@ -146,6 +146,21 @@ function byDuration(song, duration){
     return{random: newPlaylist, total: newPlaylistDur}
 }
 
+
+function cek(){ 
+   let dur = [];
+   let x = 0;
+   let total = 0;
+    for( const n of list){
+    x = n.duration.split(":");
+    let menit = parseInt(x[0])*60;
+    let detik = parseInt(x[1]);
+    dur.push(x[0]*60+x[1])
+    console.log(menit)
+   }
+   console.log(dur);
+}
+cek();
 // show all data
 // console.log("==============================================");
 // byGenre(song, "EDM");
