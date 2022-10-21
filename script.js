@@ -188,7 +188,9 @@ function byDurationNew(duration){
             stsDetik = 0;
         }
     }
+    console.log( {Total: `${stsMenit} menit, ${stsDetik} detik`, randomList:newPlaylist})
     return {Total: `${stsMenit} menit, ${stsDetik} detik`, randomList:newPlaylist}
+    //return {Total: `${Math.floor(totalDetik / 60)}: ${totalDetik % 60}`, randomList:newPlaylist}
     // console.log(`${totalDetikNew} => ${stsMenit} : ${stsDetik}`)
 }
 
