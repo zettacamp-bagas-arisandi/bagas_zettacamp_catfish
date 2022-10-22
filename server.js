@@ -83,6 +83,7 @@ function authenticateToken(req, res, next) {
     const auth = req.headers['authorization'];
     
     const token = auth.split(' ')[1];
+    console.log(jwt.decode(token))
     const getUser = jwt.decode(token).username;
     const getPass = jwt.decode(token).password;
 
