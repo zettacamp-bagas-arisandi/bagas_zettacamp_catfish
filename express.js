@@ -2,6 +2,9 @@ const express = require("express");
 const books = require('./book.js');
 const fs = require('fs');
 
+const bodyParser = require('body-parser');
+const urlencodedParser = bodyParser.urlencoded({ extended: true })
+
 const app = express();
 const port = 4000;
 
@@ -12,6 +15,35 @@ const passSet = 'admin123';
 
 // set variabel for calculating later
 let amDiscount, priceDiscount, amTax ,priceTax, totalPrice, totalPricePur, actualPur = 0;
+
+let setBook = new Set();
+let mapBook = new Map();
+
+// setBook.add(books[0].title);
+// setBook.add(books[1].title);
+// setBook.add(books[2].title);
+
+// mapBook.set(books[0].title, books[0]);
+// mapBook.set(books[1].title, books[1]);
+// mapBook.set(books[2].title, books[2]);
+
+/////////////// SET MAP /////////////////
+
+for (let i = 0; i < books.length; i++){
+    setBook.add(books[i].title);
+    mapBook.set(books[i].title, books[i])
+}
+
+// for (let [idx, val] of books.entries()){
+//     setBook.add([books[idx].title])
+//     mapBook.set(books[idx].title, books[idx]);
+// }
+
+// event
+const events = require('events');
+const eventEmitter = new events.EventEmitter();
+//Assign the event handler to an event:
+eventEmitter.on('rf', readFileTxt);
 
 // deklarasi promise
 const promise = true;
@@ -31,29 +63,29 @@ async function readFileTxt(){
     console.log(`File terbaca`);
 }
 
-// event
-const events = require('events');
-const eventEmitter = new events.EventEmitter();
-//Assign the event handler to an event:
-eventEmitter.on('rf', readFileTxt);
-
-
-/////////////// SET MAP /////////////////
-let setBook = new Set();
-let mapBook = new Map();
-
-for (const [idx, val] of books.entries()){
-    setBook.add([books[idx].title])
-    mapBook.set(books[idx].title, books[idx]);
-}
-
-
 // middleware
 app.use(authentication);
 
 // route
 app.get('/', (req,res) => {
     res.send(`Welcome admin ${userSet}!`);
+});
+
+app.post('/buy', urlencodedParser, async(req, res) => {
+    let {title, amount} = req.body;
+
+    if (amount === undefined){
+        amount = 1;
+    }
+
+        if(setBook.has(title) ){
+            // console.log( purchaseBook(mapBook.get(title),10))
+            const get = await purchaseBook(mapBook.get(title), amount);
+            res.send({judul: title, cicil: `${amount} bulan`, total: `Rp. ${get.totalPricePur.toLocaleString('ID')}`, detail: get.toc})
+        }else{
+            res.send(`${title} tidak ada`);
+        }
+
 });
 
 app.get('/book', (req,res) => {
@@ -89,10 +121,10 @@ app.get('/await', async(req, res) =>{
 });
 
 ///////////////////////// ROUTE TASK HARI INI///////////////////////////
-app.get("/checkbook", express.urlencoded({extended:true}), (req,res) =>{
-    const {title} = req.body;
-    if(setBook.has(title) ){
-        res.send(mapBook.get(title));
+app.post("/checkbook", urlencodedParser, (req,res) =>{
+    const title =  req.body.title;
+    if( setBook.has( title) ){
+        res.send( mapBook.get(title));
     }else{
         res.send(`${title} tidak ada`);
     }
@@ -160,8 +192,8 @@ async function termOfCredit(credit, addPrice = 100){
             // array func, untuk push ke array object
             toc.push( {
             bulan: a[currMonth],
-            cicilan: Math.round(creditPrice),
-            total: Math.round(tocCr)
+            cicilan: Math.round(creditPrice).toLocaleString('ID'),
+            total: Math.round(tocCr).toLocaleString('ID')
             } );
 
                 
@@ -169,7 +201,7 @@ async function termOfCredit(credit, addPrice = 100){
             };
 
             // console.log(toc);
-            return toc;
+            return {toc, totalPricePur};
     }
 
 function calculateToc(book){
@@ -186,7 +218,8 @@ function calculateToc(book){
     }
 
 async function purchaseBook(indexBook,credit) {
-    const book = books[indexBook];
+    //const book = books[indexBook];
+    const book = indexBook;
     // Jika onsale true
     if (book.status == true){
         calculateToc(book);
@@ -207,6 +240,7 @@ async function purchaseBook(indexBook,credit) {
 
         bookCredit = await termOfCredit(credit);
         console.log(bookCredit);
+        return bookCredit;
 
         // Jika onsale false
         } else {
