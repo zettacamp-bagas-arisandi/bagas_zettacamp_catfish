@@ -52,15 +52,19 @@ app.get('/find',urlencodedParser, (req,res) => {
 app.put('/update', urlencodedParser, async (req, res) => {
     let { id, title, author, date_published, price} = req.body;
     let cek = null;
-    if (id == null || id == undefined){
-        cek = 'Masukkan Object ID yang ingin dirubah';
-    }else{
-        cek = await modelBook.findByIdAndUpdate(id, {
-            title: title, 
-            author: author, 
-            date_published: date_published, 
-            price: price 
-        }, {new: true});
+    try{
+        if (id == null || id == undefined){
+            cek = 'Masukkan Object ID yang ingin dirubah';
+        }else{
+            cek = await modelBook.findByIdAndUpdate(id, {
+                title: title, 
+                author: author, 
+                date_published: date_published, 
+                price: price 
+            }, {new: true});
+        }
+    }catch(err){
+        cek = err;
     }
         res.send(cek);
 });
