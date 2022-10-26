@@ -21,7 +21,7 @@ const database = 'zettacamp';
 const connectDB = async () => {
   try {
     await mongoose.connect(`mongodb://${db}/${database}`)
-    console.log(`Connected to ${db}`)
+    console.log(`Connected to ${database}`)
   } catch (err) {
     console.log('Failed to connect to MongoDB', err)
   }
@@ -110,11 +110,15 @@ app.get('/bookshelfby', urlencodedParser, async (req,res) => {
     res.send(cek);
 });
 
-// app.get('/bookshelfbys', urlencodedParser, async (req,res) => {
-//     let {condition} = req.body;
-//     let cek = await modelBookShelf.find({name: {$gt: /condition/ }})
-//     res.send(cek);
-// })
+app.get('/bookshelfbys', urlencodedParser, async (req,res) => {
+    let {id} = req.body;
+    let idArr = [];
+    idArr = id.split(' ');
+    console.log(idArr)
+    let cek = await modelBookShelf.find(
+        { book_id: { $elemMatch: {$in:(idArr)} } } )
+    res.send(cek);
+})
 
 app.post('/bookshelf', urlencodedParser, async (req,res) => {
     let {name,book_ids} = req.body;
