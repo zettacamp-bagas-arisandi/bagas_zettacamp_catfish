@@ -258,9 +258,62 @@ app.delete('/bookshelf', urlencodedParser, async (req,res) => {
 });
 
 
+///////////////////////// Today Task //////////////////////////////////////////////////
+app.get('/books-project', urlencodedParser, async(req, res) =>{
+    let {id} = req.body;
+    let cek = await modelBook.aggregate([
+        {
+            $match: {_id : mongoose.Types.ObjectId(id)}
+        },
+        {
+            $project: { _id: 0, title: 1, author: 1, date_published: 1, price: 1, stock: 1} 
+        }
+    ]);
 
+    if (cek==''){
+        cek = await modelBook.aggregate([{
+            $project: { _id: 0, title: 1, author: 1, date_published: 1, price: 1, stock: 1} 
+        }])
+    }
 
+    res.send(cek);
+});
 
+app.post('/books-pricetax', urlencodedParser, async(req,res) =>{
+    let {id,price} = req.body;
+    price = parseInt(price);
+    let cek = await modelBook.aggregate([
+        {
+            $match: {_id : mongoose.Types.ObjectId(id)}
+        },
+        {
+            $addFields: { 
+                price_after_tax: {$sum: ["$price", price] }
+            } 
+        }
+    ])
+    if (cek==''){
+        cek = await modelBook.aggregate([
+            {
+                $addFields: {
+                    price_after_tax: {$sum: ["$price", price] }
+                }
+            }
+        ])
+    }
+    res.send(cek);
+});
+
+app.get('/bookshelf-unwind', urlencodedParser, async(req,res) => {
+    let cek = await modelBookShelf.aggregate([
+        {
+            $unwind: "$books"
+        },{
+            $project: { name: 1, books: 1}
+        }
+    ])
+    res.send(cek);
+});
 
 
 // async function generateRandomBook(){
