@@ -87,10 +87,18 @@ app.delete('/delete', urlencodedParser, async (req,res) => {
 });
 
 app.get('/bookshelf', urlencodedParser, async (req,res) => {
-    let {id} = req.body;
+    let {id,name} = req.body;
     let cek = null;
-    if (id != null){
+    if (id){
         cek = await modelBookShelf.findById(id);
+        if (!cek){
+            cek = `${id} tidak ada`;
+        }
+    }else if (name){
+        cek = await modelBookShelf.find({name: name});
+        if (cek==''){
+            cek = `${name} tidak ada`;
+        }
     }else{
         cek = await modelBookShelf.find({});
     }
@@ -110,36 +118,108 @@ app.get('/bookshelfby', urlencodedParser, async (req,res) => {
     res.send(cek);
 });
 
-app.get('/bookshelfbys', urlencodedParser, async (req,res) => {
+
+app.get('/bookshelf-find', urlencodedParser, async (req,res)=>{
     let {id} = req.body;
-    let idArr = [];
-    idArr = id.split(' ');
-    console.log(idArr)
-    let cek = await modelBookShelf.find(
-        { book_id: { $elemMatch: {$in:(idArr)} } } )
+    let cek = null;
+    if (id){
+        cek = await modelBookShelf.find({ books: { $elemMatch: { books_id: {$eq:  mongoose.Types.ObjectId(id) }} } })
+        if (cek == ''){
+            cek = `${id} tidak ada`;
+        }
+    }else{
+        cek = 'Masukkan ID yang ingin dicari';
+    }
     res.send(cek);
 })
 
-app.post('/bookshelf', urlencodedParser, async (req,res) => {
-    let {name,book_ids} = req.body;
+app.post('/bookshelf-add', urlencodedParser, async (req,res) => {
+    let {name,book_ids,date_add,stocks} = req.body;
+    let idArr = [];
+    let dateArr = [];
+    let stockArr = [];
+
+    idArr = book_ids.split(' ');
+    dateArr = date_add.split(' ');
+    stockArr = stocks.split(' ');
+    
     const newBookShelf = new modelBookShelf({
         name: name,
-        book_id: book_ids.split(' ')
-    })
+        books: [],
+        date: [{
+            date: date_add,
+            time: `${new Date().getHours()}:${new Date().getMinutes()}`
+        }]
+    });
+    
+
+    for(const [i,n] of idArr.entries()){
+        let newDate = new Date(dateArr[i])
+        console.log(newDate)
+        newBookShelf.books.push({
+            books_id: n,
+            added_date: newDate,
+            stock: stockArr[i]
+        })
+    }
+    console.log(newBookShelf)
     const cek = await newBookShelf.save()
     console.log(cek)
     res.send(cek);
 });
 
-app.put('/bookshelf', urlencodedParser, async (req,res) => {
-    let {id, name, book_ids} = req.body;
+app.put('/bookshelf-booksdate', urlencodedParser, async(req,res) => {
+    let {id, date, new_date} = req.body;
     let cek = null;
-    if (id!= null){
-        if (name!=null){
+    if (id){
+        cek = await modelBookShelf.updateOne({ "_id": mongoose.Types.ObjectId(id)
+        },{
+            $set: {
+            "books.$[idx].added_date": new Date(new_date)  
+            }
+        },{
+            arrayFilters:[{
+                "idx.added_date": {
+                    $lte: new Date(date)}
+            }]
+        });
+    }else{
+        cek = `${id} tidak ada`;
+    }
+    res.send(cek);
+})
+
+app.put('/bookshelf-date', urlencodedParser, async (req,res) =>{
+    let {id, date,new_date} = req.body;
+    let cek = null;
+    if (id){
+        cek = await modelBookShelf.updateOne({ "_id": mongoose.Types.ObjectId(id)
+        },{
+            $set: {
+            "date.$[idx].date": new Date(new_date)  
+            }
+        },{
+            arrayFilters:[{
+                "idx.date": {
+                    $lte: new Date(date)}
+            }]
+        });
+    }else{
+        cek = `${id} tidak ada`;
+    }
+    res.send(cek);
+})
+
+app.put('/bookshelf', urlencodedParser, async (req,res) => {
+    let {id, name, book_ids, date, stocks} = req.body;
+    let cek = null;
+    if (id){
+
+        if (name){
         cek = await modelBookShelf.findByIdAndUpdate(id,{
             name: name,
         },{new: true});
-        }else if(book_ids!=null){
+        }else if(book_ids){
             let book_idArr = book_ids.split(' ');
             let newArr = [];
             if (book_idArr.length > 1){
@@ -206,44 +286,55 @@ app.delete('/bookshelf', urlencodedParser, async (req,res) => {
 
 // generateRandomBook();
 
-async function save(){
+// async function save(){
 
-let id = [];
+// let id = [];
+// let yy = [2000, 2002, 2004, 2005, 2010, 2007, 2008, 2012, 2018];
+// let mm = [01,02,03,04,05,06,07,08,09,10,11,12];
+// let dd = 1; 
+// let stocks = [1,2,3,4,5] 
 
-for ( let i = 1; i <= 20; i++){
-    let data = await modelBook.findOne({title: `Judul Buku ${i}`});
-    id.push(data._id.toString())
-    }
+// for ( let i = 1; i <= 20; i++){
+//     let data = await modelBook.findOne({title: `Judul Buku ${i}`});
+//     id.push(data._id.toString())
+//     }
 
+//     for( let i = 1; i <= 7; i ++){
 
-    for( let i = 1; i <= 7; i ++){
-        let getId1 = Math.floor(Math.random() * id.length);
-        let getId2 = Math.floor(Math.random() * id.length);
-        let getId3 = Math.floor(Math.random() * id.length);
-        const newBookShelf = new modelBookShelf({
-            name: `Bookshelf ${i}`,
-            book_id: [id[getId1],id[getId2],id[getId3]]
-        })
-        const cek = await newBookShelf.save()
-        console.log(cek)
-    }
+//         let getyy = Math.floor(Math.random() * yy.length);
+//         let getmm = Math.floor(Math.random() * mm.length);
+//         dd++;
 
-}
-//save()
+//         let getStock = Math.floor(Math.random() * stocks.length);
 
+//         let getId1 = Math.floor(Math.random() * id.length);
+//         let getId2 = Math.floor(Math.random() * id.length);
+//         let getId3 = Math.floor(Math.random() * id.length);
+//         const newBookShelf = new modelBookShelf({
+//             name: `Bookshelf ${i}`,
+//             books: [{
+//                 books_id: id[getId1],
+//                 added_date: new Date([yy[getyy], mm[getyy], dd].join('-')) ,
+//                 stock: stocks[getStock],
+//             },
+//             {
+//                 books_id: id[getId2],
+//                 added_date: new Date([yy[getyy], mm[getyy], dd].join('-')) ,
+//                 stock: stocks[Math.floor(Math.random() * stocks.length)]
+//             },
+//             {
+//                 books_id: id[getId3],
+//                 added_date: new Date([yy[getyy], mm[getyy], dd].join('-')) ,
+//                 stock: stocks[Math.floor(Math.random() * stocks.length)]
+//             }],
+//             date: [{
+//                 date: new Date([yy[getyy], mm[getyy], dd].join('-')),
+//                 time: `${new Date().getHours()}:${new Date().getMinutes()}`
+//             }]
+//         })
+//         const cek = await newBookShelf.save()
+//         console.log(cek)
+//     }
 
-
-//getBookShelf()
-
-// let booksTemp = [];
-
-// async function getBooks(){
-//     const books = await modelBook.find({})
-//     const tmp = [];
-
-//     function getRndInteger(min, max) {
-//         return Math.floor(Math.random() * (max - min) ) + min;
-//         }
-//     //console.log(books)
 // }
-// getBooks()
+// save()

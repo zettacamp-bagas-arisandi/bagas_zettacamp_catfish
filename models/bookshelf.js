@@ -2,7 +2,29 @@ const mongoose = require("mongoose");
 
 const bookShelfSchema = new mongoose.Schema({ 
         name: String,
-        book_id: [{ type : mongoose.Schema.Types.ObjectId, ref: 'book' }]
+        books: [{
+                _id: false,
+                books_id: {
+                  type : mongoose.Schema.Types.ObjectId, 
+                  ref: 'book' 
+                },
+                added_date: {
+                  type: Date
+                },
+                stock: {
+                  type: Number
+                }
+        }],
+        date: [{
+                _id: false,
+                date: {
+                  type: Date,
+                  default: new Date()
+                },
+                  time: {
+                  type: String,
+                  }
+        }]
 }, {timestamps: true});
 
 const bookShelf = mongoose.model('bookShelf', bookShelfSchema);
