@@ -259,27 +259,106 @@ app.delete('/bookshelf', urlencodedParser, async (req,res) => {
 
 
 ///////////////////////// Today Task //////////////////////////////////////////////////
-app.get('/books-project', urlencodedParser, async(req, res) =>{
-    let {id} = req.body;
+app.get('/books/find', urlencodedParser, async(req, res) =>{
+    let {id,price = 500, title} = req.body;
+    price = parseInt(price);
     let cek = await modelBook.aggregate([
         {
             $match: {_id : mongoose.Types.ObjectId(id)}
         },
         {
-            $project: { _id: 0, title: 1, author: 1, date_published: 1, price: 1, stock: 1} 
+            $addFields: { 
+                price_after_add: {$sum: ["$price", price] },
+            } 
+        },
+        {
+            $project: {
+                _id: 0
+               }
         }
-    ]);
-
+    ])
     if (cek==''){
-        cek = await modelBook.aggregate([{
-            $project: { _id: 0, title: 1, author: 1, date_published: 1, price: 1, stock: 1} 
-        }])
+        cek = await modelBook.aggregate([
+            {
+                $sort: { _id: -1}
+            },
+            {
+                $addFields: {
+                    price_after_add: {$sum: ["$price", price] },
+                    description: {
+                        $concat: ["$title", " - ", "$author", " - (", {$toString: "$stock"}, ")"]
+                        },
+                    price: {
+                        $concat: [ {$toString: "$price"}, " => ", {$toString: {$sum: ["$price", price]}}]
+                    }
+                }
+            },
+            {
+                $project: {_id: 1, description: 1, price: 1, date_published: 1}
+            }
+        ])
     }
-
     res.send(cek);
 });
 
-app.post('/books-pricetax', urlencodedParser, async(req,res) =>{
+// app.get('/books/author-find', urlencodedParser, async(req, res) =>{
+//     let {id,price = 500, author} = req.body;
+//     price = parseInt(price);
+//     let cek = await modelBook.aggregate([
+//         {
+//             $match: {author : author}
+//         },
+//         { 
+//             $group:
+//          {
+//            _id: { date:  } },
+//            itemsSold: { $push:  { item: "$item", quantity: "$quantity" } }
+//          }
+//         }
+
+//     ]);
+//     if (cek==''){
+//         cek = `${author} tidak ada`
+//     }
+//     res.send(cek);
+// });
+
+app.get('/bookshelves', urlencodedParser, async(req, res) => {
+    let {id} = req.body;
+    let cek = await modelBookShelf.aggregate([
+        {
+            $match: {_id : mongoose.Types.ObjectId(id)}
+        },
+        {
+            $lookup:{
+                from: "books",
+                localField: "books.books_id",
+                foreignField: "_id",
+                as: "books_populate"
+            }}
+    ])
+
+    if (cek==''){
+    cek = await modelBookShelf.aggregate([
+        {
+            $lookup:{
+                from: "books",
+                localField: "books.books_id",
+                foreignField: "_id",
+                as: "books_populate"
+            }},
+            {
+            $project: {
+                    books: 0, createdAt: 0, updatedAt: 0, date: 0, __v: 0
+            }
+        }
+    ]);
+    };
+    res.send(cek);
+});
+
+/////////////////////////////////////////////////////////////////////////////////////////
+app.post('/books-priceadd', urlencodedParser, async(req,res) =>{
     let {id,price} = req.body;
     price = parseInt(price);
     let cek = await modelBook.aggregate([
@@ -288,16 +367,22 @@ app.post('/books-pricetax', urlencodedParser, async(req,res) =>{
         },
         {
             $addFields: { 
-                price_after_tax: {$sum: ["$price", price] }
+                price_after_add: {$sum: ["$price", price] }
             } 
         }
     ])
     if (cek==''){
         cek = await modelBook.aggregate([
             {
+                $sort: { _id: -1}
+            },
+            {
                 $addFields: {
-                    price_after_tax: {$sum: ["$price", price] }
+                    price_after_add: {$sum: ["$price", price] }
                 }
+            },
+            {
+                $project: {createdAt: 0, updatedAt: 0, __v: 0, date_published: 0, price: 0}
             }
         ])
     }

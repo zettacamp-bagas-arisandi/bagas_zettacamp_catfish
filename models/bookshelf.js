@@ -6,7 +6,7 @@ const bookShelfSchema = new mongoose.Schema({
                 _id: false,
                 books_id: {
                   type : mongoose.Schema.Types.ObjectId, 
-                  ref: 'book' 
+                  ref: 'books' 
                 },
                 added_date: {
                   type: Date
