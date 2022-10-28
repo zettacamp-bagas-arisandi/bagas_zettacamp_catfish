@@ -301,27 +301,29 @@ app.get('/books/find', urlencodedParser, async(req, res) =>{
     res.send(cek);
 });
 
-// app.get('/books/author-find', urlencodedParser, async(req, res) =>{
-//     let {id,price = 500, author} = req.body;
-//     price = parseInt(price);
-//     let cek = await modelBook.aggregate([
-//         {
-//             $match: {author : author}
-//         },
-//         { 
-//             $group:
-//          {
-//            _id: { date:  } },
-//            itemsSold: { $push:  { item: "$item", quantity: "$quantity" } }
-//          }
-//         }
+app.get('/books/author-find', urlencodedParser, async(req, res) =>{
+    let {id,price = 500, author} = req.body;
+    price = parseInt(price);
+    let cek = await modelBook.aggregate([
+        {
+            $match: {
+                author:author
+            }
+        },
+        { 
+            $group:
+            {
+              _id: "$author",
+              list: { $push:  { title: "$title", date_published: "$date_published", price: "$price"} }
+            }
+        }
 
-//     ]);
-//     if (cek==''){
-//         cek = `${author} tidak ada`
-//     }
-//     res.send(cek);
-// });
+    ]);
+    if (cek==''){
+        cek = `${author} tidak ada`
+    }
+    res.send(cek);
+});
 
 app.get('/bookshelves', urlencodedParser, async(req, res) => {
     let {id} = req.body;
@@ -357,7 +359,7 @@ app.get('/bookshelves', urlencodedParser, async(req, res) => {
     res.send(cek);
 });
 
-/////////////////////////////////////////////////////////////////////////////////////////
+
 app.post('/books-priceadd', urlencodedParser, async(req,res) =>{
     let {id,price} = req.body;
     price = parseInt(price);
@@ -400,6 +402,7 @@ app.get('/bookshelf-unwind', urlencodedParser, async(req,res) => {
     res.send(cek);
 });
 
+/////////////////////////////////////////////////////////////////////////////////////////
 
 // async function generateRandomBook(){
 //     let price = [10000, 20000, 15000, 25000, 30000, 35000, 40000, 50000];
