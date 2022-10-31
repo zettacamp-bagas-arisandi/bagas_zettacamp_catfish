@@ -1,31 +1,11 @@
 const mongoose = require("mongoose");
 
-const bookShelfSchema = new mongoose.Schema({ 
-        name: String,
-        books: [{
-                _id: false,
-                books_id: {
-                  type : mongoose.Schema.Types.ObjectId, 
-                  ref: 'books' 
-                },
-                added_date: {
-                  type: Date
-                },
-                stock: {
-                  type: Number
-                }
-        }],
-        date: [{
-                _id: false,
-                date: {
-                  type: Date,
-                  default: new Date()
-                },
-                  time: {
-                  type: String,
-                  }
-        }]
+const songListModel = new mongoose.Schema({ 
+    title: String,
+    artist: String,
+    genre: String,
+    duration: String
 }, {timestamps: true});
 
-const bookShelf = mongoose.model('bookShelf', bookShelfSchema);
-module.exports = bookShelf;
+const songlist = mongoose.model('songlist', songModel);
+module.exports = songlist;
