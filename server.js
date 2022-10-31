@@ -303,24 +303,40 @@ app.get('/books/find', urlencodedParser, async(req, res) =>{
 });
 
 app.get('/books/author-find', urlencodedParser, async(req, res) =>{
-    let {id,price = 500, author} = req.body;
+    let query = {$and: []};
+    let {price = 500, author} = req.body;
     price = parseInt(price);
+
+    // kondisi
+    if(author){
+        query.$and.push({
+            author: author
+
+        })
+    }
+    
+    if(price){
+        query.$and.push({
+            price:price
+        })
+    }
+    
+    
     let cek = await modelBook.aggregate([
         {
-            $match: {
-                author:author
-            }
+            $match: query
         },
         { 
             $group:
             {
               _id: "$author",
-              list: { $push:  { title: "$title", date_published: "$date_published", price: "$price"} }
+              list: { $push:  { title: "$title", date_published: "$date_published", price: "$price"} },
+              total : {$sum : 1}
             }
         }
 
     ]);
-    if (cek==''){
+    if (!cek.length){
         cek = `${author} tidak ada`
     }
     res.send(cek);
@@ -426,27 +442,20 @@ app.get('/bookshelf-unwind', urlencodedParser, async(req,res) => {
 
 ///////////////////////// Today Task //////////////////////////////////////////////////
 app.get('/books-page', urlencodedParser, async(req,res) => {
-    let query = [];
-    let {title,page, limit = 2} = req.body;
-    page = parseInt(page);
-    limit = parseInt(limit);
+    let {page, limit = 2} = req.body;
     let skip = 0;
     
-    // kondisi
-    if(title){
-        query.push({
-            title: title
-        })
-    }else{
-        query.push({
-            title: ''
-        })
+    // conver ke int
+    page = parseInt(page);
+    limit = parseInt(limit);
+   
+    // kondisikan limit
+    if (limit < 1){
+        limit = 1;
     }
-
-    // ubah query
-    query = {
-        $or: query
-    }
+    
+    // status pages
+    let pages = `${page} / ${Math.ceil(await modelBook.count()/limit)}`;
 
     // page 
     if (page > 1 ){
@@ -464,10 +473,15 @@ app.get('/books-page', urlencodedParser, async(req,res) => {
             $limit: limit
         }
     ]);
-    console.log(skip)
-    data = {
-        page: `${page} / ${Math.ceil(await modelBook.count()/limit)}`, 
-        data
+  
+    // tambah keterangan page
+    if (data.length){
+        data = {
+            page: pages, 
+            data
+        }
+    }else{
+        data = `Page ke-${page} tidak ada`
     }
     res.send(data);
 })
