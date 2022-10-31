@@ -277,7 +277,8 @@ app.get('/books/find', urlencodedParser, async(req, res) =>{
                }
         }
     ])
-    if (cek==''){
+    console.log(cek)
+    if (!cek.length){
         cek = await modelBook.aggregate([
             {
                 $sort: { _id: -1}
@@ -326,37 +327,58 @@ app.get('/books/author-find', urlencodedParser, async(req, res) =>{
 });
 
 app.get('/bookshelves', urlencodedParser, async(req, res) => {
-    let {id} = req.body;
-    let cek = await modelBookShelf.aggregate([
-        {
-            $match: {_id : mongoose.Types.ObjectId(id)}
-        },
-        {
-            $lookup:{
-                from: "books",
-                localField: "books.books_id",
-                foreignField: "_id",
-                as: "books_populate"
-            }}
-    ])
-
-    if (cek==''){
-    cek = await modelBookShelf.aggregate([
-        {
-            $lookup:{
-                from: "books",
-                localField: "books.books_id",
-                foreignField: "_id",
-                as: "books_populate"
-            }},
+    let {id, author} = req.body;
+    let cek;
+    if (!id){
+        cek = await modelBookShelf.find({});
+    }else{
+        cek = await modelBookShelf.aggregate([
             {
-            $project: {
-                    books: 0, createdAt: 0, updatedAt: 0, date: 0, __v: 0
+                $match: {_id : mongoose.Types.ObjectId(id)}
+            },
+            {
+                $lookup:{
+                    from: "books",
+                    localField: "books.books_id",
+                    foreignField: "_id",
+                    as: "books_populate"
+                }},
+            // {
+            //     $match: {"books_populate.author": author }
+            // }
+        ])
+    
+       
+        if (author){
+            cek = await modelBookShelf.aggregate([
+            {
+                    $match: {_id : mongoose.Types.ObjectId(id)}
+            },
+            {
+                $lookup:{
+                    from: "books",
+                    localField: "books.books_id",
+                    foreignField: "_id",
+                    as: "books_populate"
+                }},
+               
+                {
+                $project: {
+                        books: 0, createdAt: 0, updatedAt: 0, date: 0, __v: 0
+                }
             }
+                ]);
+
         }
-    ]);
-    };
-    res.send(cek);
+
+        if (!cek.length){
+            cek = {
+                status: 404,
+                message: `${author} tidak ditemukan`
+            }
+        };
+    }
+    res.send(cek);   
 });
 
 
@@ -402,6 +424,21 @@ app.get('/bookshelf-unwind', urlencodedParser, async(req,res) => {
     res.send(cek);
 });
 
+//////// testing method /////
+app.get('/test', urlencodedParser, async(req,res) => {
+    let {title} = req.body;
+    let aggrArray = [];
+    let command = [];
+    aggrArray = await modelBook.aggregate([
+        {
+            $match: {
+                title: title
+            }
+        }
+    ])
+    console.log(aggArray);
+    res.send(aggrArray)
+})
 /////////////////////////////////////////////////////////////////////////////////////////
 
 // async function generateRandomBook(){
