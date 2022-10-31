@@ -1,4 +1,4 @@
-const modelBook = require('./models/model.js')
+const modelBook = require('./models/song.js')
 function filterFind(req,res){
     let { id, title, author } = req.body;
     let cek = null;

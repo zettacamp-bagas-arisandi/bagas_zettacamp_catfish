@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const bookSchema = new mongoose.Schema({ 
+const songModel = new mongoose.Schema({ 
     title: String,
     author: String,
     date_published: Date,
@@ -9,5 +9,5 @@ const bookSchema = new mongoose.Schema({
     updateAt: Date
 }, {timestamps: true});
 
-const Book = mongoose.model('Book', bookSchema);
-module.exports = Book;
+const songs = mongoose.model('songs', songModel);
+module.exports = songs;
