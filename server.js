@@ -258,7 +258,7 @@ app.delete('/bookshelf', urlencodedParser, async (req,res) => {
 });
 
 
-///////////////////////// Today Task //////////////////////////////////////////////////
+
 app.get('/books/find', urlencodedParser, async(req, res) =>{
     let {id,price = 500, title} = req.body;
     price = parseInt(price);
@@ -424,21 +424,74 @@ app.get('/bookshelf-unwind', urlencodedParser, async(req,res) => {
     res.send(cek);
 });
 
-//////// testing method /////
-app.get('/test', urlencodedParser, async(req,res) => {
-    let {title} = req.body;
-    let aggrArray = [];
-    let command = [];
-    aggrArray = await modelBook.aggregate([
+///////////////////////// Today Task //////////////////////////////////////////////////
+app.get('/books-page', urlencodedParser, async(req,res) => {
+    let query = [];
+    let {title,page, limit = 2} = req.body;
+    page = parseInt(page);
+    limit = parseInt(limit);
+    let skip = 0;
+    
+    // kondisi
+    if(title){
+        query.push({
+            title: title
+        })
+    }else{
+        query.push({
+            title: ''
+        })
+    }
+
+    // ubah query
+    query = {
+        $or: query
+    }
+
+    // page 
+    if (page > 1 ){
+        skip = (page-1) * limit
+    }else{
+        page = 1;
+    }
+
+
+    // data sebagai respon
+    let data = await modelBook.aggregate([
         {
-            $match: {
-                title: title
+            $skip: skip
+        },{
+            $limit: limit
+        }
+    ]);
+    console.log(skip)
+    data = {
+        page: `${page} / ${Math.ceil(await modelBook.count()/limit)}`, 
+        data
+    }
+    res.send(data);
+})
+
+app.get('/books-facet', urlencodedParser, async(req,res) => {
+    let data = await modelBook.aggregate([
+        {
+            $facet: {
+                "categorizedByPrice": [
+                    {
+                        $group:{
+                            _id : "$price",
+                            count: { $sum: 1 },
+                            list: { $push: { title: "$title", author: "$author"} }
+                           
+                        }
+                    }
+                ]
             }
         }
     ])
-    console.log(aggArray);
-    res.send(aggrArray)
+    res.send(data)
 })
+
 /////////////////////////////////////////////////////////////////////////////////////////
 
 // async function generateRandomBook(){
