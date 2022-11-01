@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const songModel = new mongoose.Schema({ 
+    index: Number,
     title: String,
     artist: String,
     genre: String,
