@@ -61,6 +61,7 @@ async function getBooksBy(parent, {title, author, id}){
       }
     ])
   }
+  
 
   let result = await modelBook.aggregate(queryAgg);
 

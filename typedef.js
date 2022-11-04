@@ -43,6 +43,7 @@ type buyBook{
     price_total: Int
 }
 
+
 type Query {
     getAllBooks(page: Int, skip: Int, limit: Int): Books
     buyBooks(id: ID, title: String, discount: Int, tax: Int): buyBook
