@@ -3,6 +3,13 @@ const { ApolloServer, gql } = require('apollo-server-express');
 
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
+type User{
+    id: Int
+    username: String
+    password: String
+    role: String
+}
+
 type Book {
     id: ID
     title: String
@@ -43,12 +50,32 @@ type buyBook{
     price_total: Int
 }
 
+type date_BookShelf{
+    date: String
+    time: String
+}
+
+type BookShelf_bookIds{
+    books_id: Book
+}
+
+type BookShelf{
+    name: String
+    books: [BookShelf_bookIds]
+    date: [date_BookShelf]
+
+}
+
+type login{
+    status: String
+}
 
 type Query {
     getAllBooks(page: Int, skip: Int, limit: Int): Books
     buyBooks(id: ID, title: String, discount: Int, tax: Int): buyBook
     getBooksBy(id: ID, title: String, author: String): Books
-    
+    getBookShelf: [BookShelf]
+    login(username: String, password: String, secret: String): login
 }
 
 type Mutation {

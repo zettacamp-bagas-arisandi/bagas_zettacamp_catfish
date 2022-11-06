@@ -1,10 +1,13 @@
 const express = require('express');
-const { ApolloServer } = require('apollo-server-express');
+const { ApolloServer  } = require('apollo-server-express');
+const  bookloaders  = require('./books_loader.js')
+const { GraphQLError } = require('graphql')
 
 const mongoose = require("mongoose");
 
 const { typeDefs } = require("./typedef.js");
 const { resolvers } = require("./resolvers.js");
+
 
 async function start( typeDefs, resolvers){
 
@@ -23,10 +26,22 @@ async function start( typeDefs, resolvers){
 
   // connect to DB
   connectDB();
-    const server = new ApolloServer({ typeDefs, resolvers });
+    const server = new ApolloServer(
+      { typeDefs, 
+        resolvers,
+       context: function(){
+        return { bookloaders }
+       }
+        
+      }
+      );
     await server.start();
     const app = express();
     server.applyMiddleware({ app });
+
+    // app.use('/', (req,res,next) => {
+
+    // })
     
     app.listen({ port: 4000 }, () =>
       console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)

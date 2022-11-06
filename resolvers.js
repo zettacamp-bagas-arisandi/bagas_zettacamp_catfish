@@ -1,8 +1,14 @@
 const modelBook = require("./models/model.js");
+const modelBookShelf = require("./models/bookshelf.js");
+const modelUser = require("./models/user.js");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
+const { GraphQLError } = require("graphql");
+
+let activeUser = {};
 
 ////Query////
-async function getAllBooks(parent, {page, skip = 0, limit = 0}){
+async function getAllBooks(parent, {page = 1, skip = 0, limit = 0}){
   let count  = await modelBook.count();
   let result = await modelBook.aggregate([
     {
@@ -132,6 +138,18 @@ async function buyBooks(parent, {id, title, tax, discount}){
 
 }
 
+async function getBookShelf(){
+  console.log(activeUser);
+  let result;
+
+  if (activeUser.active === true){
+    return result = await modelBookShelf.find({});
+  }else{
+    throw new GraphQLError('Login dulu mas');
+  }
+  
+}
+
 ////Mutation////
 async function addBooks(parent, {title, author, price, date_published}){
 
@@ -185,18 +203,74 @@ async function updateBooks(parent, {id, title, author, price, date_published}){
     console.log(result)
     return result;
 }
+
+
+////Loader////
+async function getBooksLoader (parent, args, context){
+  if (parent.books_id){
+   return await context.bookloaders.load(parent.books_id)
+  }
+}
+
+////Login////
+
+function generateAccessToken(payload) {
+  return jwt.sign(payload, 'zetta', { expiresIn: '1h' });
+}
+
+async function login(parent, {username, password, secret}) {
+  let checkUser = await modelUser.find({username: username});
+  let status;
+
+  if (checkUser.length < 1){
+    status = `${username} tidak ditemukan`;
+  }
+
+  const token =  generateAccessToken({ username: username, password: password, secret: secret });
+  
+  const tokenCheck = jwt.decode(token)
+  const getUser = tokenCheck.username;
+  const getPass = tokenCheck.password;
+
+
+  if(getUser == checkUser[0].username && getPass == checkUser[0].password){
+    
+      jwt.verify(token, secret, (err) => {
+       
+      if (err){
+        return status = "Secret Word Salah, Gagal Login";
+      }
+      activeUser = checkUser[0];
+      activeUser.active = true;
+      status = "Behasil Login"
+          
+      })
+  }else{
+      status = "Cek kembali username dan password anda"
+  }
+  console.log(status)
+  return {status, resolvers}
+}
+
+
 // Provide resolver functions for your schema fields
 const resolvers = {
     Query: {
       getAllBooks,
       buyBooks,
-      getBooksBy
+      getBooksBy,
+      getBookShelf,
+      login
     },
 
     Mutation: {
       addBooks,
       deleteBooks,
       updateBooks
+    },
+
+    BookShelf_bookIds: {
+      books_id: getBooksLoader
     }
   };
 
