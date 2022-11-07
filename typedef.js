@@ -63,7 +63,6 @@ type BookShelf{
     name: String
     books: [BookShelf_bookIds]
     date: [date_BookShelf]
-
 }
 
 type login{
@@ -76,6 +75,7 @@ type Query {
     getBooksBy(id: ID, title: String, author: String): Books
     getBookShelf: [BookShelf]
     login(username: String, password: String, secret: String): login
+    auth(token: String): login
 }
 
 type Mutation {

@@ -1,13 +1,10 @@
 const express = require('express');
 const { ApolloServer  } = require('apollo-server-express');
 const  bookloaders  = require('./books_loader.js')
-const { GraphQLError } = require('graphql')
-
 const mongoose = require("mongoose");
 
 const { typeDefs } = require("./typedef.js");
-const { resolvers } = require("./resolvers.js");
-
+const { resolvers } = require("./resolversNew.js");
 
 async function start( typeDefs, resolvers){
 
@@ -32,15 +29,15 @@ async function start( typeDefs, resolvers){
        context: function(){
         return { bookloaders }
        }
-        
       }
       );
     await server.start();
     const app = express();
     server.applyMiddleware({ app });
 
-    // app.use('/', (req,res,next) => {
-
+    // app.get('/test', (req,res) => {
+      
+    //   res.send('Ini lagi test');
     // })
     
     app.listen({ port: 4000 }, () =>

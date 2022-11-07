@@ -139,7 +139,7 @@ async function buyBooks(parent, {id, title, tax, discount}){
 }
 
 async function getBookShelf(){
-  console.log(activeUser);
+  //console.log(activeUser);
   let result;
 
   if (activeUser.active === true){
@@ -186,7 +186,7 @@ async function deleteBooks(parent,{id}){
   }
   return result;
 }
-
+   
 async function updateBooks(parent, {id, title, author, price, date_published}){
   let result = await modelBook.findByIdAndUpdate(
     id,
@@ -210,7 +210,7 @@ async function updateBooks(parent, {id, title, author, price, date_published}){
 async function getBooksLoader (parent, args, context){
   if (parent.books_id){
    let cek = await context.bookloaders.load(parent.books_id)
-   console.log(cek)
+   //console.log(cek)
    return cek
   }
 }
@@ -231,8 +231,13 @@ async function login(parent, {username, password, secret}, context) {
     return {status : `${username} tidak ditemukan`};
   }
 
-  const token =  generateAccessToken({ username: username, password: password, secret: secret });
-  return {status: token}
+  if (activeUser.username == username && activeUser.password == password ){
+    const token =  generateAccessToken({ username: username, password: password, secret: secret });
+    //console.log(activeUser)
+    return {status: token}
+  }else{
+    return {status: 'Cek kembali password anda'}
+  }
 }
 
 async function auth(parent, {token}){
@@ -242,7 +247,7 @@ async function auth(parent, {token}){
   const getPass = tokenCheck.password;
   const getSecret = tokenCheck.secret;
   
-  console.log(tokenCheck)
+  //console.log(tokenCheck)
 
 
   if(getUser == activeUser.username && getPass == activeUser.password){

@@ -16,7 +16,7 @@ const loadBooks = async function(books){
     booksList.forEach((n) => {
         booksMap[n._id] = n
     })
-    //console.log(booksList)
+    console.log(booksList)
     return books.map(id => booksMap[id])
 }
 
