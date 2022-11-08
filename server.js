@@ -33,6 +33,7 @@ async function start( typeDefs, resolvers){
       );
     await server.start();
     const app = express();
+
     server.applyMiddleware({ app });
     
     app.listen({ port: 4000 }, () =>
