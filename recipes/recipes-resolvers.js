@@ -1,4 +1,5 @@
 const recipesModel = require("../models/recipes");
+const ingrModel = require("../models/ingredients");
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const { GraphQLError } = require('graphql');
@@ -84,8 +85,30 @@ async function GetOneRecipes(parent, {id}){
 
 
 //////////////// MUTATION ////////////////
-async function CreateRecipes(parent, {recipe_name, input, stock_used}){
+async function CreateRecipes(parent, { recipe_name, input, stock_used} ){
     try{
+
+        /// Validasi ingredients sesuai di database
+        let id = [];
+        let checkId = await ingrModel.find({});
+        checkId = checkId.map((n) => {
+            return n.id
+        });
+   
+        let index = 0;
+        for(const val of checkId){
+           if (val == input[index].ingredient_id){
+            id.push(val);
+            input[index].ingredient_id = val;
+            index++
+           }
+        }
+       
+        if(id.length!== input.length){
+            throw new GraphQLError('Cek kembali bahan yang dimasukan')
+        }
+     
+
         const recipes = new recipesModel({
             recipe_name: recipe_name,
             ingredients: input,
@@ -98,11 +121,13 @@ async function CreateRecipes(parent, {recipe_name, input, stock_used}){
     }
 }
 
-async function UpdateIngredients(parent, {id, name, stock}){
+async function UpdateRecipes(parent, {id, recipe_name, input, stock_used}){
     let update;
     if(id){
-        update = await ingrModel.findByIdAndUpdate(id,{
-            stock: stock
+        update = await recipesModel.findByIdAndUpdate(id,{
+            recipe_name: recipe_name,
+            ingredients: input,
+            stock_used:stock_used
         },{new: true, runValidators: true});      
     }else{
         throw new GraphQLError('Minimal masukkan parameter');
@@ -115,11 +140,11 @@ async function UpdateIngredients(parent, {id, name, stock}){
     return update;
 }
 
-async function DeleteIngredients(parent, {id}){
+async function DeleteRecipes(parent, {id}){
     try{
     let deleted;
     if(id){
-        deleted = await ingrModel.findByIdAndUpdate(id,{
+        deleted = await recipesModel.findByIdAndUpdate(id,{
             status: 'deleted'
         },{new: true, runValidators: true});      
     }else{
@@ -153,7 +178,9 @@ const recipesResolvers = {
         
     },
     Mutation: {
-        CreateRecipes
+        CreateRecipes,
+        UpdateRecipes,
+        DeleteRecipes
     },
 
     ingredient_id: {

@@ -7,27 +7,34 @@ const { applyMiddleware } = require ('graphql-middleware');
 
 
 /// Import Loader
-const ingrLoader = require('./loader/ingredients.loader.js');
-
+const ingrLoader = require('./loader/ingredients-loader.js');
+const userLoader = require('./loader/user-loader.js');
+const recipeLoader = require('./loader/recipe-loader');
 
 /// Import things from user
-const { userTypeDefs } = require('./user/typedefs.js');
-const { userResolvers } = require('./user/resolvers.js'); 
+const { userTypeDefs } = require('./user/user-typedefs.js');
+const { userResolvers } = require('./user/user-resolvers.js'); 
 const { middleWare } = require('./user/auth');
 
 /// Import things from ingredients
-const { ingrResolvers } = require('./ingredients/resolvers.js');
-const { ingrTypeDefs } = require('./ingredients/typedefs.js');
+const { ingrResolvers } = require('./ingredients/ingredients-resolvers.js');
+const { ingrTypeDefs } = require('./ingredients/ingredients-typedefs.js');
 
 /// Import things from recipes
-const { recipesResolvers } = require('./recipes/resolvers');
-const { recipesTypeDefs } = require('./recipes/typedefs');
+const { recipesResolvers } = require('./recipes/recipes-resolvers');
+const { recipesTypeDefs } = require('./recipes/recipes-typedefs');
+
+/// Import things from transactions
+const { trancsactionsTypeDefs } = require('./transactions/transactions-typedefs');
+const { trancsactionsResolvers } = require('./transactions/transactions-resolvers');
+
 
 /// Merge typedefs
 const typeDefs = [
   userTypeDefs,
   ingrTypeDefs,
-  recipesTypeDefs
+  recipesTypeDefs,
+  trancsactionsTypeDefs
 
 ]
 
@@ -35,7 +42,8 @@ const typeDefs = [
 const resolvers = merge(
   userResolvers,
   ingrResolvers,
-  recipesResolvers
+  recipesResolvers,
+  trancsactionsResolvers
 )
 
 
@@ -45,7 +53,11 @@ const schemaWithMiddleware = applyMiddleware(schema, ...middleWare )
 const server = new ApolloServer({
     schema: schemaWithMiddleware,
     context: function({req}){
-        return {ingrLoader,req}
+        return {
+          ingrLoader,
+          userLoader,
+          recipeLoader,
+          req}
     }  
 })
 

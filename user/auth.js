@@ -28,3 +28,20 @@ const middleWare = [{
 }]
 
 module.exports = {middleWare}
+
+
+const authJwt = async(resolver,parent, args, ctx)=>{
+  let auth = ctx.req.get('Authorization')  /// replacenya coba dibawah
+  if(!auth){
+      throw new ApolloError('Gak Bisa Akese')
+  }else{
+      auth =  auth.replace("Bearer ", ""); /// pindah sini
+      const verify = jwt.verify(auth, tokenSecret);
+      const getUser = await User.find({
+          _id : verify.userId
+      });
+      ctx.user = getUser;
+      ctx.token = auth
+  }
+  return resolver()
+}

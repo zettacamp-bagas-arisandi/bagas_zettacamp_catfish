@@ -7,7 +7,7 @@ type Page_User{
 }
 
 type User{
-    id: ID!
+    id: ID
     email: String!
     password: String!
     first_name: String!

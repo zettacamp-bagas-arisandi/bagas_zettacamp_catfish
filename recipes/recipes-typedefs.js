@@ -32,8 +32,8 @@ type Query {
 
 type Mutation {
     CreateRecipes(recipe_name: String, input: [ingredient_id_input], status: String): Recipes
-    UpdateIngredients(id: ID, name: String, stock: Int): Ingredients
-    DeleteIngredients(id: ID): Ingredients
+    UpdateRecipes(id: ID, recipe_name: String, input: [ingredient_id_input]): Recipes
+    DeleteRecipes(id: ID): Recipes
 }
 
 
