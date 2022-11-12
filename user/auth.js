@@ -24,6 +24,7 @@ const middleWare = [{
     CreateUser:auth,
     UpdateUser:auth,
     DeleteUser:auth,
+    CreateTransactions: auth,
 }
 }]
 

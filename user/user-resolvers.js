@@ -169,7 +169,7 @@ async function Login(parent, {email, password}){
         }
 
         if(password === getUser[0].password){
-            let token = jwt.sign({ username: getUser[0].email, password: getUser[0].password }, 'zetta', { expiresIn: '1h' });
+            let token = jwt.sign({ username: getUser[0].email, password: getUser[0].password }, 'zetta', { expiresIn: '1d' });
             return {token};
         }else{
             throw new GraphQLError(`Password salah`);

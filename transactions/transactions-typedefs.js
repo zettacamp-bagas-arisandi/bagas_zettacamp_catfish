@@ -26,6 +26,17 @@ enum enum_order_status{
     failed
 }
 
+
+input transactions_menu_input{
+    recipe_id: ID
+    amount: Int
+    note: String
+}
+
+input Transactions_input{
+    menu: [transactions_menu_input]
+}
+
 input allTransaction_input{
    last_name_user: String
    recipe_name: String
@@ -34,16 +45,14 @@ input allTransaction_input{
 }
 
 
-
 type Query {
     GetAllTransactions(filter: allTransaction_input): Page_Transactions
-    GetOneRecipes(id: ID): Recipes
+    GetOneTransactions(id: ID): Transactions
 }
 
 type Mutation {
-    CreateRecipes(recipe_name: String, input: [ingredient_id_input], status: String): Recipes
-    UpdateRecipes(id: ID, recipe_name: String, input: [ingredient_id_input]): Recipes
-    DeleteRecipes(id: ID): Recipes
+    CreateTransactions(input: Transactions_input): Transactions
+    DeleteTransactions(id: ID): Transactions
 }
 
 

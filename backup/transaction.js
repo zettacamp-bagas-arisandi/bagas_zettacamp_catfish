@@ -155,7 +155,7 @@ async function CreateTransactions(parent, {input}, context){
 
     /// Ambil user dari token
     let User = jwt.decode(context.req.headers.authorization);
-    let id = await modelUser.find({email:User.username});
+    let id = await modelUser.find({email:User.username})
 
     /// struktur untuk create
     let creator = {
@@ -174,8 +174,8 @@ async function CreateTransactions(parent, {input}, context){
     /// temp var
     let getRecipes = [];
     let getIngredients = [];
-    let checkStatus = [];
 
+    let validate = [];
 
     /// load recipes id
     for(const [idx,val] of input.menu.entries()){
@@ -183,35 +183,22 @@ async function CreateTransactions(parent, {input}, context){
         getRecipes.push(checkRecipes);
     };
 
-    for(const recs of getRecipes){
-        for(const [idx_ingr, val] of recs.ingredients.entries() ){
-            let checkIngredients = await ingrModel.findById(recs.ingredients[idx_ingr].ingredient_id);
+    for(const [idx,val] of getRecipes.entries()){
+        for(const [idx_ingr, val] of getRecipes[idx].ingredients.entries() ){
+            let checkIngredients = await ingrModel.findById(getRecipes[idx].ingredients[idx_ingr].ingredient_id);
             getIngredients.push(checkIngredients);
-            const validateStock = recs.ingredients[idx_ingr].stock_used * input.menu[idx].amount < checkIngredients.stock
-            console.log(`${checkIngredients.name}(${recs.ingredients[idx_ingr].stock_used * input.menu[idx].amount}, ${checkIngredients.stock}) => ${validateStock}`)
-            checkStatus.push(validateStock)
+            if(getRecipes[idx].ingredients[idx_ingr].stock_used * input.menu[idx].amount < checkIngredients.stock){
+            validate.push(getRecipes[idx].ingredients[idx_ingr].stock_used * input.menu[idx].amount < checkIngredients.stock )
+            }
+            // console.log(getRecipes[idx].ingredients[idx_ingr].ingredient_id)
         }
        
     }
-    checkStatus = checkStatus.includes(false);
-    if(checkStatus === false){
-        creator.order_status = 'success'
-    }
+
+    console.log(validate)
+  
 
 
-    // async function reduce(id){
-    //     let ingredient = await ingrModel.findByIdById(id,{
-    //         ingredient.stock: 
-    //     })
-    //         console.log(reduceStock)
-    // }
-    
-    //// REDUCE////
-    if(creator.order_status === 'success'){
-        getIngredients.forEach((el) => {
-            reduce(el)
-        });
-    }
 
     return creator;
 }
@@ -298,3 +285,15 @@ const trancsactionsResolvers = {
   }
 
 module.exports = { trancsactionsResolvers }
+
+
+ for(const [idx,val] of getRecipes.entries()){
+        for(const [idx_ingr, val] of getRecipes[idx].ingredients.entries() ){
+            let checkIngredients = await ingrModel.findById(getRecipes[idx].ingredients[idx_ingr].ingredient_id);
+            getIngredients.push(checkIngredients);
+            const validateStock = getRecipes[idx].ingredients[idx_ingr].stock_used * input.menu[idx].amount < checkIngredients.stock
+            console.log(`${checkIngredients.name}(${getRecipes[idx].ingredients[idx_ingr].stock_used * input.menu[idx].amount}, ${checkIngredients.stock}) => ${validateStock}`)
+            checkStatus.push(validateStock)
+        }
+       
+    }
