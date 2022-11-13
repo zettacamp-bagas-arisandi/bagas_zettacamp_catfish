@@ -175,6 +175,7 @@ async function CreateTransactions(parent, {input}, context){
     let getRecipes = [];
     let getIngredients = [];
     let checkStatus = [];
+    let stockUsed_calculate = [];
 
 
     /// load recipes id
@@ -183,13 +184,14 @@ async function CreateTransactions(parent, {input}, context){
         getRecipes.push(checkRecipes);
     };
 
-    for(const recs of getRecipes){
-        for(const [idx_ingr, val] of recs.ingredients.entries() ){
-            let checkIngredients = await ingrModel.findById(recs.ingredients[idx_ingr].ingredient_id);
+    for(const [idx,val] of getRecipes.entries()){
+        for(const [idx_ingr, val] of getRecipes[idx].ingredients.entries() ){
+            let checkIngredients = await ingrModel.findById(getRecipes[idx].ingredients[idx_ingr].ingredient_id);
             getIngredients.push(checkIngredients);
-            const validateStock = recs.ingredients[idx_ingr].stock_used * input.menu[idx].amount < checkIngredients.stock
-            console.log(`${checkIngredients.name}(${recs.ingredients[idx_ingr].stock_used * input.menu[idx].amount}, ${checkIngredients.stock}) => ${validateStock}`)
+            const validateStock = getRecipes[idx].ingredients[idx_ingr].stock_used * input.menu[idx].amount <= checkIngredients.stock;
+            stockUsed_calculate.push( getIngredients[idx_ingr].stock - getRecipes[idx].ingredients[idx_ingr].stock_used * input.menu[idx].amount );
             checkStatus.push(validateStock)
+            console.log(`${checkIngredients.name}(${getRecipes[idx].ingredients[idx_ingr].stock_used * input.menu[idx].amount}, ${checkIngredients.stock}) => ${validateStock}`)
         }
        
     }
@@ -198,19 +200,17 @@ async function CreateTransactions(parent, {input}, context){
         creator.order_status = 'success'
     }
 
+    console.log(stockUsed_calculate)
 
-    // async function reduce(id){
-    //     let ingredient = await ingrModel.findByIdById(id,{
-    //         ingredient.stock: 
-    //     })
-    //         console.log(reduceStock)
-    // }
+   
     
-    //// REDUCE////
-    if(creator.order_status === 'success'){
-        getIngredients.forEach((el) => {
-            reduce(el)
-        });
+    // REDUCE////
+    if(creator.order_status == 'success'){
+        for (const [idx, val] of getIngredients.entries()){
+            let reduceStock = await ingrModel.findByIdAndUpdate(getIngredients[idx]._id, {
+                stock: stockUsed_calculate[idx]
+            })
+        }
     }
 
     return creator;
