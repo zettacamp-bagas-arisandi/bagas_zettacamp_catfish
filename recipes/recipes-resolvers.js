@@ -85,35 +85,18 @@ async function GetOneRecipes(parent, {id}){
 
 
 //////////////// MUTATION ////////////////
-async function CreateRecipes(parent, { recipe_name, input, stock_used} ){
+async function CreateRecipes(parent, { recipe_name, input} ){
     try{
-
         /// Validasi ingredients sesuai di database
-        let id = [];
-        let checkId = await ingrModel.find({});
-        checkId = checkId.map((n) => {
-            return n.id
-        });
-   
-        let index = 0;
-        for(const val of checkId){
-           if (val == input[index].ingredient_id){
-            id.push(val);
-            input[index].ingredient_id = val;
-            index++
-           }
+        for (let ingredientz of input){
+            const bahan = await ingrModel.findById(ingredientz.ingredient_id);
+            if(!bahan) throw new GraphQLError('Data ingredient_id tidak sesuai')
         }
-       
-        if(id.length!== input.length){
-            throw new GraphQLError('Cek kembali bahan yang dimasukan')
-        }
-     
-
         const recipes = new recipesModel({
             recipe_name: recipe_name,
             ingredients: input,
-            stock_used:stock_used
         })
+   
     await recipes.save();   
     return recipes;
     }catch(err){
