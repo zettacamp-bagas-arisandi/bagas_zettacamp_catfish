@@ -189,5 +189,3 @@ const recipesResolvers = {
 };
 
 module.exports = { recipesResolvers };
-
-

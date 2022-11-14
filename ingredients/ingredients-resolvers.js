@@ -6,6 +6,7 @@ const { GraphQLError } = require('graphql');
 
 //////////////// QUERY ////////////////
 async function GetAllIngredients(parent, {name, stock, skip = 0, page = 1, limit = 5}){
+     const tick = Date.now();
      let result;
      /// kondisikan skip dan count
      let count = await ingrModel.count();
@@ -39,7 +40,6 @@ async function GetAllIngredients(parent, {name, stock, skip = 0, page = 1, limit
              stock: {$gte: 0},
          });
          }
-         console.log(query.$and.length)
  
      /// Kondisi jika semua parameter terisi, akan melakukan pipeline match
      if (query.$and.length > 0){
@@ -77,7 +77,7 @@ async function GetAllIngredients(parent, {name, stock, skip = 0, page = 1, limit
          count: count,
          data: result,
      }
- 
+     console.log(`Total Time: ${Date.now() - tick} ms`)
      return result;
  
 };

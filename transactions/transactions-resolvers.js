@@ -16,9 +16,17 @@ async function GetAllTransactions(parent, {filter, page = 1, limit = 5}){
 
     /// temp var for query
     let query = {$and:[]};
-    let queryAgg = [];
+    let queryAgg = [    
+        {
+            $skip: skip
+        },{
+            $limit: limit
+        }
+    ];
+    let result;
 
     /// Kondisi untuk parameter, jika ada akan di push ke query $and
+if(filter){
     if(filter.last_name_user){
         filter.last_name_user = new RegExp(filter.last_name_user, 'i');
         query.$and.push({ "users_populate.last_name": filter.last_name_user })
@@ -58,42 +66,34 @@ async function GetAllTransactions(parent, {filter, page = 1, limit = 5}){
     }
 
     if(filter.order_date){
+        filter.order_date = moment(filter.order_date).locale('id').format('LL');
         filter.order_date = new RegExp(filter.order_date, 'i');
+        console.log(filter.order_date)
         query.$and.push({
             order_date: filter.order_date
         })
     }
-
-    /// Kondisi jika semua parameter terisi, akan melakukan pipeline match
+}
+    /// Kondisi jika semua parameter terisi, akan melakukan pipeline match 
     if (query.$and.length > 0){
         queryAgg.push(
             {
                 $match: query
             }
         )
+
+        let countMatch = await transactionsModel.aggregate([{
+            $match: query
+        }])
+        count = countMatch.length;
+    };
+    /// Panggil pipeline yang ada
+    result = await transactionsModel.aggregate(queryAgg);
+    if(result.length > 0){
+        count = result.length;
     }
 
-    /// Panggil pipeline yang ada
-    let result = await transactionsModel.aggregate(queryAgg);
-
-    /// Update count
-    count = result.length;
-
-    // /// testing moment
-    // let cek = moment(new Date('2021-11-10')).locale('id').format('LL')
-    // let ceks = moment(new Date(cek)).locale('id').fromNow()
-    // console.log(ceks)
-  
-    /// Apply skip dan limit
-    queryAgg.unshift( 
-        {
-            $skip: skip
-        },{
-            $limit: limit
-        }
-        )
-        
-        /// Pagination Things
+    /// Pagination Things
     let pages = `${page} / ${Math.ceil(count/limit)}`
     
     /// Fixing id null
@@ -102,7 +102,6 @@ async function GetAllTransactions(parent, {filter, page = 1, limit = 5}){
         return el;
     })
  
-
     // return sesuai typdef
     result = {
         page: pages,
@@ -152,117 +151,68 @@ async function DeleteTransactions(parent, {id}){
 }
 
 async function CreateTransactions(parent, {input}, context){
-
+try{
     /// Ambil user dari token
     let User = jwt.decode(context.req.headers.authorization);
     let id = await modelUser.find({email:User.username});
 
     /// struktur untuk create
-    let creator = {
-        id: "TESTING YGY",
+    let creator = new transactionsModel({
         user_id: id[0]._id,
         menu: input.menu,
         order_status: 'failed',
-        order_date: moment(new Date()).locale('id').format('LL'),
-        status: "active"
-    }
-
-
+        order_date: moment(new Date()).locale('id').format('LL')
+    });
     
     /// Validate ////
 
-    /// temp var
-    let getRecipes = [];
-    let getIngredients = [];
-    let checkStatus = [];
-    let stockUsed_calculate = [];
+   
+
 
 
     /// load recipes id
-    for(const [idx,val] of input.menu.entries()){
-        let checkRecipes = await recipesModel.findById(input.menu[idx].recipe_id);
-        getRecipes.push(checkRecipes);
+    creator = await validateStockIngredient(creator, input, stock_usedCalculate);
+    await creator.save();
+    return creator;
+    }catch(err){
+        throw new GraphQLError(err)
+    }
+}
+
+
+/////////////// CREATE VALIDATE  ///////////////
+
+async function reduceIngredientStock(ids,stockUsed){
+    for (const [index, _] of ids.entries()){
+        const reduce = await ingrModel.findByIdAndUpdate(ids[index],{
+          stock: stockUsed[index]
+        })
+      }
+}
+
+async function validateStockIngredient(creator, input){
+     /// temp var
+     let checkStatus = [];
+     let stock_usedCalculate = [];
+     let getIngredientsId = [];
+
+    for(const recipes of input.menu){
+        const checkRecipes = await recipesModel.findById(recipes.recipe_id);
+        for (const ingredient of checkRecipes.ingredients){
+            getIngredientsId.push(ingredient.ingredient_id);
+            const checkIngredients = await ingrModel.findById(ingredient.ingredient_id);
+            const tempStatus = ingredient.stock_used * recipes.amount <= checkIngredients.stock;
+            stock_usedCalculate.push(checkIngredients.stock - ingredient.stock_used * recipes.amount);
+            checkStatus.push(tempStatus);
+        }
     };
-
-    for(const [idx,val] of getRecipes.entries()){
-        for(const [idx_ingr, val] of getRecipes[idx].ingredients.entries() ){
-            let checkIngredients = await ingrModel.findById(getRecipes[idx].ingredients[idx_ingr].ingredient_id);
-            getIngredients.push(checkIngredients);
-            const validateStock = getRecipes[idx].ingredients[idx_ingr].stock_used * input.menu[idx].amount <= checkIngredients.stock;
-            stockUsed_calculate.push( getIngredients[idx_ingr].stock - getRecipes[idx].ingredients[idx_ingr].stock_used * input.menu[idx].amount );
-            checkStatus.push(validateStock)
-            console.log(`${checkIngredients.name}(${getRecipes[idx].ingredients[idx_ingr].stock_used * input.menu[idx].amount}, ${checkIngredients.stock}) => ${validateStock}`)
-        }
-       
-    }
-    checkStatus = checkStatus.includes(false);
-    if(checkStatus === false){
-        creator.order_status = 'success'
-    }
-
-    console.log(stockUsed_calculate)
-
-   
     
-    // REDUCE////
-    if(creator.order_status == 'success'){
-        for (const [idx, val] of getIngredients.entries()){
-            let reduceStock = await ingrModel.findByIdAndUpdate(getIngredients[idx]._id, {
-                stock: stockUsed_calculate[idx]
-            })
-        }
+    if (!checkStatus.includes(false)){
+        creator.order_status = 'success';
+        reduceIngredientStock(getIngredientsId);
     }
-
     return creator;
 }
-
-async function ValidateStockIngredients(recipe_id){
-    let checkStock =  await recipesModel.find({_id: mongoose.Types.ObjectId(recipe_id)})
-    console.log(checkStock)
-
-}
-
-async function ReduceIngredientStock(recipe_id){
-    console.log(recipe_id)
-}
-
-async function CreateUser(parent,{email, password, first_name, last_name, status}){
-    try{
-    const addUser = new modelUser({
-        email: email, 
-        password: password, 
-        first_name: first_name, 
-        last_name: last_name, 
-        status: status
-    });
-    const added = await addUser.save();
-    return addUser;
-    }catch(err){
-        throw new ApolloError(err)
-    }
-}
-
-async function UpdateUser(parent, {id, email, first_name, last_name, password}){
-    let update;
-    if(id){
-        update = await modelUser.findByIdAndUpdate(id,{
-            email: email, 
-            password: password, 
-            first_name: first_name, 
-            last_name: last_name, 
-        },{new: true, runValidators: true});      
-    }else{
-        throw new GraphQLError('Minimal masukkan parameter');
-    }
-
-    if (update===null){
-        throw new GraphQLError(`Data dengan id:${id} tidak ada`);
-    }
-    
-    return update;
-}
-
-
 
 /////////////// LOADER  ///////////////
 async function getUserLoader (parent, args, context){

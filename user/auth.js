@@ -19,12 +19,35 @@ const middleWare = [{
   Query: {
     GetAllUser:auth,
     GetOneUser:auth,
+
+    GetAllIngredients: auth,
+    GetOneIngredients: auth,
+
+    GetAllRecipes: auth,
+    GetOneRecipes: auth,
+
+    GetAllTransactions: auth,
+    GetOneTransactions: auth,
+
   },
   Mutation: {
     CreateUser:auth,
     UpdateUser:auth,
     DeleteUser:auth,
+
+    CreateIngredients: auth,
+    UpdateIngredients: auth,
+    DeleteIngredients: auth,
+
+    CreateRecipes: auth,
+    UpdateRecipes: auth,
+    DeleteRecipes: auth,
+
     CreateTransactions: auth,
+    DeleteTransactions: auth,
+    CreateTransactions: auth,
+
+  
 }
 }]
 

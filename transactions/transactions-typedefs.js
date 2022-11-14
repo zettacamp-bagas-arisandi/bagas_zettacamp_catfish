@@ -46,7 +46,7 @@ input allTransaction_input{
 
 
 type Query {
-    GetAllTransactions(filter: allTransaction_input): Page_Transactions
+    GetAllTransactions(filter: allTransaction_input, page: Int, limit: Int): Page_Transactions
     GetOneTransactions(id: ID): Transactions
 }
 

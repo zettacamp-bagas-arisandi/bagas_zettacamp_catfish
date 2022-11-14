@@ -1,4 +1,5 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const moment = require('moment');
 
 const trancsactionsSchema = new mongoose.Schema({ 
    user_id: {
@@ -20,14 +21,14 @@ const trancsactionsSchema = new mongoose.Schema({
     },
     note: String
    }],
-   order_Status: {
+   order_status: {
     type: String,
     enum: ['success', 'failed'],
     default: 'active'
    },
    order_date: {
-    type: Date,
-    default: new Date()
+    type: String,
+    default: moment(new Date()).locale('id').format('LL')
    },
    status: {
     type: String,
@@ -39,17 +40,3 @@ const trancsactionsSchema = new mongoose.Schema({
 
 const trancsactionsModel = mongoose.model('trancsactions', trancsactionsSchema);
 module.exports = trancsactionsModel;
-
-// db.trancsactions.insertOne(
-//     {
-//         user_id: ObjectId("636a5aeaeef26b2208891104"),
-//         menu: [{
-//             recipe_id: ObjectId("636b57a59edb8d4020325e1a"),
-//             amount: 1,
-//             note: 'Good Menus'
-//         }],
-//         order_status: 'success',
-//         order_date: new Date(),
-//         status: 'active',
-//     }
-// )
