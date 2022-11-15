@@ -6,7 +6,7 @@ const { ApolloError } = require('apollo-server');
 const bcrypt = require('bcrypt');
 
 /////////////// QUERY USER ///////////////
-async function GetAllUser(parent, {email, first_name, last_name, page = 1, limit = 5}){
+async function GetAllUser(parent, {email, first_name, last_name, page = 1, limit = 5}, context){
     /// kondisikan skip dan count
     let count = await modelUser.count();
     skip = (page-1)*limit;
@@ -74,13 +74,14 @@ async function GetAllUser(parent, {email, first_name, last_name, page = 1, limit
         el.id = mongoose.Types.ObjectId(el._id);
         return el;
     })
-
+    console.log(result)
     /// return sesuai typdef
     result = {
         page: pages,
         count: count,
         data: result,
     }
+    
 
     return result;
 
@@ -105,15 +106,71 @@ async function GetOneUser(parent, {id, email}){
 }
 
 /////////////// MUTATION USER ///////////////
-async function CreateUser(parent,{email, password, first_name, last_name, status}){
+async function CreateUser(parent,{email, password, first_name, last_name, role}){
     try{
+        let permission = [];
+
+        const permissionAdmin = [
+            {
+                name: "homepage",
+                view: true
+            },{
+                name: "login",
+                view: true
+            },{
+                name: "menu",
+                view: true
+            },{
+                name: "cart",
+                view: true
+            },{
+                name: "about",
+                view: true
+            },{
+                name: "stock_management",
+                view: true
+            },{
+                name: "menu_management",
+                view: true
+            }
+        ];
+
+        const permissionUser = [{
+            name: "homepage",
+            view: true
+        },{
+            name: "login",
+            view: true
+        },{
+            name: "menu",
+            view: true
+        },{
+            name: "cart",
+            view: true
+        },{
+            name: "about",
+            view: true
+        },{
+            name: "stock_management",
+            view: false
+        },{
+            name: "menu_management",
+            view: false
+        }];
+
+        if(role === 'admin'){
+            permission = permissionAdmin;
+        }else{
+            permission = permissionUser;
+        }
     password = await bcrypt.hash(password, 5);
     const addUser = new modelUser({
         email: email, 
         password: password, 
         first_name: first_name, 
         last_name: last_name, 
-        status: status
+        role: role,
+        user_type: permission
     });
     const added = await addUser.save();
     return addUser;
@@ -175,7 +232,12 @@ async function Login(parent, {email, password}, context){
         }
         
         if(isValid){
-            let token = jwt.sign({ email: getUser.email, password: getUser.password, role: getUser.role, user_id: getUser._id }, 'zetta', { expiresIn: '1d' });
+            let token = jwt.sign({ 
+                email: getUser.email, 
+                password: getUser.password, 
+                role: getUser.role, 
+                user_id: getUser._id,
+            }, 'zetta', { expiresIn: '1d' });
             return {token};
         }else{
             throw new GraphQLError(`Password salah`);

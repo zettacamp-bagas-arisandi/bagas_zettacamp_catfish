@@ -152,19 +152,25 @@ async function DeleteTransactions(parent, {id}){
 
 async function CreateTransactions(parent, {input}, context){
 try{
-    /// struktur untuk create
-    let creator = new transactionsModel({
-        user_id: context.req.user_id,
-        menu: input.menu,
-        order_status: 'failed',
-        order_date: moment(new Date()).locale('id').format('LL')
-    });
-    
-    /// Validate ////
-    creator = await validateStockIngredient(creator, input);
-    //await creator.save();
-    return creator;
-    }catch(err){
+    if(input){
+        /// struktur untuk create
+        let creator = new transactionsModel({
+            user_id: context.req.user_id,
+            menu: input.menu,
+            order_status: 'failed',
+            order_date: moment(new Date()).locale('id').format('LL'),
+            total_price: 0
+        });
+        
+        /// Validate ////
+        creator = await validateStockIngredient(creator, input);
+        await creator.save();
+        return creator;
+        }else{
+            throw new GraphQLError('Masukkan parameter')
+        }
+    }
+    catch(err){
         throw new GraphQLError(err)
     }
 }
@@ -182,12 +188,14 @@ async function reduceIngredientStock(ids,stockUsed){
 
 async function validateStockIngredient(creator, input){
      /// temp var
+     let total_priceCalculate = 0;
      let checkStatus = [];
      let stock_usedCalculate = [];
      let getIngredientsId = [];
 
     for(const recipes of input.menu){
         const checkRecipes = await recipesModel.findById(recipes.recipe_id);
+        creator.total_price += checkRecipes.price * recipes.amount;
         for (const ingredient of checkRecipes.ingredients){
             getIngredientsId.push(ingredient.ingredient_id);
             const checkIngredients = await ingrModel.findById(ingredient.ingredient_id);
@@ -196,7 +204,6 @@ async function validateStockIngredient(creator, input){
             checkStatus.push(tempStatus);
         }
     };
-  
     if (!checkStatus.includes(false)){
         creator.order_status = 'success';
         reduceIngredientStock(getIngredientsId,stock_usedCalculate);

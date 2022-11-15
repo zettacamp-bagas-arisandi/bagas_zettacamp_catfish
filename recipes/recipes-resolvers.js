@@ -56,11 +56,12 @@ async function GetAllRecipes(parent, {name, recipe_name, skip = 0, page = 1, lim
         return el;
     })
     
+
     /// return sesuai typdef
      result = {
              page: pages,
              count: count,
-             data_recipes: result,
+             data_recipes: result
          }
         
      return result;
@@ -85,7 +86,7 @@ async function GetOneRecipes(parent, {id}){
 
 
 //////////////// MUTATION ////////////////
-async function CreateRecipes(parent, { recipe_name, input} ){
+async function CreateRecipes(parent, { recipe_name, input, description, price} ){
     try{
         /// Validasi ingredients sesuai di database
         for (let ingredientz of input){
@@ -95,6 +96,8 @@ async function CreateRecipes(parent, { recipe_name, input} ){
         const recipes = new recipesModel({
             recipe_name: recipe_name,
             ingredients: input,
+            description: description, 
+            price: price
         })
    
     await recipes.save();   
@@ -153,6 +156,14 @@ async function getIngrLoader (parent, args, context){
     }
   }
 
+async function getRemainOrder (parent, args, context){
+    for (const ingr of parent.ingredients){
+        const ingredients = await ingrModel.findById(ingr.ingredient_id)
+        console.log(ingredients.name)
+    }
+    return 100
+}
+
 /// temp var resolers to Server
 const recipesResolvers = {
     Query: {
@@ -168,6 +179,10 @@ const recipesResolvers = {
 
     ingredient_id: {
         ids: getIngrLoader
+    },
+
+    Recipes: {
+        remain_order: getRemainOrder
     }
 };
 

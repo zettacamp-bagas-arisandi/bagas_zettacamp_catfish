@@ -14,6 +14,12 @@ type User{
     last_name: String!
     status: status
     role: String
+    user_type: [user_types]
+}
+
+type user_types{
+    name: String
+    view: Boolean
 }
 
 enum status{
@@ -37,7 +43,7 @@ type Query {
 }
 
 type Mutation{
-    CreateUser(email: String, password: String, first_name: String, last_name: String, status: status): User
+    CreateUser(email: String, password: String, first_name: String, last_name: String, role: String): User
     UpdateUser(id: ID, email: String, password: String, first_name: String, last_name: String): User
     DeleteUser(id: ID): User
     Login(email: String, password: String): Token

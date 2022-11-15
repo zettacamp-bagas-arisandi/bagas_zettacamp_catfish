@@ -7,6 +7,7 @@ type Transactions{
     order_status: enum_order_status
     order_date: String
     status: status
+    total_price: Int
 }
 
 type transactions_menu{

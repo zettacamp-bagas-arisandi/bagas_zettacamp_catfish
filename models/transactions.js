@@ -34,6 +34,10 @@ const trancsactionsSchema = new mongoose.Schema({
     type: String,
     enum: ['active', 'deleted'],
     default: 'active'
+   },
+   total_price: {
+    type: Number,
+    default: 0
    }
 
 }, {timestamps: true});

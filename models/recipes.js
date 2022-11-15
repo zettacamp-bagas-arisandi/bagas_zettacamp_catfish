@@ -25,6 +25,14 @@ const recipeSchema = new mongoose.Schema({
         type : String,
         enum: ['active', 'deleted'],
         default: 'active'
+    },
+    description: {
+        type: String,
+        default: "Enak Banget YGY"
+    },
+    price: {
+        type: Number,
+        default: 0
     }
 }, {timestamps: true});
 

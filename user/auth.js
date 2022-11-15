@@ -10,10 +10,11 @@ async function auth (resolve, parent, args, context, info){
         if(err){
             throw new GraphQLError(err)
         }
+        context.req.user_type = decode.user_type; 
         context.req.user_role = decode.role;
         context.req.user_id = decode.user_id;
     });
-    return await resolve(parent, args, context, info);
+    return resolve(parent, args, context, info);
   }
 
 const middleWareAuth = {

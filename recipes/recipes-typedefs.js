@@ -5,6 +5,9 @@ type Recipes{
     recipe_name: String
     ingredients: [ingredient_id]
     status: status
+    description: String
+    price: Int
+    remain_order: Int
 }
 
 type ingredient_id{
@@ -31,7 +34,7 @@ type Query {
 }
 
 type Mutation {
-    CreateRecipes(recipe_name: String, input: [ingredient_id_input], status: String): Recipes
+    CreateRecipes(recipe_name: String, input: [ingredient_id_input], description: String, price: Int): Recipes
     UpdateRecipes(id: ID, recipe_name: String, input: [ingredient_id_input]): Recipes
     DeleteRecipes(id: ID): Recipes
 }

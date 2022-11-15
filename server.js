@@ -47,15 +47,9 @@ const resolvers = merge(
   trancsactionsResolvers
 )
 
-/// Merge Middleware
-// const middleware = merge(
-//   middleWareRole,
-//   middleWareAuth
-// )
-
 /// Schema for apollo
 const schema = makeExecutableSchema({ typeDefs, resolvers })
-const schemaWithMiddleware = applyMiddleware(schema, middleWareRole, middleWareAuth )
+const schemaWithMiddleware = applyMiddleware(schema, middleWareAuth, middleWareRole )
 const server = new ApolloServer({
     schema: schemaWithMiddleware,
     context: function({req}){

@@ -2,13 +2,9 @@ const jwt = require('jsonwebtoken');
 const {GraphQLError} = require('graphql');
 
 async function role (resolve, parent, args, context, info){
-    let getRole = context.req.headers.authorization;
-    getRole = jwt.decode(getRole).role;
-    
-    if (getRole !== 'admin'){
-        throw new GraphQLError('User tidak bisa mengakses ini');
+    if(context.req.user_role !== 'admin'){
+        throw new GraphQLError('Tidak bisa akses selain admin')
     }
-
     return await resolve (parent, args, context, info)
   }
 
