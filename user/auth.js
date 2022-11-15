@@ -6,18 +6,19 @@ async function auth (resolve, parent, args, context, info){
     throw new GraphQLError('Silakan Login')
   }
     token = context.req.headers.authorization;
-    jwt.verify(token, 'zetta', (err) => {
+    jwt.verify(token, 'zetta', (err,decode) => {
         if(err){
             throw new GraphQLError(err)
         }
+        context.req.user_role = decode.role;
+        context.req.user_id = decode.user_id;
     });
     return await resolve(parent, args, context, info);
   }
 
-
-const middleWare = [{
+const middleWareAuth = {
   Query: {
-    GetAllUser:auth, 
+    GetAllUser:auth,
     GetOneUser:auth,
 
     GetAllIngredients: auth,
@@ -49,6 +50,6 @@ const middleWare = [{
 
   
 }
-}]
+}
 
-module.exports = {middleWare}
+module.exports = {middleWareAuth}

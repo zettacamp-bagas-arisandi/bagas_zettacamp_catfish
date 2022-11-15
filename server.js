@@ -14,7 +14,8 @@ const recipeLoader = require('./loader/recipe-loader');
 /// Import things from user
 const { userTypeDefs } = require('./user/user-typedefs.js');
 const { userResolvers } = require('./user/user-resolvers.js'); 
-const { middleWare } = require('./user/auth');
+const { middleWareAuth } = require('./user/auth');
+const { middleWareRole } = require('./user/role');
 
 /// Import things from ingredients
 const { ingrResolvers } = require('./ingredients/ingredients-resolvers.js');
@@ -46,10 +47,15 @@ const resolvers = merge(
   trancsactionsResolvers
 )
 
+/// Merge Middleware
+// const middleware = merge(
+//   middleWareRole,
+//   middleWareAuth
+// )
 
 /// Schema for apollo
 const schema = makeExecutableSchema({ typeDefs, resolvers })
-const schemaWithMiddleware = applyMiddleware(schema, ...middleWare )
+const schemaWithMiddleware = applyMiddleware(schema, middleWareRole, middleWareAuth )
 const server = new ApolloServer({
     schema: schemaWithMiddleware,
     context: function({req}){

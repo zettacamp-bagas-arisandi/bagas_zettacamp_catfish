@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const { GraphQLError } = require('graphql');
 const { ApolloError } = require('apollo-server');
+const bcrypt = require('bcrypt');
 
 /////////////// QUERY USER ///////////////
 async function GetAllUser(parent, {email, first_name, last_name, page = 1, limit = 5}){
@@ -91,7 +92,7 @@ async function GetOneUser(parent, {id, email}){
     if(id){
         result = await modelUser.find({_id: mongoose.Types.ObjectId(id)});
     }else if(email){
-        result = await modelUser.find({email:email});
+        result = await modelUser.findOne({email:email});
     }else{
         throw new GraphQLError('Minimal masukkan parameter');
     }
@@ -100,12 +101,13 @@ async function GetOneUser(parent, {id, email}){
     if(result.length < 1 ){
         throw new GraphQLError('Data Tidak Ditemukan');
     }
-    return result[0];
+    return result;
 }
 
 /////////////// MUTATION USER ///////////////
 async function CreateUser(parent,{email, password, first_name, last_name, status}){
     try{
+    password = await bcrypt.hash(password, 5);
     const addUser = new modelUser({
         email: email, 
         password: password, 
@@ -122,6 +124,9 @@ async function CreateUser(parent,{email, password, first_name, last_name, status
 
 async function UpdateUser(parent, {id, email, first_name, last_name, password}){
     let update;
+    if (password){
+        password = await bcrypt.hash(password, 5);
+    }
     if(id){
         update = await modelUser.findByIdAndUpdate(id,{
             email: email, 
@@ -161,15 +166,16 @@ async function DeleteUser(parent, {id}){
     }
 }
 
-async function Login(parent, {email, password}){
+async function Login(parent, {email, password}, context){
     if( email && password){
-        let getUser = await modelUser.find({email: email});
+        let getUser = await modelUser.findOne({email: email});
+        const isValid = await bcrypt.compare(password, getUser.password);
         if(getUser.length < 1){
             throw new GraphQLError(`${email} tidak ditemukan`);
         }
-
-        if(password === getUser[0].password){
-            let token = jwt.sign({ username: getUser[0].email, password: getUser[0].password }, 'zetta', { expiresIn: '1d' });
+        
+        if(isValid){
+            let token = jwt.sign({ email: getUser.email, password: getUser.password, role: getUser.role, user_id: getUser._id }, 'zetta', { expiresIn: '1d' });
             return {token};
         }else{
             throw new GraphQLError(`Password salah`);

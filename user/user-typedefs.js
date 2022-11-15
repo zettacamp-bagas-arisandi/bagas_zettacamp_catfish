@@ -13,6 +13,7 @@ type User{
     first_name: String!
     last_name: String!
     status: status
+    role: String
 }
 
 enum status{

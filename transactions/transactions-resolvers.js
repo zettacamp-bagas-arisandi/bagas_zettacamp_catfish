@@ -152,27 +152,17 @@ async function DeleteTransactions(parent, {id}){
 
 async function CreateTransactions(parent, {input}, context){
 try{
-    /// Ambil user dari token
-    let User = jwt.decode(context.req.headers.authorization);
-    let id = await modelUser.find({email:User.username});
-
     /// struktur untuk create
     let creator = new transactionsModel({
-        user_id: id[0]._id,
+        user_id: context.req.user_id,
         menu: input.menu,
         order_status: 'failed',
         order_date: moment(new Date()).locale('id').format('LL')
     });
     
     /// Validate ////
-
-   
-
-
-
-    /// load recipes id
-    creator = await validateStockIngredient(creator, input, stock_usedCalculate);
-    await creator.save();
+    creator = await validateStockIngredient(creator, input);
+    //await creator.save();
     return creator;
     }catch(err){
         throw new GraphQLError(err)
@@ -201,15 +191,15 @@ async function validateStockIngredient(creator, input){
         for (const ingredient of checkRecipes.ingredients){
             getIngredientsId.push(ingredient.ingredient_id);
             const checkIngredients = await ingrModel.findById(ingredient.ingredient_id);
-            const tempStatus = ingredient.stock_used * recipes.amount <= checkIngredients.stock;
+            const tempStatus = ingredient.stock_used * recipes.amount <= checkIngredients.stock && checkIngredients.status === 'active';
             stock_usedCalculate.push(checkIngredients.stock - ingredient.stock_used * recipes.amount);
             checkStatus.push(tempStatus);
         }
     };
-    
+  
     if (!checkStatus.includes(false)){
         creator.order_status = 'success';
-        reduceIngredientStock(getIngredientsId);
+        reduceIngredientStock(getIngredientsId,stock_usedCalculate);
     }
     return creator;
 }
