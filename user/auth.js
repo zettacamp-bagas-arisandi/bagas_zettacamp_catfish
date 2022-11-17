@@ -1,11 +1,13 @@
 const jwt = require('jsonwebtoken');
 const {GraphQLError} = require('graphql');
+const moment = require('moment');
 
 async function auth (resolve, parent, args, context, info){
   if(!context.req.headers.authorization){
     throw new GraphQLError('Silakan Login')
   }
     token = context.req.headers.authorization;
+  
     jwt.verify(token, 'zetta', (err,decode) => {
         if(err){
             throw new GraphQLError(err)
@@ -13,6 +15,7 @@ async function auth (resolve, parent, args, context, info){
         context.req.user_type = decode.user_type; 
         context.req.user_role = decode.role;
         context.req.user_id = decode.user_id;
+        console.log(decode.email, decode.role, moment(new Date()).locale('id').format('LLL') )
     });
     return resolve(parent, args, context, info);
   }

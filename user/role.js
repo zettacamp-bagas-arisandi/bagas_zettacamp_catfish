@@ -16,8 +16,8 @@ const middleWareRole = {
     GetAllIngredients: role,
     GetOneIngredients: role,
 
-    GetAllRecipes: role,
-    GetOneRecipes: role,
+    // GetAllRecipes: role,
+    // GetOneRecipes: role,
 
     GetAllTransactions: role,
     GetOneTransactions: role,

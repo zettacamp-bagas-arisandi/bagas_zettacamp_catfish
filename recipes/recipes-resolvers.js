@@ -157,11 +157,12 @@ async function getIngrLoader (parent, args, context){
   }
 
 async function getRemainOrder (parent, args, context){
+    const Stocks = []
     for (const ingr of parent.ingredients){
         const ingredients = await ingrModel.findById(ingr.ingredient_id)
-        console.log(ingredients.name)
+        Stocks.push(Math.floor(ingredients.stock/ingr.stock_used))
     }
-    return 100
+    return Math.min(...Stocks)
 }
 
 /// temp var resolers to Server

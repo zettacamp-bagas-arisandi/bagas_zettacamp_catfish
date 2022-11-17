@@ -2,6 +2,7 @@ const ingrModel = require("../models/ingredients");
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const { GraphQLError } = require('graphql');
+const recipeModel = require("../models/recipes");
 
 
 //////////////// QUERY ////////////////
@@ -123,7 +124,7 @@ async function UpdateIngredients(parent, {id, name, stock}){
             stock: stock
         },{new: true, runValidators: true});      
     }else{
-        throw new GraphQLError('Minimal masukkan parameter');
+        throw new GraphQLError(`ID : ${{id}} error atau tidak ada`);
     }
 
     if (update===null){
@@ -137,6 +138,8 @@ async function DeleteIngredients(parent, {id}){
     try{
     let deleted;
     if(id){
+        const check = await findIngredientInRecipe(id);
+        if (check === false) throw new GraphQLError(`${id} tidak bisa dirubah`)
         deleted = await ingrModel.findByIdAndUpdate(id,{
             status: 'deleted'
         },{new: true, runValidators: true});      
@@ -150,9 +153,17 @@ async function DeleteIngredients(parent, {id}){
   
     return deleted;
     }catch(err){
-        throw new ApolloError(err)
+        throw new GraphQLError(err)
     }
 }
+
+async function findIngredientInRecipe(id) {
+    const recipes = await recipeModel.find({ ingredients: { $elemMatch: { ingredient_id: mongoose.Types.ObjectId(id) } } })
+
+    if (!recipes.length) return true;
+    return false
+}
+
 
 /// temp var resolers to Server
 const ingrResolvers = {

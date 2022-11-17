@@ -30,6 +30,9 @@ const recipeSchema = new mongoose.Schema({
         type: String,
         default: "Enak Banget YGY"
     },
+    image: {
+        type: String
+    },
     price: {
         type: Number,
         default: 0

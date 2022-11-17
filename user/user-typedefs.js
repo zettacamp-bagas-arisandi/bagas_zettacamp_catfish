@@ -28,6 +28,10 @@ enum status{
 }
 
 type Token{
+    id: ID
+    email: String!
+    role: String
+    user_type: [user_types]
     token: String
 }
 

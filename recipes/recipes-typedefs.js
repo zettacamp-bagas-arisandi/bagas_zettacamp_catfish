@@ -6,6 +6,7 @@ type Recipes{
     ingredients: [ingredient_id]
     status: status
     description: String
+    image: String
     price: Int
     remain_order: Int
 }
