@@ -7,7 +7,6 @@ const recipeModel = require("../models/recipes");
 
 //////////////// QUERY ////////////////
 async function GetAllIngredients(parent, {name, stock, skip = 0, page = 1, limit = 5}){
-     const tick = Date.now();
      let result;
      /// kondisikan skip dan count
      let count = await ingrModel.count();
@@ -19,7 +18,7 @@ async function GetAllIngredients(parent, {name, stock, skip = 0, page = 1, limit
      let queryAgg = [
         {
             $match: {
-                stock: {$gt: 0}
+                stock: {$gte: 0}
             }
         },{
             $skip: skip
@@ -64,7 +63,8 @@ async function GetAllIngredients(parent, {name, stock, skip = 0, page = 1, limit
     //  console.log(result.length)
  
      /// Pagination Things
-     let pages = `${page} / ${Math.ceil(count/limit)}`
+     let pages = page;
+     let maxPages = Math.ceil(count/limit);
  
      /// Fixing id null
      result = result.map((el) => {
@@ -75,10 +75,10 @@ async function GetAllIngredients(parent, {name, stock, skip = 0, page = 1, limit
      /// return sesuai typdef
      result = {
          page: pages,
+         maxPage: maxPages,
          count: count,
          data: result,
      }
-     console.log(`Total Time: ${Date.now() - tick} ms`)
      return result;
  
 };
@@ -124,7 +124,7 @@ async function UpdateIngredients(parent, {id, name, stock}){
             stock: stock
         },{new: true, runValidators: true});      
     }else{
-        throw new GraphQLError(`ID : ${{id}} error atau tidak ada`);
+        throw new GraphQLError('Minimal masukkan parameter');
     }
 
     if (update===null){
@@ -159,7 +159,6 @@ async function DeleteIngredients(parent, {id}){
 
 async function findIngredientInRecipe(id) {
     const recipes = await recipeModel.find({ ingredients: { $elemMatch: { ingredient_id: mongoose.Types.ObjectId(id) } } })
-
     if (!recipes.length) return true;
     return false
 }

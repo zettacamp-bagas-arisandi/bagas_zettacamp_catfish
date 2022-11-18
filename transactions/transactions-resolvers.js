@@ -94,7 +94,8 @@ if(filter){
     }
 
     /// Pagination Things
-    let pages = `${page} / ${Math.ceil(count/limit)}`
+    let pages = page;
+    let maxPages = Math.ceil(count/limit);
     
     /// Fixing id null
     result = result.map((el) => {
@@ -105,6 +106,7 @@ if(filter){
     // return sesuai typdef
     result = {
         page: pages,
+        maxPage: maxPages,
         count: count,
         data: result,
     }
@@ -150,6 +152,60 @@ async function DeleteTransactions(parent, {id}){
     }
 }
 
+
+async function addCart(parent, {input}, context ){
+  try{
+    let totalPrice = 0;
+    let transaction = await transactionsModel.findOne({$and:[{order_status: 'pending'}, {user_id: context.req.user_id}]});
+    
+    if(!transaction){
+        let add = {
+            user_id: context.req.user_id,
+            menu: input.menu,
+            order_status: 'pending',
+            order_date: moment(new Date()).locale('id').format('LL'),
+            total_price: 0
+        }
+        add.total_price = totalPrice;
+        add = new transactionsModel(add);
+        await add.save();
+        return add;
+    }else{
+        let edit = await transactionsModel.findByIdAndUpdate(transaction._id, 
+            {
+                $push: {
+                    menu: input.menu,
+                },
+                total_price: totalPrice
+            },{new: true}
+            )
+            return edit
+    }
+  }catch(err){
+    throw new GraphQLError(err)
+  }
+}
+
+async function deleteCart(parent, {id}, context ){
+    try{
+        const transaction = await transactionsModel.findOne({$and:[{order_status: 'pending'}, {user_id: context.req.user_id}]});
+        const recipes = await transactionsModel.find({ menu: { $elemMatch: { _id: mongoose.Types.ObjectId(id) } } })
+        if(recipes.length){
+            let edit = await transactionsModel.findByIdAndUpdate(transaction._id, 
+                {
+                    $pull: {
+                        menu: {_id: mongoose.Types.ObjectId(id)}
+                    }
+                },{new: true}
+                )
+                return edit
+        }
+    }catch(err){
+      throw new GraphQLError(err)
+    }
+}
+
+
 async function CreateTransactions(parent, {input}, context){
 try{
     if(input){
@@ -157,7 +213,7 @@ try{
         let creator = new transactionsModel({
             user_id: context.req.user_id,
             menu: input.menu,
-            order_status: 'failed',
+            order_status: 'pending',
             order_date: moment(new Date()).locale('id').format('LL'),
             total_price: 0
         });
@@ -177,6 +233,11 @@ try{
 
 
 /////////////// CREATE VALIDATE  ///////////////
+async function findRecipes(id) {
+    const recipes = await transactionsModel.find({ menu: { $elemMatch: { recipe_id: mongoose.Types.ObjectId(id) } } })
+    if (!recipes.length) return false;
+    return true
+}
 
 async function reduceIngredientStock(ids,stockUsed){
     for (const [index, _] of ids.entries()){
@@ -188,7 +249,6 @@ async function reduceIngredientStock(ids,stockUsed){
 
 async function validateStockIngredient(creator, input){
      /// temp var
-     let total_priceCalculate = 0;
      let checkStatus = [];
      let stock_usedCalculate = [];
      let getIngredientsId = [];
@@ -234,7 +294,9 @@ const trancsactionsResolvers = {
     },
     Mutation: {
         DeleteTransactions,
-        CreateTransactions
+        CreateTransactions,
+        addCart,
+        deleteCart
     },
     Transactions: {
         user_id: getUserLoader

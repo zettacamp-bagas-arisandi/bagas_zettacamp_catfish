@@ -23,8 +23,8 @@ const trancsactionsSchema = new mongoose.Schema({
    }],
    order_status: {
     type: String,
-    enum: ['success', 'failed'],
-    default: 'active'
+    enum: ['success', 'failed', 'pending'],
+    default: 'pending'
    },
    order_date: {
     type: String,

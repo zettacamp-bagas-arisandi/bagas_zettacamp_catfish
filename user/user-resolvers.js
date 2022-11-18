@@ -67,24 +67,22 @@ async function GetAllUser(parent, {email, first_name, last_name, page = 1, limit
 
 
     /// Pagination Things
-    let pages = `${page} / ${Math.ceil(count/limit)}`
+    let pages = page;
+    let maxPages = Math.ceil(count/limit);
 
     /// Fixing id null
     result = result.map((el) => {
         el.id = mongoose.Types.ObjectId(el._id);
         return el;
     })
-    console.log(result)
     /// return sesuai typdef
     result = {
         page: pages,
+        maxPage: maxPages,
         count: count,
         data: result,
     }
-    
-
     return result;
-
 }
 
 async function GetOneUser(parent, {id, email}){

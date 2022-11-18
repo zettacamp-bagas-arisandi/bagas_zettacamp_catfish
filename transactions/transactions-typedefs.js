@@ -18,11 +18,13 @@ type transactions_menu{
 
 type Page_Transactions{
     data: [Transactions]
-    page: String
+    page: Int
+    maxPage: Int
     count: Int
 }
 
 enum enum_order_status{
+    pending
     success
     failed
 }
@@ -41,7 +43,7 @@ input Transactions_input{
 input allTransaction_input{
    last_name_user: String
    recipe_name: String
-   order_status: String
+   order_status: enum_order_status
    order_date: String
 }
 
@@ -54,6 +56,8 @@ type Query {
 type Mutation {
     CreateTransactions(input: Transactions_input): Transactions
     DeleteTransactions(id: ID): Transactions
+    addCart(input: Transactions_input ): Transactions
+    deleteCart(id: ID): Transactions
 }
 
 

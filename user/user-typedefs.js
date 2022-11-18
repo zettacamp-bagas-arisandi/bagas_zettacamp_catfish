@@ -2,7 +2,8 @@ const userTypeDefs = `
 
 type Page_User{
     data: [User]
-    page: String
+    page: Int
+    maxPage: Int
     count: Int
 }
 
@@ -25,6 +26,7 @@ type user_types{
 enum status{
     active
     deleted
+    unpublish
 }
 
 type Token{

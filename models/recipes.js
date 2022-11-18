@@ -23,8 +23,8 @@ const recipeSchema = new mongoose.Schema({
     }],
     status: {
         type : String,
-        enum: ['active', 'deleted'],
-        default: 'active'
+        enum: ['active', 'deleted', 'unpublish'],
+        default: 'unpublish'
     },
     description: {
         type: String,

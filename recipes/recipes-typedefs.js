@@ -18,7 +18,8 @@ type ingredient_id{
 
 type Page_recipes{
     data_recipes: [Recipes]
-    page: String
+    page: Int
+    maxPage: Int
     count: Int
 }
 
@@ -30,14 +31,15 @@ input ingredient_id_input{
 
 
 type Query {
-    GetAllRecipes(recipe_name: String): Page_recipes
+    GetAllRecipes(recipe_name: String, page: Int, limit: Int): Page_recipes
     GetOneRecipes(id: ID): Recipes
 }
 
 type Mutation {
-    CreateRecipes(recipe_name: String, input: [ingredient_id_input], description: String, price: Int): Recipes
-    UpdateRecipes(id: ID, recipe_name: String, input: [ingredient_id_input]): Recipes
+    CreateRecipes(recipe_name: String, input: [ingredient_id_input], description: String, price: Int, image: String, status: String): Recipes
+    UpdateRecipes(id: ID, recipe_name: String, input: [ingredient_id_input], price: Int, image: String, desription: String, status: String): Recipes
     DeleteRecipes(id: ID): Recipes
+    PublishRecipes(id: ID): Recipes
 }
 
 

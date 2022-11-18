@@ -6,8 +6,9 @@ const { GraphQLError } = require('graphql');
 
 
 //////////////// QUERY ////////////////
-async function GetAllRecipes(parent, {name, recipe_name, skip = 0, page = 1, limit = 5}){
+async function GetAllRecipes(parent, {name, recipe_name, skip = 0, page = 1, limit = 5}, context){
      let result;
+
      /// kondisikan skip dan count
      let count = await recipesModel.count();
      skip = (page-1)*limit;
@@ -22,6 +23,15 @@ async function GetAllRecipes(parent, {name, recipe_name, skip = 0, page = 1, lim
             $limit: limit
         }
      ];
+
+     /// jika bukan admin
+     if(context.req.user_role === "user"){
+        queryAgg.push({
+            $match: {
+                status: "active"
+            }
+        })
+     }
  
      /// Kondisi untuk parameter, jika ada akan di push ke query $and
     if(recipe_name){
@@ -48,7 +58,8 @@ async function GetAllRecipes(parent, {name, recipe_name, skip = 0, page = 1, lim
     result = await recipesModel.aggregate(queryAgg);
     
     /// Pagination Things
-    let pages = `${page} / ${Math.ceil(count/limit)}`
+    let pages = page;
+    let maxpages = Math.ceil(count/limit);
     
     /// Fixing id null
     result = result.map((el) => {
@@ -60,6 +71,7 @@ async function GetAllRecipes(parent, {name, recipe_name, skip = 0, page = 1, lim
     /// return sesuai typdef
      result = {
              page: pages,
+             maxPage: maxpages,
              count: count,
              data_recipes: result
          }
@@ -86,18 +98,21 @@ async function GetOneRecipes(parent, {id}){
 
 
 //////////////// MUTATION ////////////////
-async function CreateRecipes(parent, { recipe_name, input, description, price} ){
+async function CreateRecipes(parent, { recipe_name, input, description, price, image, status} ){
     try{
-        /// Validasi ingredients sesuai di database
+        /// Validasi ingredients sesuai di database dan active
         for (let ingredientz of input){
             const bahan = await ingrModel.findById(ingredientz.ingredient_id);
-            if(!bahan) throw new GraphQLError('Data ingredient_id tidak sesuai')
+            if(!bahan) throw new GraphQLError(`${ingredientz.ingredient_id} tidak ada`);
+            if(bahan.status !== 'active') throw new GraphQLError(`${bahan.name} tidak bisa digunakan`);
         }
         const recipes = new recipesModel({
             recipe_name: recipe_name,
             ingredients: input,
             description: description, 
-            price: price
+            image: image,
+            price: price,
+            status: status
         })
    
     await recipes.save();   
@@ -107,16 +122,20 @@ async function CreateRecipes(parent, { recipe_name, input, description, price} )
     }
 }
 
-async function UpdateRecipes(parent, {id, recipe_name, input, stock_used}){
+async function UpdateRecipes(parent, {id, recipe_name, input, stock_used, description, price, image, status}){
     let update;
     if(id){
         update = await recipesModel.findByIdAndUpdate(id,{
             recipe_name: recipe_name,
             ingredients: input,
-            stock_used:stock_used
+            stock_used:stock_used,
+            description: description,
+            price: price,
+            image: image,
+            status: status
         },{new: true, runValidators: true});      
     }else{
-        throw new GraphQLError('Minimal masukkan parameter');
+        throw new GraphQLError(`parameter id tidak terbaca`);
     }
 
     if (update===null){
@@ -134,7 +153,7 @@ async function DeleteRecipes(parent, {id}){
             status: 'deleted'
         },{new: true, runValidators: true});      
     }else{
-        throw new GraphQLError('Minimal masukkan parameter');
+        throw new GraphQLError('parameter id tidak terbaca');
     }
 
     if (deleted===null){
@@ -143,10 +162,30 @@ async function DeleteRecipes(parent, {id}){
   
     return deleted;
     }catch(err){
-        throw new ApolloError(err)
+        throw new GraphQLError(err)
     }
 }
 
+async function PublishRecipes(parent, {id}){
+    try{
+    let publish;
+    if(id){
+        publish = await recipesModel.findByIdAndUpdate(id,{
+            status: 'active'
+        },{new: true, runValidators: true});      
+    }else{
+        throw new GraphQLError('Minimal masukkan parameter');
+    }
+
+    if (publish===null){
+        throw new GraphQLError(`Data dengan id:${id} tidak ada`);
+    }
+  
+    return publish;
+    }catch(err){
+        throw new ApolloError(err)
+    }
+}
 
 //////////////// LOADER ////////////////
 async function getIngrLoader (parent, args, context){
@@ -175,7 +214,8 @@ const recipesResolvers = {
     Mutation: {
         CreateRecipes,
         UpdateRecipes,
-        DeleteRecipes
+        DeleteRecipes,
+        PublishRecipes
     },
 
     ingredient_id: {

@@ -47,10 +47,14 @@ const middleWareAuth = {
     CreateRecipes: auth,
     UpdateRecipes: auth,
     DeleteRecipes: auth,
+    PublishRecipes: auth,
 
     CreateTransactions: auth,
     DeleteTransactions: auth,
     CreateTransactions: auth,
+
+    addCart: auth,
+    deleteCart: auth
 
   
 }

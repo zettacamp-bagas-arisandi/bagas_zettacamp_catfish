@@ -9,7 +9,8 @@ type Ingredients{
 
 type Page_Ingredients{
     data: [Ingredients]
-    page: String
+    page: Int
+    maxPage: Int
     count: Int
 }
 

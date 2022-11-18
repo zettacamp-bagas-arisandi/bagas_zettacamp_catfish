@@ -35,7 +35,8 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['admin', 'user'],
         default: 'user'
-    }, user_type: [{
+    }, 
+    user_type: [{
         name: String,
         view: Boolean
     }]
