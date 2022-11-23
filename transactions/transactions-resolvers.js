@@ -9,7 +9,7 @@ const { GraphQLError } = require('graphql');
 const { ApolloError } = require('apollo-server');
 
 /////////////// QUERY ///////////////
-async function GetAllTransactions(parent, {filter, page = 1, limit = 5}){
+async function GetAllTransactions(parent, {filter, page = 1, limit = 10}){
     /// kondisikan skip dan count
     let count = await transactionsModel.count();
     skip = (page-1)*limit;
@@ -130,6 +130,24 @@ async function GetOneTransactions(parent, {id}){
     return result[0];
 }
 
+async function GetOrder(parent, _, context){
+    let result =  await transactionsModel.findOne({order_status: 'pending', user_id: context.req.user_id});
+    // console.log(result)
+    if(!result){
+        throw new GraphQLError('User ini belum pernah add item to cart ygy')
+    }
+
+    const menus = result.menu;
+    let totalPrice = 0;
+    for(let menu of menus){
+        let recipe = await recipesModel.findById(menu.recipe_id)
+        totalPrice += (menu.amount * recipe.price)
+    }
+    // console.log(totalPrice)
+    return result
+    
+}
+
 /////////////// MUTATION ///////////////
 async function DeleteTransactions(parent, {id}){
     try{
@@ -139,7 +157,7 @@ async function DeleteTransactions(parent, {id}){
             status: 'deleted'
         },{new: true, runValidators: true});      
     }else{
-        throw new GraphQLError('Minimal masukkan parameter');
+        throw new GraphQLError('id tidak ditemukan');
     }
 
     if (deleted===null){
@@ -152,35 +170,49 @@ async function DeleteTransactions(parent, {id}){
     }
 }
 
-
 async function addCart(parent, {input}, context ){
   try{
-    let totalPrice = 0;
+    /// cek dulu ada gak ya
     let transaction = await transactionsModel.findOne({$and:[{order_status: 'pending'}, {user_id: context.req.user_id}]});
-    
+    let add;
     if(!transaction){
-        let add = {
+
+        /// bikin transaction baru kalo belom ada
+        add = {
             user_id: context.req.user_id,
-            menu: input.menu,
+            menu: input,
             order_status: 'pending',
             order_date: moment(new Date()).locale('id').format('LL'),
-            total_price: 0
         }
-        add.total_price = totalPrice;
+
+        /// cari price
+        let price = await recipesModel.findById(input.recipe_id)
+        
+        /// total price awal
+        add.total_price = price.price * input.amount
+
         add = new transactionsModel(add);
         await add.save();
+        
         return add;
     }else{
-        let edit = await transactionsModel.findByIdAndUpdate(transaction._id, 
+        /// kalo udah ada ngepush menunya aja
+        add = await transactionsModel.findByIdAndUpdate(transaction._id, 
             {
                 $push: {
-                    menu: input.menu,
+                    menu: input,
                 },
-                total_price: totalPrice
             },{new: true}
             )
-            return edit
-    }
+        }
+        /// update juga total pricenya stiap ngepush
+        add = await transactionsModel.findByIdAndUpdate(transaction._id, 
+            {
+                total_price: await getTotalPrice(add)
+            },{new: true}
+            )
+       
+        return add;
   }catch(err){
     throw new GraphQLError(err)
   }
@@ -188,23 +220,61 @@ async function addCart(parent, {input}, context ){
 
 async function deleteCart(parent, {id}, context ){
     try{
+        /// cari dulu transaksinya
         const transaction = await transactionsModel.findOne({$and:[{order_status: 'pending'}, {user_id: context.req.user_id}]});
+        
+        /// cek dulu dia mesen nggak
         const recipes = await transactionsModel.find({ menu: { $elemMatch: { _id: mongoose.Types.ObjectId(id) } } })
+        
+        /// kalo iya
         if(recipes.length){
             let edit = await transactionsModel.findByIdAndUpdate(transaction._id, 
                 {
                     $pull: {
                         menu: {_id: mongoose.Types.ObjectId(id)}
-                    }
+                    },
                 },{new: true}
                 )
+
+                /// update total price setiap ngepull
+                edit = await transactionsModel.findByIdAndUpdate(transaction._id, 
+                    {
+                        total_price: await getTotalPrice(edit, transaction._id)
+                    },{new: true}
+                    )
+
                 return edit
+        }else{
+            //// kasi error gak ada menunya
+            throw new GraphQLError('Recipe atau Menu tidak ditemukan');
         }
     }catch(err){
       throw new GraphQLError(err)
     }
 }
 
+async function OrderNow(parent,{id}, context){
+    try{
+        let transaction = await transactionsModel.findById(id);
+        if(transaction.order_status !== 'pending') throw new GraphQLError('Order sudah selesai');
+        if(transaction.menu.length<1) throw new GraphQLError('Pilih Menu dulu dong baru order')
+        transaction = await validateStockIngredient(transaction,id);
+        return transaction;
+    }catch(err){
+        throw new GraphQLError(err)
+    }
+
+}
+
+async function EditNote(parent,{id, newNote}, context){
+    console.log(`Edit Note Running: ${id} : ${newNote}`)
+    let transaction = await transactionsModel.findOne({$and:[{order_status: 'pending'}, {user_id: context.req.user_id}]});
+    let edit = await transactionsModel.updateMany( { },
+        { "menu.$[elem].note" : newNote  },
+        { arrayFilters: [ { "elem._id": mongoose.Types.ObjectId(id)} ]},)
+        console.log(newNote)
+    return {status: newNote}
+}
 
 async function CreateTransactions(parent, {input}, context){
 try{
@@ -231,14 +301,7 @@ try{
     }
 }
 
-
-/////////////// CREATE VALIDATE  ///////////////
-async function findRecipes(id) {
-    const recipes = await transactionsModel.find({ menu: { $elemMatch: { recipe_id: mongoose.Types.ObjectId(id) } } })
-    if (!recipes.length) return false;
-    return true
-}
-
+/////////////// ANOTHER FUNCTION  ///////////////
 async function reduceIngredientStock(ids,stockUsed){
     for (const [index, _] of ids.entries()){
         const reduce = await ingrModel.findByIdAndUpdate(ids[index],{
@@ -247,15 +310,28 @@ async function reduceIngredientStock(ids,stockUsed){
       }
 }
 
-async function validateStockIngredient(creator, input){
+async function getTotalPrice(creator){
+    let cek = 0;
+   
+    if (creator.menu.length<1) return creator.price_amount = 0;
+        for (const price of creator.menu){
+            const checkRecipes = await recipesModel.findById(price.recipe_id);
+            let total = checkRecipes.price * price.amount;
+            cek += total;
+            creator.price_amount = cek;
+        }
+   return creator.price_amount;
+}
+
+
+async function validateStockIngredient(creator, id){
      /// temp var
      let checkStatus = [];
      let stock_usedCalculate = [];
      let getIngredientsId = [];
 
-    for(const recipes of input.menu){
+    for(const recipes of creator.menu){
         const checkRecipes = await recipesModel.findById(recipes.recipe_id);
-        creator.total_price += checkRecipes.price * recipes.amount;
         for (const ingredient of checkRecipes.ingredients){
             getIngredientsId.push(ingredient.ingredient_id);
             const checkIngredients = await ingrModel.findById(ingredient.ingredient_id);
@@ -264,12 +340,66 @@ async function validateStockIngredient(creator, input){
             checkStatus.push(tempStatus);
         }
     };
+
     if (!checkStatus.includes(false)){
         creator.order_status = 'success';
         reduceIngredientStock(getIngredientsId,stock_usedCalculate);
+    }else{
+        creator.order_status = 'failed';
     }
+
+
+    /// update status order
+    creator = await transactionsModel.findByIdAndUpdate(id,
+        {
+            order_status: creator.order_status, 
+            total_price: await getTotalPrice(creator)
+        },{new: true})
     return creator;
 }
+
+async function IncrAmount(parent, {id}, context){
+    try{
+        let edit = await transactionsModel.updateMany(
+            { },
+            { $inc: { "menu.$[elem].amount" : 1 } },
+            { arrayFilters: [ { "elem._id": mongoose.Types.ObjectId(id)} ]},
+         )
+         
+        const transaction = await transactionsModel.findOne({$and:[{order_status: 'pending'}, {user_id: context.req.user_id}]});
+        let add = await transactionsModel.findByIdAndUpdate(transaction._id, 
+            {
+                total_price: await getTotalPrice(transaction)
+            },{new: true}
+            )
+       
+
+        return {status: "Berhasil menambahkan Amount"};
+    }catch(err){
+        throw new GraphQLError(err)
+    }
+}
+
+async function DecrAmount(parent, {id}, context){
+    try{
+        let edit = await transactionsModel.updateMany(
+            { },
+            { $inc: { "menu.$[elem].amount" : -1 } },
+            { arrayFilters: [ { "elem._id": mongoose.Types.ObjectId(id)} ]},
+         )
+         const transaction = await transactionsModel.findOne({$and:[{order_status: 'pending'}, {user_id: context.req.user_id}]});
+         let add = await transactionsModel.findByIdAndUpdate(transaction._id, 
+            {
+                total_price: await getTotalPrice(transaction)
+            },{new: true}
+            )
+        //  console.log(edit)
+        return {status: "Berhasil mengurangi Amount"};
+    }catch(err){
+        throw new GraphQLError(err)
+    }
+}
+
 
 /////////////// LOADER  ///////////////
 async function getUserLoader (parent, args, context){
@@ -291,12 +421,17 @@ const trancsactionsResolvers = {
     Query: {
         GetAllTransactions,
         GetOneTransactions,
+        GetOrder
     },
     Mutation: {
         DeleteTransactions,
         CreateTransactions,
         addCart,
-        deleteCart
+        deleteCart,
+        OrderNow,
+        IncrAmount,
+        DecrAmount,
+        EditNote
     },
     Transactions: {
         user_id: getUserLoader

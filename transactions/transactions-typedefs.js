@@ -11,6 +11,7 @@ type Transactions{
 }
 
 type transactions_menu{
+    id: ID
     recipe_id: Recipes
     amount: Int
     note: String
@@ -47,8 +48,13 @@ input allTransaction_input{
    order_date: String
 }
 
+type status_edited{
+    status: String
+}
+
 
 type Query {
+    GetOrder(page: Int, limit: Int): Transactions
     GetAllTransactions(filter: allTransaction_input, page: Int, limit: Int): Page_Transactions
     GetOneTransactions(id: ID): Transactions
 }
@@ -56,8 +62,12 @@ type Query {
 type Mutation {
     CreateTransactions(input: Transactions_input): Transactions
     DeleteTransactions(id: ID): Transactions
-    addCart(input: Transactions_input ): Transactions
+    addCart(input: transactions_menu_input): Transactions
     deleteCart(id: ID): Transactions
+    OrderNow(id: ID): Transactions
+    IncrAmount(id: ID): status_edited
+    DecrAmount(id: ID): status_edited
+    EditNote(id: ID, newNote: String): status_edited
 }
 
 

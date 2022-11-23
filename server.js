@@ -5,7 +5,6 @@ const { merge } = require('lodash');
 const { makeExecutableSchema } = require('@graphql-tools/schema');
 const { applyMiddleware } = require ('graphql-middleware');
 
-
 /// Import Loader
 const ingrLoader = require('./loader/ingredients-loader.js');
 const userLoader = require('./loader/user-loader.js');

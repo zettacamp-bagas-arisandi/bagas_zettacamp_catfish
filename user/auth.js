@@ -33,6 +33,8 @@ const middleWareAuth = {
 
     GetAllTransactions: auth,
     GetOneTransactions: auth,
+    
+    GetOrder: auth
 
   },
   Mutation: {
@@ -54,7 +56,12 @@ const middleWareAuth = {
     CreateTransactions: auth,
 
     addCart: auth,
-    deleteCart: auth
+    deleteCart: auth,
+    OrderNow: auth,
+    IncrAmount: auth,
+    DecrAmount: auth,
+    EditNote: auth
+
 
   
 }

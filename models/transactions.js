@@ -17,7 +17,7 @@ const trancsactionsSchema = new mongoose.Schema({
     },
     amount: {
         type: Number,
-        min: 0  
+        min: 0 
     },
     note: String
    }],
