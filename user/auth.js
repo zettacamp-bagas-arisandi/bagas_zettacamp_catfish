@@ -15,6 +15,7 @@ async function auth (resolve, parent, args, context, info){
         context.req.user_type = decode.user_type; 
         context.req.user_role = decode.role;
         context.req.user_id = decode.user_id;
+        context.req.user_firstName = decode.first_name;
         console.log(decode.email, decode.role, moment(new Date()).locale('id').format('LLL') )
     });
     return resolve(parent, args, context, info);
@@ -29,7 +30,7 @@ const middleWareAuth = {
     GetOneIngredients: auth,
 
     GetAllRecipes: auth,
-    GetOneRecipes: auth,
+    // GetOneRecipes: auth,
 
     GetAllTransactions: auth,
     GetOneTransactions: auth,
@@ -38,7 +39,7 @@ const middleWareAuth = {
 
   },
   Mutation: {
-    CreateUser:auth,
+    // CreateUser:auth,
     UpdateUser:auth,
     DeleteUser:auth,
 
@@ -49,7 +50,6 @@ const middleWareAuth = {
     CreateRecipes: auth,
     UpdateRecipes: auth,
     DeleteRecipes: auth,
-    PublishRecipes: auth,
 
     CreateTransactions: auth,
     DeleteTransactions: auth,

@@ -9,27 +9,32 @@ const { GraphQLError } = require('graphql');
 const { ApolloError } = require('apollo-server');
 
 /////////////// QUERY ///////////////
-async function GetAllTransactions(parent, {filter, page = 1, limit = 10}){
+async function GetAllTransactions(parent, {last_name_user, recipe_name, order_status, order_date, page = 1, limit = 5}, context){
+    let result;
+
     /// kondisikan skip dan count
     let count = await transactionsModel.count();
     skip = (page-1)*limit;
-
-    /// temp var for query
+    
+    /// temp var for query untuk matching
     let query = {$and:[]};
-    let queryAgg = [    
-        {
-            $skip: skip
-        },{
-            $limit: limit
-        }
-    ];
-    let result;
+    let queryLookUp = {$and:[]};
 
-    /// Kondisi untuk parameter, jika ada akan di push ke query $and
-if(filter){
-    if(filter.last_name_user){
-        filter.last_name_user = new RegExp(filter.last_name_user, 'i');
-        query.$and.push({ "users_populate.last_name": filter.last_name_user })
+    /// queary default
+    let queryAgg = [];
+
+     // match berdasarkan user jika dia bukan admin
+    if(context.req.user_role === 'user'){
+        query.$and.push({
+             user_id: mongoose.Types.ObjectId(context.req.user_id)
+        })
+    }
+
+
+/// Kondisi untuk parameter, jika ada akan di push ke query $and
+
+    if(last_name_user){
+        last_name_user = new RegExp(last_name_user, 'i');
         queryAgg.push(
             {
                 $lookup:
@@ -41,11 +46,11 @@ if(filter){
                 }
             }
         )
+        queryLookUp.$and.push({ "users_populate.last_name": last_name_user })
     };
        
-    if(filter.recipe_name){
-        filter.recipe_name = new RegExp(filter.recipe_name, 'i');
-        query.$and.push({ "recipes_populate.recipe_name": filter.recipe_name })
+    if(recipe_name){
+        recipe_name = new RegExp(recipe_name, 'i');
         queryAgg.push(
             {
                 $lookup:
@@ -56,42 +61,63 @@ if(filter){
                     as: "recipes_populate"
                 }
             }
-        )
+            )
+        queryLookUp.$and.push({ "recipes_populate.recipe_name": recipe_name })
     };
 
-    if(filter.order_status){
+    if(order_status){
         query.$and.push({
-            order_status: filter.order_status
+            order_status: order_status
         });
     }
 
-    if(filter.order_date){
-        filter.order_date = moment(filter.order_date).locale('id').format('LL');
-        filter.order_date = new RegExp(filter.order_date, 'i');
-        console.log(filter.order_date)
+    if(order_date){
+        order_date = moment(order_date).locale('id').format('LL');
+        order_date = new RegExp(order_date, 'i');
+        // console.log(order_date)
         query.$and.push({
-            order_date: filter.order_date
+            order_date: order_date
         })
     }
-}
+
     /// Kondisi jika semua parameter terisi, akan melakukan pipeline match 
     if (query.$and.length > 0){
-        queryAgg.push(
+        queryAgg.unshift(
             {
                 $match: query
             }
         )
-
-        let countMatch = await transactionsModel.aggregate([{
-            $match: query
-        }])
-        count = countMatch.length;
     };
-    /// Panggil pipeline yang ada
-    result = await transactionsModel.aggregate(queryAgg);
-    if(result.length > 0){
-        count = result.length;
+
+    if(queryLookUp.$and.length > 0){
+        queryAgg.push(
+            {
+                $match: queryLookUp
+            }
+        )
     }
+
+    /// update count
+    if(queryLookUp.$and.length || query.$and.length){
+        let countMatch = await transactionsModel.aggregate(queryAgg);
+        count = countMatch.length;
+    }
+
+    /// apply pagination
+    queryAgg.push(
+            {
+                $sort: {
+                    createdAt: -1
+                    }
+            },{
+                $skip: skip
+            },{
+                $limit: limit
+            }
+        )
+
+    /// Panggil pipeline yang ada + skip limit
+    result = await transactionsModel.aggregate(queryAgg);
 
     /// Pagination Things
     let pages = page;
@@ -110,6 +136,7 @@ if(filter){
         count: count,
         data: result,
     }
+
     return result;
 
 }
@@ -148,6 +175,7 @@ async function GetOrder(parent, _, context){
     
 }
 
+
 /////////////// MUTATION ///////////////
 async function DeleteTransactions(parent, {id}){
     try{
@@ -171,7 +199,7 @@ async function DeleteTransactions(parent, {id}){
 }
 
 async function addCart(parent, {input}, context ){
-  try{
+ 
     /// cek dulu ada gak ya
     let transaction = await transactionsModel.findOne({$and:[{order_status: 'pending'}, {user_id: context.req.user_id}]});
     let add;
@@ -196,16 +224,34 @@ async function addCart(parent, {input}, context ){
         
         return add;
     }else{
-        /// kalo udah ada ngepush menunya aja
-        add = await transactionsModel.findByIdAndUpdate(transaction._id, 
-            {
-                $push: {
-                    menu: input,
-                },
-            },{new: true}
-            )
+
+        /// cek menunya dah ada di cart belom
+        add = await transactionsModel.find({
+        
+            _id: mongoose.Types.ObjectId(transaction._id),
+            menu: {
+                $elemMatch: { recipe_id: mongoose.Types.ObjectId(input.recipe_id), note: input.note } 
+                
+            } 
+        })
+
+       /// kalo ada gak bisa add lagi
+       if(add.length > 0 ){
+            throw new GraphQLError('Pesanan sudah ada didalam Cart')
         }
-        /// update juga total pricenya stiap ngepush
+        
+       }
+
+       /// Push menunya
+       add = await transactionsModel.findByIdAndUpdate(transaction._id, 
+        {
+            $push: {
+                menu:input
+            }
+        },{new: true}
+        )
+       
+        /// update juga total pricenya stiap perubahan
         add = await transactionsModel.findByIdAndUpdate(transaction._id, 
             {
                 total_price: await getTotalPrice(add)
@@ -213,9 +259,7 @@ async function addCart(parent, {input}, context ){
             )
        
         return add;
-  }catch(err){
-    throw new GraphQLError(err)
-  }
+ 
 }
 
 async function deleteCart(parent, {id}, context ){
@@ -303,47 +347,57 @@ try{
 
 /////////////// ANOTHER FUNCTION  ///////////////
 async function reduceIngredientStock(ids,stockUsed){
+   console.log(ids, stockUsed)
+
     for (const [index, _] of ids.entries()){
         const reduce = await ingrModel.findByIdAndUpdate(ids[index],{
-          stock: stockUsed[index]
+          $inc : {
+            stock: -stockUsed[index]
+          }
         })
       }
 }
 
 async function getTotalPrice(creator){
     let cek = 0;
-   
+    let discountAmount = 0;
     if (creator.menu.length<1) return creator.price_amount = 0;
-        for (const price of creator.menu){
-            const checkRecipes = await recipesModel.findById(price.recipe_id);
+    for (const price of creator.menu){
+        const checkRecipes = await recipesModel.findById(price.recipe_id);
             let total = checkRecipes.price * price.amount;
+            discountAmount = (cek*checkRecipes.is_special_offers.discount)/100;
             cek += total;
-            creator.price_amount = cek;
         }
-   return creator.price_amount;
+
+    creator.price_amount = cek - discountAmount;
+    return creator.price_amount;
 }
 
 
 async function validateStockIngredient(creator, id){
      /// temp var
      let checkStatus = [];
-     let stock_usedCalculate = [];
-     let getIngredientsId = [];
+    let ingrMap = [];
+    let usedStock = [];
 
-    for(const recipes of creator.menu){
-        const checkRecipes = await recipesModel.findById(recipes.recipe_id);
-        for (const ingredient of checkRecipes.ingredients){
-            getIngredientsId.push(ingredient.ingredient_id);
-            const checkIngredients = await ingrModel.findById(ingredient.ingredient_id);
-            const tempStatus = ingredient.stock_used * recipes.amount <= checkIngredients.stock && checkIngredients.status === 'active';
-            stock_usedCalculate.push(checkIngredients.stock - ingredient.stock_used * recipes.amount);
-            checkStatus.push(tempStatus);
+    for (const menu of creator.menu){
+        const getMenu = await recipesModel.findById(menu.recipe_id);
+        for(const ingredients of getMenu.ingredients){
+            const getIngredient = await ingrModel.findById(ingredients.ingredient_id);
+            ingrMap.push(ingredients.ingredient_id);
+            usedStock.push(ingredients.stock_used * menu.amount)
+            if(ingredients.stock_used * menu.amount <= getIngredient.stock && getIngredient.status === 'active'){
+                checkStatus.push(true)
+            }else{
+                checkStatus.push(false)
+            }
+            }
         }
-    };
 
-    if (!checkStatus.includes(false)){
+
+        if (!checkStatus.includes(false)){
         creator.order_status = 'success';
-        reduceIngredientStock(getIngredientsId,stock_usedCalculate);
+        reduceIngredientStock(ingrMap,usedStock);
     }else{
         creator.order_status = 'failed';
     }

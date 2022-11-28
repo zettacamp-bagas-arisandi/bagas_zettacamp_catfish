@@ -23,6 +23,7 @@ async function GetAllUser(parent, {email, first_name, last_name, page = 1, limit
 
     /// Kondisi untuk parameter, jika ada akan di push ke query $and
     if(email){
+        email = new RegExp(email, 'i')
         query.$and.push({
             email:email
         });
@@ -54,12 +55,10 @@ async function GetAllUser(parent, {email, first_name, last_name, page = 1, limit
         )
 
         /// Update count jika termatch tanpa melibatkan skip dan limit
-        if(result.length < count){
         let countMatch = await modelUser.aggregate([{
             $match: query
         }])
         count = countMatch.length;
-    }
     }
 
     /// Panggil pipeline yang ada
@@ -89,15 +88,16 @@ async function GetOneUser(parent, {id, email}){
     let result;
     /// Kondisi untuk parameter, jika ada akan find berdasarkan parameter
     if(id){
-        result = await modelUser.find({_id: mongoose.Types.ObjectId(id)});
+        result = await modelUser.findOne({_id: mongoose.Types.ObjectId(id)});
     }else if(email){
+        email = new RegExp(email, 'i');
         result = await modelUser.findOne({email:email});
     }else{
-        throw new GraphQLError('Minimal masukkan parameter');
+        throw new GraphQLError('Masukkan ID atau Email yang ingin dicari');
     }
 
     /// Jika result kosong
-    if(result.length < 1 ){
+    if(!result){
         throw new GraphQLError('Data Tidak Ditemukan');
     }
     return result;
@@ -177,13 +177,17 @@ async function CreateUser(parent,{email, password, first_name, last_name, role})
     }
 }
 
-async function UpdateUser(parent, { email, first_name, last_name, password},context){
+async function UpdateUser(parent, { id,email, first_name, last_name, password},context){
+
+    /// temp variabel
     let update;
+
+    /// hash password
     if (password){
         password = await bcrypt.hash(password, 5);
     }
     if(email || first_name || last_name || password){
-        update = await modelUser.findByIdAndUpdate(context.get.user_id,{
+        update = await modelUser.findByIdAndUpdate(context.req.user_id,{
             email: email, 
             password: password, 
             first_name: first_name, 
@@ -208,7 +212,7 @@ async function DeleteUser(parent, {id}){
             status: 'deleted'
         },{new: true, runValidators: true});      
     }else{
-        throw new GraphQLError('Minimal masukkan parameter');
+        throw new GraphQLError('id user tidak terbaca');
     }
 
     if (deleted===null){
@@ -224,23 +228,24 @@ async function DeleteUser(parent, {id}){
 async function Login(parent, {email, password}, context){
     if( email && password){
         let getUser = await modelUser.findOne({email: email});
-        const isValid = await bcrypt.compare(password, getUser.password);
-        if(getUser.length < 1){
+        if(!getUser){
             throw new GraphQLError(`${email} tidak ditemukan`);
         }
-        
+        const isValid = await bcrypt.compare(password, getUser.password);
         if(isValid){
             let token = jwt.sign({ 
                 email: getUser.email, 
                 password: getUser.password, 
                 role: getUser.role, 
                 user_id: getUser._id,
+                first_name: getUser.first_name
             }, 'zetta', { expiresIn: '1d' });
             return {
                 id: getUser._id,
                 email: getUser.email,
                 role: getUser.role,
                 user_type: getUser.user_type,
+                first_name: getUser.first_name,
                 token: token,
             };
         }else{

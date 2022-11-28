@@ -16,15 +16,16 @@ const middleWareRole = {
     GetAllIngredients: role,
     GetOneIngredients: role,
 
-    GetOneRecipes: role,
+    // GetAllRecipes: role,
+    // GetOneRecipes: role,
 
     // GetAllTransactions: role,
-    // GetOneTransactions: role,
+    GetOneTransactions: role,
 
   },
   Mutation: {
-    CreateUser:role,
-    UpdateUser:role,
+    // CreateUser:role,
+    // UpdateUser:role,
     DeleteUser:role,
 
     CreateIngredients: role,
@@ -34,7 +35,6 @@ const middleWareRole = {
     CreateRecipes: role,
     UpdateRecipes: role,
     DeleteRecipes: role,
-    PublishRecipes: role,
 
     CreateTransactions: role,
     DeleteTransactions: role,

@@ -6,7 +6,7 @@ const recipeModel = require("../models/recipes");
 
 
 //////////////// QUERY ////////////////
-async function GetAllIngredients(parent, {name, stock, skip = 0, page = 1, limit = 5}){
+async function GetAllIngredients(parent, {name, status, stock, skip = 0, page = 1, limit = 5}){
      let result;
      /// kondisikan skip dan count
      let count = await ingrModel.count();
@@ -17,10 +17,6 @@ async function GetAllIngredients(parent, {name, stock, skip = 0, page = 1, limit
      let query = { $and: []};
      let queryAgg = [
         {
-            $match: {
-                stock: {$gte: 0}
-            }
-        },{
             $skip: skip
         },{
             $limit: limit
@@ -35,12 +31,18 @@ async function GetAllIngredients(parent, {name, stock, skip = 0, page = 1, limit
          });
         }
      
-    if(stock){
-         query.$and.push({
-             stock: {$gte: 0},
-         });
-         }
- 
+    /// filter by stock
+    if(stock > 0){
+        query.$and.push({
+            stock: stock
+        });
+    }
+         
+    if(status){
+        query.$and.push({
+            status:status
+        });
+    }
      /// Kondisi jika semua parameter terisi, akan melakukan pipeline match
      if (query.$and.length > 0){
          queryAgg.unshift(
@@ -91,7 +93,7 @@ async function GetOneIngredients(parent, {id}){
     }else if(email){
         result = await ingrModel.find({email:email});
     }else{
-        throw new GraphQLError('Minimal masukkan parameter');
+        throw new GraphQLError('id ingredient tidak terbaca');
     }
 
     /// Jika result kosong
@@ -105,6 +107,11 @@ async function GetOneIngredients(parent, {id}){
 //////////////// MUTATION ////////////////
 async function CreateIngredients(parent, {name, stock}){
     try{
+
+        /// Cek ingredient sudah ada belum
+        const check = await ingrModel.findOne({ name: new RegExp("^" + name.trim() + "$", 'i') });
+        //// kalo ada return error
+        if (check) { throw new GraphQLError(`Ingredient: ${name} sudah ada`) }
         let addIngr = {};
         addIngr = new ingrModel({
         name: name,
@@ -117,14 +124,14 @@ async function CreateIngredients(parent, {name, stock}){
     }
 }
 
-async function UpdateIngredients(parent, {id, name, stock}){
+async function UpdateIngredients(parent, {id, stock}){
     let update;
     if(id){
         update = await ingrModel.findByIdAndUpdate(id,{
             stock: stock
         },{new: true, runValidators: true});      
     }else{
-        throw new GraphQLError('Minimal masukkan parameter');
+        throw new GraphQLError('id ingredient tidak terbaca');
     }
 
     if (update===null){
@@ -135,11 +142,16 @@ async function UpdateIngredients(parent, {id, name, stock}){
 }
 
 async function DeleteIngredients(parent, {id}){
-    try{
     let deleted;
     if(id){
+        let usedRecipes = [];
         const check = await findIngredientInRecipe(id);
-        if (check === false) throw new GraphQLError(`${id} tidak bisa dirubah`)
+        /// untuk error message
+        for(const recipes of check.recipes){
+            usedRecipes.push(recipes.recipe_name)
+        }
+        check.recipes 
+        if (check.status === false) throw new GraphQLError(`${id} tidak bisa dirubah, terpakai di resep ${usedRecipes}`)
         deleted = await ingrModel.findByIdAndUpdate(id,{
             status: 'deleted'
         },{new: true, runValidators: true});      
@@ -152,15 +164,14 @@ async function DeleteIngredients(parent, {id}){
     }
   
     return deleted;
-    }catch(err){
-        throw new GraphQLError(err)
-    }
 }
 
+
+//// unutk check ingredient dipakai atau ngak
 async function findIngredientInRecipe(id) {
     const recipes = await recipeModel.find({ ingredients: { $elemMatch: { ingredient_id: mongoose.Types.ObjectId(id) } } })
-    if (!recipes.length) return true;
-    return false
+    if (!recipes.length) return {status: true};
+    return {recipes, status: false}
 }
 
 

@@ -31,6 +31,7 @@ enum status{
 
 type Token{
     id: ID
+    first_name: String
     email: String!
     role: String
     user_type: [user_types]
@@ -50,7 +51,7 @@ type Query {
 
 type Mutation{
     CreateUser(email: String, password: String, first_name: String, last_name: String, role: String): User
-    UpdateUser(id: ID, email: String, password: String, first_name: String, last_name: String): User
+    UpdateUser(email: String, password: String, first_name: String, last_name: String): User
     DeleteUser(id: ID): User
     Login(email: String, password: String): Token
 }

@@ -6,15 +6,15 @@ const { GraphQLError } = require('graphql');
 
 
 //////////////// QUERY ////////////////
-async function GetAllRecipes(parent, {name, recipe_name, skip = 0, page = 1, limit = 5}, context){
+async function GetAllRecipes(parent, {recipe_name, skip = 0, status, is_hightlighted, is_special_offers, page = 1, limit = 5}, context){
      let result;
-
+      
      /// kondisikan skip dan count
      let count = await recipesModel.count();
      skip = (page-1)*limit;
   
      
-     /// temp var for query
+     /// temp var for query match
      let query = { $and: []};
      let queryAgg = [
         {
@@ -24,22 +24,41 @@ async function GetAllRecipes(parent, {name, recipe_name, skip = 0, page = 1, lim
         }
      ];
 
-     /// jika bukan admin
-     if(context.req.user_role === "user"){
-        queryAgg.push({
-            $match: {
-                status: "active"
-            }
+     /// jika bukan selain admin tampilkan yg active saja
+     if(context.req.user_role !== "admin"){
+        query.$and.push({
+            status: "active"
         })
      }
  
-     /// Kondisi untuk parameter, jika ada akan di push ke query $and
+     /// filter by recipe name, jika ada akan di push ke query $and
     if(recipe_name){
         recipe_name = new RegExp(recipe_name, 'i');
          query.$and.push({
             recipe_name:recipe_name
          });
         }
+    
+    /// filter by status
+    if(status){
+         query.$and.push({
+            status:status
+         });
+    }
+
+    /// filter by special offers
+    if(is_special_offers){
+        query.$and.push({
+            is_special_offers:is_special_offers
+         });
+    }
+
+    /// filter by hightlighted
+    if(is_hightlighted){
+        query.$and.push({
+            is_hightlighted:is_hightlighted
+         });
+    }
  
      /// Kondisi jika semua parameter terisi, akan melakukan pipeline match
      if (query.$and.length > 0){
@@ -54,7 +73,7 @@ async function GetAllRecipes(parent, {name, recipe_name, skip = 0, page = 1, lim
         }])
         count = countMatch.length;
     }
- 
+    // console.log(query)
     result = await recipesModel.aggregate(queryAgg);
     
     /// Pagination Things
@@ -80,6 +99,100 @@ async function GetAllRecipes(parent, {name, recipe_name, skip = 0, page = 1, lim
  
 };
 
+async function GetAllRecipesNotLogin(parent, {recipe_name, skip = 0, status, is_hightlighted, is_special_offers, page = 1, limit = 5}, context){
+    let result;
+
+    /// kondisikan skip dan count
+    let count = await recipesModel.count();
+    skip = (page-1)*limit;
+ 
+    
+    /// temp var for query match
+    let query = { $and: []};
+    let queryAgg = [
+       {
+           $skip: skip
+       },{
+           $limit: limit
+       }
+    ];
+
+    /// jika bukan selain admin tampilkan yg active saja
+ 
+    query.$and.push({
+        status: "active"
+    })
+  
+
+    /// filter by recipe name, jika ada akan di push ke query $and
+   if(recipe_name){
+       recipe_name = new RegExp(recipe_name, 'i');
+        query.$and.push({
+           recipe_name:recipe_name
+        });
+       }
+   
+   /// filter by status
+   if(status){
+        query.$and.push({
+           status:status
+        });
+   }
+
+   /// filter by special offers
+   if(is_special_offers){
+       query.$and.push({
+           is_special_offers:is_special_offers
+        });
+   }
+
+   /// filter by hightlighted
+   if(is_hightlighted){
+       query.$and.push({
+           is_hightlighted:is_hightlighted
+        });
+   }
+
+    /// Kondisi jika semua parameter terisi, akan melakukan pipeline match
+    if (query.$and.length > 0){
+        queryAgg.unshift(
+            {
+                $match: query
+            }
+        )
+       /// Update count jika termatch tanpma melibatkan skip
+       let countMatch = await recipesModel.aggregate([{
+           $match: query
+       }])
+       count = countMatch.length;
+   }
+   // console.log(query)
+   result = await recipesModel.aggregate(queryAgg);
+   
+   /// Pagination Things
+   let pages = page;
+   let maxpages = Math.ceil(count/limit);
+   
+   /// Fixing id null
+   result = result.map((el) => {
+       el.id = mongoose.Types.ObjectId(el._id);
+       return el;
+   })
+   
+
+   /// return sesuai typdef
+    result = {
+            page: pages,
+            maxPage: maxpages,
+            count: count,
+            data_recipes: result
+        }
+       
+    return result;
+
+};
+
+
 async function GetOneRecipes(parent, {id}){
     let result;
     /// Kondisi untuk parameter, jika ada akan find berdasarkan parameter
@@ -98,8 +211,7 @@ async function GetOneRecipes(parent, {id}){
 
 
 //////////////// MUTATION ////////////////
-async function CreateRecipes(parent, { recipe_name, input, description, price, image, status} ){
-    try{
+async function CreateRecipes(parent, { recipe_name, input, description, price, image, status, is_special_offers, discount, is_hightlighted} ){
         /// Validasi ingredients sesuai di database dan active
         for (let ingredientz of input){
             const bahan = await ingrModel.findById(ingredientz.ingredient_id);
@@ -112,17 +224,21 @@ async function CreateRecipes(parent, { recipe_name, input, description, price, i
             description: description, 
             image: image,
             price: price,
-            status: status
+            status: status,
+            is_hightlighted: is_hightlighted,
+            is_special_offers: {
+                status: is_special_offers,
+                discount: discount
+            }
+            
         })
    
     await recipes.save();   
     return recipes;
-    }catch(err){
-        throw new GraphQLError(err)
-    }
+
 }
 
-async function UpdateRecipes(parent, {id, recipe_name, input, stock_used, description, price, image, status}){
+async function UpdateRecipes(parent, {id, recipe_name, input, stock_used, description, price, image, status, is_hightlighted, is_special_offers, discount}){
     let update;
     if(id){
         update = await recipesModel.findByIdAndUpdate(id,{
@@ -132,7 +248,12 @@ async function UpdateRecipes(parent, {id, recipe_name, input, stock_used, descri
             description: description,
             price: price,
             image: image,
-            status: status
+            status: status,
+            is_hightlighted: is_hightlighted,
+            is_special_offers: {
+                status: is_special_offers,
+                discount: discount
+            }
         },{new: true, runValidators: true});      
     }else{
         throw new GraphQLError(`parameter id tidak terbaca`);
@@ -166,27 +287,6 @@ async function DeleteRecipes(parent, {id}){
     }
 }
 
-async function PublishRecipes(parent, {id}){
-    try{
-    let publish;
-    if(id){
-        publish = await recipesModel.findByIdAndUpdate(id,{
-            status: 'active'
-        },{new: true, runValidators: true});      
-    }else{
-        throw new GraphQLError('Minimal masukkan parameter');
-    }
-
-    if (publish===null){
-        throw new GraphQLError(`Data dengan id:${id} tidak ada`);
-    }
-  
-    return publish;
-    }catch(err){
-        throw new ApolloError(err)
-    }
-}
-
 //////////////// LOADER ////////////////
 async function getIngrLoader (parent, args, context){
     if (parent.ingredient_id){
@@ -209,13 +309,13 @@ const recipesResolvers = {
     Query: {
         GetAllRecipes,
         GetOneRecipes,
+        GetAllRecipesNotLogin
         
     },
     Mutation: {
         CreateRecipes,
         UpdateRecipes,
-        DeleteRecipes,
-        PublishRecipes
+        DeleteRecipes
     },
 
     ingredient_id: {

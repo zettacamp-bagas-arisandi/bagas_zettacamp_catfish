@@ -4,7 +4,7 @@ type Transactions{
     id: ID
     user_id: User
     menu: [transactions_menu]
-    order_status: enum_order_status
+    order_status: String
     order_date: String
     status: status
     total_price: Int
@@ -30,7 +30,6 @@ enum enum_order_status{
     failed
 }
 
-
 input transactions_menu_input{
     recipe_id: ID
     amount: Int
@@ -41,12 +40,6 @@ input Transactions_input{
     menu: [transactions_menu_input]
 }
 
-input allTransaction_input{
-   last_name_user: String
-   recipe_name: String
-   order_status: enum_order_status
-   order_date: String
-}
 
 type status_edited{
     status: String
@@ -55,7 +48,7 @@ type status_edited{
 
 type Query {
     GetOrder(page: Int, limit: Int): Transactions
-    GetAllTransactions(filter: allTransaction_input, page: Int, limit: Int): Page_Transactions
+    GetAllTransactions(page: Int, limit: Int, last_name_user: String, recipe_name: String, order_status: String, order_date: String): Page_Transactions
     GetOneTransactions(id: ID): Transactions
 }
 

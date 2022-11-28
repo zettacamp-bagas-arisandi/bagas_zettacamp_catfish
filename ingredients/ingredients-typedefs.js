@@ -15,7 +15,7 @@ type Page_Ingredients{
 }
 
 type Query {
-    GetAllIngredients(name: String, stock: Int, page: Int, limit: Int): Page_Ingredients
+    GetAllIngredients(name: String, stock: Int, status: String, page: Int, limit: Int): Page_Ingredients
     GetOneIngredients(id:ID): Ingredients
 }
 
