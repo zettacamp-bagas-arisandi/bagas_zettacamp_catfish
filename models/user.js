@@ -39,7 +39,14 @@ const userSchema = new mongoose.Schema({
     user_type: [{
         name: String,
         view: Boolean
-    }]
+    }],
+    image: {
+        type: String,
+        default: "https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Clipart.png"
+    },
+    question_answer: {
+        type: String
+    }
 }, {timestamps: true});
 
 const modelUser = mongoose.model('users', userSchema);

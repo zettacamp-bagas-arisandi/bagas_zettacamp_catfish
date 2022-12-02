@@ -238,7 +238,7 @@ async function CreateRecipes(parent, { recipe_name, input, description, price, i
 
 }
 
-async function UpdateRecipes(parent, {id, recipe_name, input, stock_used, description, price, image, status, is_hightlighted, is_special_offers, discount}){
+async function UpdateRecipes(parent, {id, recipe_name, input, stock_used, description, price, image, status, status_hightlighted, status_special_offers, discount}){
     let update;
     if(id){
         update = await recipesModel.findByIdAndUpdate(id,{
@@ -249,9 +249,9 @@ async function UpdateRecipes(parent, {id, recipe_name, input, stock_used, descri
             price: price,
             image: image,
             status: status,
-            is_hightlighted: is_hightlighted,
+            is_hightlighted: status_hightlighted,
             is_special_offers: {
-                status: is_special_offers,
+                status: status_special_offers,
                 discount: discount
             }
         },{new: true, runValidators: true});      

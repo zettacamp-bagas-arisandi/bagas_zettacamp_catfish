@@ -49,7 +49,7 @@ type Query {
 
 type Mutation {
     CreateRecipes(recipe_name: String, input: [ingredient_id_input], description: String, price: Int, image: String, status: String): Recipes
-    UpdateRecipes(id: ID, recipe_name: String, input: [ingredient_id_input], price: Int, image: String, desription: String, status: String, is_hightlighted: Boolean, is_special_offers: special_offers_input): Recipes
+    UpdateRecipes(id: ID, recipe_name: String, input: [ingredient_id_input], price: Int, image: String, desription: String, status: String, status_hightlighted: Boolean, status_special_offers: Boolean, discount: Int): Recipes
     DeleteRecipes(id: ID): Recipes
     PublishRecipes(id: ID): Recipes
 }

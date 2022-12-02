@@ -347,8 +347,6 @@ try{
 
 /////////////// ANOTHER FUNCTION  ///////////////
 async function reduceIngredientStock(ids,stockUsed){
-   console.log(ids, stockUsed)
-
     for (const [index, _] of ids.entries()){
         const reduce = await ingrModel.findByIdAndUpdate(ids[index],{
           $inc : {
@@ -376,25 +374,43 @@ async function getTotalPrice(creator){
 
 async function validateStockIngredient(creator, id){
      /// temp var
-     let checkStatus = [];
+    let checkStatus = [];
     let ingrMap = [];
     let usedStock = [];
+    let stocked = [];
+
+    let map = new Map();
 
     for (const menu of creator.menu){
         const getMenu = await recipesModel.findById(menu.recipe_id);
         for(const ingredients of getMenu.ingredients){
             const getIngredient = await ingrModel.findById(ingredients.ingredient_id);
+            // console.log(map.has(getIngredient.name), getIngredient.name)
+            if(map.has(getIngredient.name)){
+                let min = getIngredient.stock - ingredients.stock_used * menu.amount;
+                map.set(getIngredient.name, min-=ingredients.stock_used * menu.amount)
+            }else{
+                map.set(getIngredient.name, getIngredient.stock - ingredients.stock_used * menu.amount);
+            }
+
+           
+
             ingrMap.push(ingredients.ingredient_id);
-            usedStock.push(ingredients.stock_used * menu.amount)
-            if(ingredients.stock_used * menu.amount <= getIngredient.stock && getIngredient.status === 'active'){
+            usedStock.push(ingredients.stock_used * menu.amount) 
+            if(ingredients.stock_used * menu.amount < getIngredient.stock && getIngredient.status === 'active'){
                 checkStatus.push(true)
             }else{
                 checkStatus.push(false)
             }
-            }
         }
-
-
+    }
+        // console.log(map)
+        map.forEach((val,key) => {
+            if(val < 1){
+                // console.log(`Waduh ${key}-nya habis`)
+                throw new GraphQLError(`Waduh ${key}-nya habis`);
+            }
+        })
         if (!checkStatus.includes(false)){
         creator.order_status = 'success';
         reduceIngredientStock(ingrMap,usedStock);

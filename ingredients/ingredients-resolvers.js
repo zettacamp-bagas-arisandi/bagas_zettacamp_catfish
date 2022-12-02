@@ -146,11 +146,17 @@ async function DeleteIngredients(parent, {id}){
     if(id){
         let usedRecipes = [];
         const check = await findIngredientInRecipe(id);
-        /// untuk error message
-        for(const recipes of check.recipes){
-            usedRecipes.push(recipes.recipe_name)
+
+        /// Cari ingredientnnya dipakai gak
+        const search = await recipeModel.find( {"ingredients.ingredient_id": mongoose.Types.ObjectId(id)});
+        if(search){
+            /// kalo iya push ke usedRecipes
+            for(const recipes of search){
+                usedRecipes.push(recipes.recipe_name)
+            }
         }
-        check.recipes 
+
+        /// Check apakah ada true atau false
         if (check.status === false) throw new GraphQLError(`${id} tidak bisa dirubah, terpakai di resep ${usedRecipes}`)
         deleted = await ingrModel.findByIdAndUpdate(id,{
             status: 'deleted'
