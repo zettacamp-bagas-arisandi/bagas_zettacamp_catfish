@@ -9,7 +9,14 @@ const { GraphQLError } = require('graphql');
 const { ApolloError } = require('apollo-server');
 
 /////////////// QUERY ///////////////
-async function GetAllTransactions(parent, {last_name_user, recipe_name, order_status, order_date, page = 1, limit = 5}, context){
+async function GetAllTransactions(parent, 
+    {   
+        /// args/parameter filter
+        first_name_user, last_name_user, recipe_name, order_status, order_date, page = 1, limit = 5,
+        /// sorting
+        sortUserName, sortTotalPrice, sortDate, sortMenu
+    }, 
+    context){
     let result;
 
     /// kondisikan skip dan count
@@ -32,9 +39,7 @@ async function GetAllTransactions(parent, {last_name_user, recipe_name, order_st
 
 
 /// Kondisi untuk parameter, jika ada akan di push ke query $and
-
-    if(last_name_user){
-        last_name_user = new RegExp(last_name_user, 'i');
+    if(last_name_user || first_name_user || sortUserName!== undefined){
         queryAgg.push(
             {
                 $lookup:
@@ -46,10 +51,65 @@ async function GetAllTransactions(parent, {last_name_user, recipe_name, order_st
                 }
             }
         )
-        queryLookUp.$and.push({ "users_populate.last_name": last_name_user })
+
+        if(last_name_user){
+            last_name_user = new RegExp(last_name_user, 'i');
+            queryLookUp.$and.push({ "users_populate.last_name": last_name_user })
+        }
+
+        if(first_name_user){
+            first_name_user = new RegExp(first_name_user, 'i');
+            queryLookUp.$and.push({ "users_populate.first_name": first_name_user })
+        }
+
+
+        if(sortUserName === true){
+            queryAgg.push({
+                $sort: {
+                    "users_populate.first_name": 1
+                }
+            })
+        }
+        
+        if(sortUserName === false){
+            queryAgg.push({
+                $sort: {
+                    "users_populate.first_name": -1
+                }
+            })
+        }
+
     };
+
+    /// kondisi jika pakai sort by date
+    if(sortDate!==undefined){
+        /// temp var
+        let sortBy;
+
+        /// menentukan asending atau descending
+        if(sortDate === true || sortDate === null){
+            sortBy = -1
+        }else{
+            sortBy = 1
+        }
+        
+        /// push query agg nya
+        queryAgg.push({
+            $sort:{
+                createdAt: sortBy
+            }
+        });
+    }else{
+        /// defaultnya berdasarkan date terbaru
+        queryAgg.push({
+            $sort:{
+                createdAt: -1
+            }
+        })
+    }
+
        
-    if(recipe_name){
+    if(recipe_name || sortMenu !== undefined){
         recipe_name = new RegExp(recipe_name, 'i');
         queryAgg.push(
             {
@@ -61,8 +121,23 @@ async function GetAllTransactions(parent, {last_name_user, recipe_name, order_st
                     as: "recipes_populate"
                 }
             }
-            )
-        queryLookUp.$and.push({ "recipes_populate.recipe_name": recipe_name })
+        )
+        queryLookUp.$and.push({ "recipes_populate.recipe_name": recipe_name });
+
+        /// sort
+        let sortBy;
+        if(sortMenu === true){
+            sortBy = -1;
+        }else{
+            sortBy = 1;
+        }
+
+        queryAgg.push({
+            $sort: {
+                "recipes_populate.recipe_name": sortBy
+            }
+        })
+
     };
 
     if(order_status){
@@ -77,6 +152,22 @@ async function GetAllTransactions(parent, {last_name_user, recipe_name, order_st
         // console.log(order_date)
         query.$and.push({
             order_date: order_date
+        })
+    }
+
+
+    if(sortTotalPrice!== undefined){
+        let sortBy;
+        if(sortTotalPrice === true){
+           sortBy = -1
+        }else{
+            sortBy = 1
+        }
+
+         queryAgg.push({
+            $sort:{
+                total_price: sortBy
+            }
         })
     }
 
@@ -106,10 +197,6 @@ async function GetAllTransactions(parent, {last_name_user, recipe_name, order_st
     /// apply pagination
     queryAgg.push(
             {
-                $sort: {
-                    createdAt: -1
-                    }
-            },{
                 $skip: skip
             },{
                 $limit: limit
@@ -136,7 +223,7 @@ async function GetAllTransactions(parent, {last_name_user, recipe_name, order_st
         count: count,
         data: result,
     }
-
+    console.log(queryAgg)
     return result;
 
 }
@@ -167,8 +254,9 @@ async function GetOrder(parent, _, context){
     const menus = result.menu;
     let totalPrice = 0;
     for(let menu of menus){
-        let recipe = await recipesModel.findById(menu.recipe_id)
-        totalPrice += (menu.amount * recipe.price)
+        let recipe = await recipesModel.findById(menu.recipe_id);
+        if(!recipe){throw new GraphQLError("Menu tidak ada dalam list")};
+        totalPrice += (menu.amount * recipe.price);
     }
     // console.log(totalPrice)
     return result
@@ -302,7 +390,7 @@ async function OrderNow(parent,{id}, context){
         let transaction = await transactionsModel.findById(id);
         if(transaction.order_status !== 'pending') throw new GraphQLError('Order sudah selesai');
         if(transaction.menu.length<1) throw new GraphQLError('Pilih Menu dulu dong baru order')
-        transaction = await validateStockIngredient(transaction,id);
+        transaction = await validateStockIngredient(transaction,id, context);
         return transaction;
     }catch(err){
         throw new GraphQLError(err)
@@ -346,6 +434,19 @@ try{
 }
 
 /////////////// ANOTHER FUNCTION  ///////////////
+async function reduceBalance(total_price, context){
+    let balanceUser = await modelUser.findById(context);
+    if(balanceUser.balance > total_price){
+        let reduce = await modelUser.findByIdAndUpdate(context, {
+            $inc : {
+                balance: -total_price
+              }
+        }); 
+    }else{
+        throw new GraphQLError(`Saldo anda kurang, butuh ${total_price - balanceUser.balance} lagi`);
+    }
+}
+
 async function reduceIngredientStock(ids,stockUsed){
     for (const [index, _] of ids.entries()){
         const reduce = await ingrModel.findByIdAndUpdate(ids[index],{
@@ -372,12 +473,11 @@ async function getTotalPrice(creator){
 }
 
 
-async function validateStockIngredient(creator, id){
+async function validateStockIngredient(creator, id, context){
      /// temp var
     let checkStatus = [];
     let ingrMap = [];
     let usedStock = [];
-    let stocked = [];
 
     let map = new Map();
 
@@ -393,27 +493,40 @@ async function validateStockIngredient(creator, id){
                 map.set(getIngredient.name, getIngredient.stock - ingredients.stock_used * menu.amount);
             }
 
-           
-
             ingrMap.push(ingredients.ingredient_id);
             usedStock.push(ingredients.stock_used * menu.amount) 
-            if(ingredients.stock_used * menu.amount < getIngredient.stock && getIngredient.status === 'active'){
+            if(ingredients.stock_used * menu.amount <= getIngredient.stock && getIngredient.status === 'active'){
                 checkStatus.push(true)
             }else{
                 checkStatus.push(false)
             }
         }
     }
-        // console.log(map)
-        map.forEach((val,key) => {
-            if(val < 1){
-                // console.log(`Waduh ${key}-nya habis`)
-                throw new GraphQLError(`Waduh ${key}-nya habis`);
-            }
-        })
-        if (!checkStatus.includes(false)){
-        creator.order_status = 'success';
+    
+    let cekStock = [];
+    map.forEach((val,key) => {
+        if(val < 0){
+            cekStock.push(key)
+        }    
+    });
+        
+    if(cekStock.length>0){
+         throw new GraphQLError(`Waduh ${cekStock} tidak mencukupi`)
+    }
+
+    if (!checkStatus.includes(false)){
+        reduceBalance(creator.total_price, context.req.user_id)
         reduceIngredientStock(ingrMap,usedStock);
+        creator.order_status = 'success';
+
+        /// update sold at recipe
+        for( const menu of creator.menu){
+            let update = await recipesModel.findByIdAndUpdate(menu.recipe_id,{
+                $inc : {
+                    sold: menu.amount
+                  }
+            })
+        }
     }else{
         creator.order_status = 'failed';
     }

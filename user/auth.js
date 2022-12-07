@@ -24,7 +24,7 @@ async function auth (resolve, parent, args, context, info){
 const middleWareAuth = {
   Query: {
     GetAllUser:auth,
-    GetOneUser:auth,
+    // GetOneUser:auth,
 
     GetAllIngredients: auth,
     GetOneIngredients: auth,

@@ -48,7 +48,18 @@ type status_edited{
 
 type Query {
     GetOrder(page: Int, limit: Int): Transactions
-    GetAllTransactions(page: Int, limit: Int, last_name_user: String, recipe_name: String, order_status: String, order_date: String): Page_Transactions
+    GetAllTransactions(
+        page: Int, 
+        limit: Int, 
+        first_name_user: String,
+        last_name_user: String, 
+        recipe_name: String, 
+        order_status: String, 
+        order_date: String,
+        sortDate: Boolean,
+        sortTotalPrice: Boolean,
+        sortMenu: Boolean,
+        sortUserName: Boolean): Page_Transactions
     GetOneTransactions(id: ID): Transactions
 }
 

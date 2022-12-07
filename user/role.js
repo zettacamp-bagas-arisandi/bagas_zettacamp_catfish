@@ -11,7 +11,7 @@ async function role (resolve, parent, args, context, info){
 const middleWareRole = {
   Query: {
     GetAllUser:role,
-    GetOneUser:role,
+    // GetOneUser:role,
 
     GetAllIngredients: role,
     GetOneIngredients: role,

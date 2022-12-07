@@ -66,10 +66,9 @@ const server = new ApolloServer({
 async function start(typeDefs, resolvers){
     // const url = 'localhost:27017';
     // const portdb = 27017;
-    // const database = 'zettacamp';
+    const database = 'zettacamp';
 
     /// connect with atlas
-    const database = 'zettacamp';
     const url = `mongodb+srv://notes:notes123@mini-project.slwlqew.mongodb.net/${database}?retryWrites=true&w=majority`;
 
 // function connect to db

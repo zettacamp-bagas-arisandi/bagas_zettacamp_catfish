@@ -42,15 +42,27 @@ const recipeSchema = new mongoose.Schema({
             type: Boolean,
             default: false
         },
+        price_discount: {
+            type: Number,
+            default: 0
+        },
         discount: {
             type: Number,
-            default: 0,
+            default: 5,
             min: 0
         }
     },
     is_hightlighted: {
         type: Boolean,
         default: false
+    },
+    category: {
+        type : String,
+        default: "appetizer"
+    },
+    sold: {
+        type: Number,
+        default: 0
     }
 }, {timestamps: true});
 

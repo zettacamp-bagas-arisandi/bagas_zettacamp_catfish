@@ -44,6 +44,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Clipart.png"
     },
+    balance: {
+        type: Number,
+        min: 0
+    },
     question_answer: {
         type: String
     }

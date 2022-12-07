@@ -15,6 +15,8 @@ type User{
     last_name: String!
     status: status
     role: String
+    balance: Int
+    question_answer: String
     user_type: [user_types]
 }
 
@@ -38,6 +40,10 @@ type Token{
     token: String
 }
 
+type security_answer{
+    result: String
+}
+
 type Query {
     GetOneUser(id: ID, email: String): User
     GetAllUser(
@@ -50,10 +56,11 @@ type Query {
 }
 
 type Mutation{
-    CreateUser(email: String, password: String, first_name: String, last_name: String, role: String): User
+    CreateUser(email: String, password: String, first_name: String, last_name: String, role: String, question_answer: String): User
     UpdateUser(email: String, password: String, first_name: String, last_name: String): User
     DeleteUser(id: ID): User
     Login(email: String, password: String): Token
+    ForgetPassword(email: String, answer: String, newPassword: String): security_answer
 }
 
 input GetAllUserInput{
