@@ -45,7 +45,7 @@ input ingredient_id_input{
 
 type Query {
     GetAllRecipes(recipe_name: String, status: String, page: Int, limit: Int, is_special_offers: Boolean, is_hightlighted: Boolean): Page_recipes
-    GetAllRecipesNotLogin(recipe_name: String, page: Int, limit: Int, is_hightlighted: Boolean, is_special_offers: Boolean): Page_recipes
+    GetAllRecipesNotLogin(category: String, recipe_name: String, page: Int, limit: Int, is_hightlighted: Boolean, is_special_offers: Boolean): Page_recipes
     GetOneRecipes(id: ID): Recipes
 }
 

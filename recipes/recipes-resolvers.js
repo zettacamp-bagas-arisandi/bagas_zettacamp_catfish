@@ -99,7 +99,7 @@ async function GetAllRecipes(parent, {recipe_name, skip = 0, status, is_hightlig
  
 };
 
-async function GetAllRecipesNotLogin(parent, {recipe_name, skip = 0, status, is_hightlighted, is_special_offers, page = 1, limit = 5}, context){
+async function GetAllRecipesNotLogin(parent, {recipe_name, skip = 0, status, is_hightlighted, is_special_offers, category, page = 1, limit = 5}, context){
     let result;
 
     /// kondisikan skip dan count
@@ -147,6 +147,13 @@ async function GetAllRecipesNotLogin(parent, {recipe_name, skip = 0, status, is_
         query.$and.push({
            status:status
         });
+   }
+
+   if(category){
+    query.$and.push({
+        category:category
+     });
+
    }
 
 
