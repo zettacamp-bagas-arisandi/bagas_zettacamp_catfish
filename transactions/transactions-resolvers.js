@@ -245,11 +245,13 @@ async function GetOneTransactions(parent, {id}){
 }
 
 async function GetOrder(parent, _, context){
+    let countOrder = 0;
     let result =  await transactionsModel.findOne({order_status: 'pending', user_id: context.req.user_id});
     // console.log(result)
-    if(!result){
-        throw new GraphQLError('User ini belum pernah add item to cart ygy')
-    }
+    // if(!result){
+    //     throw new GraphQLError('User ini belum pernah add item to cart ygy')
+    // }
+
 
     const menus = result.menu;
     let totalPrice = 0;

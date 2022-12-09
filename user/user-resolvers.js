@@ -181,7 +181,6 @@ async function CreateUser(parent,{email, password, first_name, last_name, role, 
 }
 
 async function UpdateUser(parent, { id,email, first_name, last_name, password},context){
-
     /// temp variabel
     let update;
 
@@ -264,15 +263,16 @@ async function ForgetPassword(parent, {email, answer, newPassword}){
    if(!find){
        throw new GraphQLError('Email tidak ditemukan');
     }
-    console.log(find._id)
-    newPassword = await bcrypt.hash(password, 5)
+    newPassword = await bcrypt.hash(newPassword, 5);
     if(answer === find.question_answer){
-    let update = modelUser.findByIdAndUpdate(find._id,{
-        password: newPassword, 
-    },{new: true, runValidators: true})
+        let update = await modelUser.findByIdAndUpdate(find._id,{
+            password: newPassword
+        },{new: true, runValidators: true});      
+        return {result: "Password berhasil dirubah!"}
+   }else{
+    throw new GraphQLError('Security answer salah!')
    }
     
-   return {result: "Password berhasil dirubah!"}
 }
 
 
