@@ -215,8 +215,11 @@ async function GetOneRecipes(parent, {id}){
 
 
 //////////////// MUTATION ////////////////
-async function CreateRecipes(parent, { recipe_name, input, description, price, image, status, is_special_offers = false, discount = 0, is_hightlighted = false, sold = 0} ){
-        
+async function CreateRecipes(parent, { recipe_name, input, description, price, image, status, is_special_offers = false, discount = 0, sold = 0} ){
+        let check = await recipesModel.find({recipe_name: recipe_name});
+        if(check){
+            throw new GraphQLError(`${recipe_name} sudah ada!`);
+        }
         if(!input){throw new GraphQLError("Ingredient tidak boleh kosong")};
         /// Validasi ingredients sesuai di database dan active
         for (let ingredientz of input){
