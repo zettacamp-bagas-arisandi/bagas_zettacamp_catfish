@@ -39,6 +39,38 @@ async function GetAllTransactions(parent,
 
 
 /// Kondisi untuk parameter, jika ada akan di push ke query $and
+
+
+    /// kondisi jika pakai sort by date
+    if(sortDate!==undefined){
+        /// temp var
+        let sortBy;
+
+        /// menentukan asending atau descending
+        if(sortDate === true || sortDate === null){
+            sortBy = -1
+        }else{
+            sortBy = 1
+        }
+        
+        /// push query agg nya
+        queryAgg.push({
+            $sort:{
+                createdAt: sortBy
+            }
+        });
+    }
+    else{
+        /// defaultnya berdasarkan date terbaru
+        queryAgg.push({
+            $sort:{
+                createdAt: -1
+            }
+        })
+    }
+
+
+
     if(last_name_user || first_name_user || sortUserName!== undefined){
         queryAgg.push(
             {
@@ -63,50 +95,23 @@ async function GetAllTransactions(parent,
         }
 
 
-        if(sortUserName === true){
-            queryAgg.push({
-                $sort: {
-                    "users_populate.first_name": 1
-                }
-            })
-        }
-        
-        if(sortUserName === false){
-            queryAgg.push({
-                $sort: {
-                    "users_populate.first_name": -1
-                }
-            })
-        }
-
-    };
-
-    /// kondisi jika pakai sort by date
-    if(sortDate!==undefined){
-        /// temp var
-        let sortBy;
-
-        /// menentukan asending atau descending
-        if(sortDate === true || sortDate === null){
+         /// menentukan asending atau descending
+         if(sortUserName === true || sortUserName === null){
             sortBy = -1
         }else{
             sortBy = 1
         }
-        
-        /// push query agg nya
-        queryAgg.push({
-            $sort:{
-                createdAt: sortBy
-            }
-        });
-    }else{
-        /// defaultnya berdasarkan date terbaru
-        queryAgg.push({
-            $sort:{
-                createdAt: -1
+
+         queryAgg.push({
+            $sort: {
+                "users_populate.first_name": sortBy
             }
         })
-    }
+       
+        
+
+    };
+
 
        
     if(recipe_name || sortMenu !== undefined){

@@ -38,6 +38,7 @@ type Token{
     role: String
     user_type: [user_types]
     token: String
+    balance: Int
 }
 
 type security_answer{
