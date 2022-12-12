@@ -55,7 +55,7 @@ type Mutation {
         input: [ingredient_id_input], 
         price: Int, 
         image: String, 
-        desription: String, 
+        description: String, 
         status: String, 
         category: String,
         status_hightlighted: Boolean, 

@@ -442,7 +442,6 @@ try{
 
 /////////////// ANOTHER FUNCTION  ///////////////
 async function reduceBalance(total_price, context){
-    let balanceUser = await modelUser.findById(context);
     if(balanceUser.balance > total_price){
         let reduce = await modelUser.findByIdAndUpdate(context, {
             $inc : {
@@ -450,7 +449,7 @@ async function reduceBalance(total_price, context){
               }
         }); 
     }else{
-        throw new GraphQLError(`Saldo anda kurang, butuh ${total_price - balanceUser.balance} lagi`);
+        throw new GraphQLError("ER")
     }
 }
 
@@ -516,6 +515,13 @@ async function validateStockIngredient(creator, id, context){
             cekStock.push(key)
         }    
     });
+
+    /// validate user balance
+    let balanceUser = await modelUser.findById(context.req.user_id);
+
+    if(balanceUser.balance < creator.total_price){
+        throw new GraphQLError(`Saldo anda tidak mencukupi, butuh ${creator.total_price - balanceUser.balance} lagi`);
+    }
         
     if(cekStock.length>0){
          throw new GraphQLError(`Waduh ${cekStock} tidak mencukupi`)
