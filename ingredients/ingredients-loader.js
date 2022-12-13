@@ -1,6 +1,6 @@
 // import dataloader
 const DataLoader = require('dataloader');
-const ingrModel = require('../models/ingredients');
+const ingrModel = require('./ingredients-model');
 
 
 // import model

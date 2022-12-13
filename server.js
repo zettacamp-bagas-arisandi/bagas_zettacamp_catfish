@@ -7,9 +7,9 @@ const { applyMiddleware } = require ('graphql-middleware');
 
 
 /// Import Loader
-const ingrLoader = require('./loader/ingredients-loader.js');
-const userLoader = require('./loader/user-loader.js');
-const recipeLoader = require('./loader/recipe-loader');
+const ingrLoader = require('./ingredients/ingredients-loader');
+const userLoader = require('./user/user-loader.js');
+const recipeLoader = require('./recipes/recipe-loader');
 
 /// Import things from user
 const { userTypeDefs } = require('./user/user-typedefs.js');

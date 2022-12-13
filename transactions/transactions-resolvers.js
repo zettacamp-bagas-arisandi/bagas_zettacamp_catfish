@@ -1,8 +1,8 @@
 const moment = require('moment');
-const modelUser = require("../models/user");
-const transactionsModel = require("../models/transactions");
-const recipesModel = require("../models/recipes");
-const ingrModel = require('../models/ingredients');
+const modelUser = require("../user/user-model");
+const transactionsModel = require("./transactions-model");
+const recipesModel = require("../recipes/recipes-model");
+const ingrModel = require('../ingredients/ingredients-model');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const { GraphQLError } = require('graphql');
@@ -520,7 +520,7 @@ async function validateStockIngredient(creator, id, context){
     let balanceUser = await modelUser.findById(context.req.user_id);
 
     if(balanceUser.balance < creator.total_price){
-        throw new GraphQLError(`Saldo anda tidak mencukupi, butuh ${creator.total_price - balanceUser.balance} lagi`);
+        throw new GraphQLError(`Saldo anda tidak mencukupi`);
     }
         
     if(cekStock.length>0){

@@ -1,5 +1,5 @@
-const recipesModel = require("../models/recipes");
-const ingrModel = require("../models/ingredients");
+const recipesModel = require("./recipes-model");
+const ingrModel = require("../ingredients/ingredients-model");
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const { GraphQLError } = require('graphql');
@@ -216,7 +216,7 @@ async function GetOneRecipes(parent, {id}){
 
 //////////////// MUTATION ////////////////
 async function CreateRecipes(parent, { recipe_name, input, description, price, image, status, is_special_offers = false, discount = 0, sold = 0} ){
-        let check = await recipesModel.find({recipe_name: recipe_name});
+        let check = await recipesModel.findOne({recipe_name: recipe_name});
         if(check){
             throw new GraphQLError(`${recipe_name} sudah ada!`);
         }
@@ -235,7 +235,6 @@ async function CreateRecipes(parent, { recipe_name, input, description, price, i
             price: price,
             status: status,
             sold:sold,
-            is_hightlighted: is_hightlighted,
             is_special_offers: {
                 status: is_special_offers,
                 price_discount: price - (price * (discount/100)),

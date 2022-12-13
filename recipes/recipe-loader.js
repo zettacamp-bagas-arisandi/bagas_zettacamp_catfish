@@ -1,6 +1,6 @@
 // import dataloader
 const DataLoader = require('dataloader');
-const recipesModel = require('../models/recipes');
+const recipesModel = require('./recipes-model');
 
 
 // import model

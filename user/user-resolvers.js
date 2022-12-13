@@ -1,4 +1,4 @@
-const modelUser = require("../models/user.js");
+const modelUser = require("./user-model");
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const { GraphQLError } = require('graphql');

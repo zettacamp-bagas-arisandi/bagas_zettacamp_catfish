@@ -1,8 +1,8 @@
-const ingrModel = require("../models/ingredients");
+const ingrModel = require("./ingredients-model");
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const { GraphQLError } = require('graphql');
-const recipeModel = require("../models/recipes");
+const recipeModel = require("../recipes/recipes-model");
 
 
 //////////////// QUERY ////////////////

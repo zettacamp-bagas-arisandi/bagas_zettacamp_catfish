@@ -1,6 +1,6 @@
 // import dataloader
 const DataLoader = require('dataloader');
-const userModel = require('../models/user');
+const userModel = require('./user-model');
 
 
 // import model

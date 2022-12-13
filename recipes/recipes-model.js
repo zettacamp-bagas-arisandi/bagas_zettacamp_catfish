@@ -38,10 +38,6 @@ const recipeSchema = new mongoose.Schema({
         default: 0
     },
     is_special_offers: {
-        status : {
-            type: Boolean,
-            default: false
-        },
         price_discount: {
             type: Number,
             default: 0
@@ -51,10 +47,6 @@ const recipeSchema = new mongoose.Schema({
             default: 5,
             min: 0
         }
-    },
-    is_hightlighted: {
-        type: Boolean,
-        default: false
     },
     category: {
         type : String,
