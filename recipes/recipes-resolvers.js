@@ -215,9 +215,9 @@ async function GetOneRecipes(parent, {id}){
 
 
 //////////////// MUTATION ////////////////
-async function CreateRecipes(parent, { recipe_name, input, description, price, image, status, is_special_offers = false, discount = 0, sold = 0, category} ){
+async function CreateRecipes(parent, { recipe_name, input, description, price, image, status, discount = 0, sold = 0, category} ){
         let check = await recipesModel.findOne({recipe_name: recipe_name});
-        if(check){
+        if(check!==null){
             throw new GraphQLError(`${recipe_name} sudah ada!`);
         }
         if(input.length<1){throw new GraphQLError("Ingredient tidak boleh kosong")};
@@ -237,7 +237,6 @@ async function CreateRecipes(parent, { recipe_name, input, description, price, i
             category: category,
             sold:sold,
             is_special_offers: {
-                status: is_special_offers,
                 price_discount: price - (price * (discount/100)),
                 discount: discount
             }
@@ -249,19 +248,15 @@ async function CreateRecipes(parent, { recipe_name, input, description, price, i
 
 }
 
-async function UpdateRecipes(parent, {id, recipe_name, input, stock_used, description, price, image, status, status_hightlighted, status_special_offers, discount}){
+async function UpdateRecipes(parent, {id, recipe_name, input, stock_used, description, price, image, status, discount}){
     let update;
     let getRecipes = await recipesModel.findById(id);
     
     if(id){
-        /// mengkondisikan special offers 
         if(!price){
             price = getRecipes.price
         };
 
-        if(status_special_offers===undefined){
-            status_special_offers = getRecipes.is_special_offers.status
-        };
     
         if(!discount){
             discount = getRecipes.is_special_offers.discount

@@ -117,7 +117,7 @@ async function CreateIngredients(parent, {name, stock}){
         /// Cek ingredient sudah ada belum
         const check = await ingrModel.findOne({ name: new RegExp("^" + name.trim() + "$", 'i') });
         //// kalo ada return error
-        if (check) { throw new GraphQLError(`Ingredient: ${name} sudah ada`) }
+        if (check) { throw new GraphQLError(`Ingredient: ${name} sudah ada`) };
         let addIngr = {};
         addIngr = new ingrModel({
         name: name,

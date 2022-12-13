@@ -58,8 +58,6 @@ type Mutation {
         description: String, 
         status: String, 
         category: String,
-        status_hightlighted: Boolean, 
-        status_special_offers: Boolean, 
         discount: Int): Recipes
     UpdateRecipes(
         id: ID, 
@@ -70,8 +68,6 @@ type Mutation {
         desription: String, 
         status: String, 
         category: String,
-        status_hightlighted: Boolean, 
-        status_special_offers: Boolean, 
         discount: Int): Recipes
     DeleteRecipes(id: ID): Recipes
     PublishRecipes(id: ID): Recipes
