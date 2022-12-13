@@ -442,15 +442,11 @@ try{
 
 /////////////// ANOTHER FUNCTION  ///////////////
 async function reduceBalance(total_price, context){
-    if(balanceUser.balance > total_price){
-        let reduce = await modelUser.findByIdAndUpdate(context, {
-            $inc : {
-                balance: -total_price
-              }
-        }); 
-    }else{
-        throw new GraphQLError("ER")
-    }
+    let reduce = await modelUser.findByIdAndUpdate(context, {
+        $inc : {
+            balance: -total_price
+            }
+    }); 
 }
 
 async function reduceIngredientStock(ids,stockUsed){
@@ -524,7 +520,8 @@ async function validateStockIngredient(creator, id, context){
     }
         
     if(cekStock.length>0){
-         throw new GraphQLError(`Waduh ${cekStock} tidak mencukupi`)
+        //  throw new GraphQLError(`Stok menu ini ${cekStock} tidak mencukupi`)
+        throw new GraphQLError(`Stok menu ini tidak mencukupi`)
     }
 
     if (!checkStatus.includes(false)){
