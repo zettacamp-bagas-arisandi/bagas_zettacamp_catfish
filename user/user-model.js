@@ -3,7 +3,6 @@ const mongoose = require('mongoose')
 const userSchema = new mongoose.Schema({ 
     email: {
         type: String,
-        required: true,
         unique: true,
         trim: true,
         match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Masukkan email dengan benar'],
@@ -11,18 +10,15 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
         minLength: 5
     },
     first_name: {
         type: String,
-        required: true,
         trim: true,
         minLength: 2
     },
     last_name: {
         type: String,
-        required: true,
         trim: true,
         minLength: 2
     },

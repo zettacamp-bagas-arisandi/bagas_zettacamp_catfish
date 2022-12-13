@@ -122,15 +122,15 @@ async function GetAllRecipesNotLogin(parent, {recipe_name, skip = 0, status, is_
         status: "active"
     })
   
-    if(is_hightlighted === true){
+    if(is_special_offers === true){
         query.$and.push({
-            sold: {$gt: 5}
+            sold: {$gt: 10}
         })
     }
 
-    if(is_special_offers === true){
+    if(is_hightlighted === true){
         query.$and.push({
-            "is_special_offers.status": true
+            "is_special_offers.discount": {$gte: 5}
         })
     }
 
@@ -215,12 +215,12 @@ async function GetOneRecipes(parent, {id}){
 
 
 //////////////// MUTATION ////////////////
-async function CreateRecipes(parent, { recipe_name, input, description, price, image, status, is_special_offers = false, discount = 0, sold = 0} ){
+async function CreateRecipes(parent, { recipe_name, input, description, price, image, status, is_special_offers = false, discount = 0, sold = 0, category} ){
         let check = await recipesModel.findOne({recipe_name: recipe_name});
         if(check){
             throw new GraphQLError(`${recipe_name} sudah ada!`);
         }
-        if(!input){throw new GraphQLError("Ingredient tidak boleh kosong")};
+        if(input.length<1){throw new GraphQLError("Ingredient tidak boleh kosong")};
         /// Validasi ingredients sesuai di database dan active
         for (let ingredientz of input){
             const bahan = await ingrModel.findById(ingredientz.ingredient_id);
@@ -234,6 +234,7 @@ async function CreateRecipes(parent, { recipe_name, input, description, price, i
             image: image,
             price: price,
             status: status,
+            category: category,
             sold:sold,
             is_special_offers: {
                 status: is_special_offers,
