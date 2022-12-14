@@ -250,26 +250,16 @@ async function GetOneTransactions(parent, {id}){
 }
 
 async function GetOrder(parent, _, context){
-    let countOrder = 0;
     let result =  await transactionsModel.findOne({order_status: 'pending', user_id: context.req.user_id});
-    // console.log(result)
-    // if(!result){
-    //     throw new GraphQLError('User ini belum pernah add item to cart ygy')
-    // }
-
 
     const menus = result.menu;
-    let totalPrice = 0;
     for(let menu of menus){
         let recipe = await recipesModel.findById(menu.recipe_id);
         if(!recipe){throw new GraphQLError("Menu tidak ada dalam list")};
-        totalPrice += (menu.amount * recipe.price);
     }
-    // console.log(totalPrice)
     return result
     
 }
-
 
 /////////////// MUTATION ///////////////
 async function DeleteTransactions(parent, {id}){
@@ -563,7 +553,6 @@ async function IncrAmount(parent, {id}, context){
          )
          
         const transaction = await transactionsModel.findOne({$and:[{order_status: 'pending'}, {user_id: context.req.user_id}]});
-        console.log(transaction)
         let add = await transactionsModel.findByIdAndUpdate(transaction._id, 
             {
                 total_price: await getTotalPrice(transaction)
