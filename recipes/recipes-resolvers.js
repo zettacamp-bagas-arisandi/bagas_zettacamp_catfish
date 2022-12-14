@@ -248,14 +248,47 @@ async function CreateRecipes(parent, { recipe_name, input, description, price, i
 
 }
 
-async function UpdateRecipes(parent, {id, recipe_name, input, stock_used, description, price, image, status, discount}){
+async function UpdateRecipes(parent, {id, recipe_name, input, stock_used, description, price, image, status, discount, category}){
     let update;
+
     let getRecipes = await recipesModel.findById(id);
+    console.log(getRecipes)
     
     if(id){
-        if(!price){
-            price = getRecipes.price
+
+        /// fix overwriting
+        if(!input){
+            input = getRecipes.ingredients;
+        }
+
+        if(!stock_used){
+            stock_used = getRecipes.stock_used;
+        }
+
+        if(!recipe_name){
+            recipe_name = getRecipes.recipe_name;
         };
+
+        if(!category){
+            category = getRecipes.category;
+        }
+
+        if(!description){
+            description = getRecipes.description;
+        }
+
+        /// mengkondisikan special offers 
+        if(!price){
+            price = getRecipes.price;
+        };
+
+        if(!image){
+            image = getRecipes.image;
+        }
+
+        if(!status){
+            status = getRecipes.status
+        }
 
     
         if(!discount){
@@ -266,13 +299,12 @@ async function UpdateRecipes(parent, {id, recipe_name, input, stock_used, descri
             recipe_name: recipe_name,
             ingredients: input,
             stock_used:stock_used,
+            category:category,
             description: description,
             price: price,
             image: image,
             status: status,
-            is_hightlighted: status_hightlighted,
             is_special_offers: {
-                status: status_special_offers,
                 price_discount: price - (price * (discount/100)),
                 discount: discount
             }
@@ -289,6 +321,7 @@ async function UpdateRecipes(parent, {id, recipe_name, input, stock_used, descri
   
     return update;
 }
+
 
 async function DeleteRecipes(parent, {id}){
     try{

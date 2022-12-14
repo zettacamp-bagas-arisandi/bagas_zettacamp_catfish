@@ -14,6 +14,10 @@ type Page_Ingredients{
     count: Int
 }
 
+type deleted{
+    status: String
+}
+
 type Query {
     GetAllIngredients(name: String, stock: Int, status: String, page: Int, limit: Int): Page_Ingredients
     GetOneIngredients(id:ID): Ingredients
@@ -22,7 +26,7 @@ type Query {
 type Mutation {
     CreateIngredients(name: String, stock: Int): Ingredients
     UpdateIngredients(id: ID, name: String, stock: Int): Ingredients
-    DeleteIngredients(id: ID): Ingredients
+    DeleteIngredients(id: ID): deleted
 }
 
 `

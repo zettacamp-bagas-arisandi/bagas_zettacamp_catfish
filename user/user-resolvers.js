@@ -180,13 +180,30 @@ async function CreateUser(parent,{email, password, first_name, last_name, role, 
     }
 }
 
-async function UpdateUser(parent, { id,email, first_name, last_name, password},context){
+async function UpdateUser(parent, { id, email, first_name, last_name, password},context){
     /// temp variabel
     let update;
+    let check = await modelUser.findById(context.req.user_id);
+
+    /// fix overwriting
 
     /// hash password
     if (password){
         password = await bcrypt.hash(password, 5);
+    }else{
+        password = check.password;
+    }
+
+    if (!email){
+        email = check.email;
+    }
+
+    if(!first_name){
+        first_name = check.first_name;
+    }
+
+    if(!last_name){
+        last_name = check.last_name;
     }
 
     if(email || first_name || last_name || password){

@@ -132,10 +132,22 @@ async function CreateIngredients(parent, {name, stock}){
 
 async function UpdateIngredients(parent, {id, stock, name}){
     let update;
+    let check = await ingrModel.findById(id);
+
+    /// fix overwriting 
+    if(!name){
+        name = check.name;
+    }
+
+    if(!stock){
+        stock = check.stock;
+    }
+
+    console.log(stock, name)  
     if(id){
-        update = await ingrModel.findByIdAndUpdate(id,{
-            name: name,
-            stock: stock,
+        update = await ingrModel.findByIdAndUpdate(check._id,{
+            name:name,
+            stock: stock
         },{new: true, runValidators: true});      
     }else{
         throw new GraphQLError('id ingredient tidak terbaca');
@@ -165,9 +177,8 @@ async function DeleteIngredients(parent, {id}){
 
         /// Check apakah ada true atau false
         if (check.status === false) throw new GraphQLError(`${id} tidak bisa dihapus, terpakai di resep ${usedRecipes}`)
-        deleted = await ingrModel.findByIdAndUpdate(id,{
-            status: 'deleted'
-        },{new: true, runValidators: true});      
+        deleted = await ingrModel.deleteOne(mongoose.Types.ObjectId(id));
+        return {status: `Ingredient berhasil dihapus!` };
     }else{
         throw new GraphQLError('Minimal masukkan parameter');
     }

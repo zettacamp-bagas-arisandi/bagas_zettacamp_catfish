@@ -10,12 +10,10 @@ type Recipes{
     image: String
     price: Int
     remain_order: Int
-    is_hightlighted: Boolean
     is_special_offers: special_offers
 }
 
 type special_offers{
-    status: Boolean
     price_discount: Int
     discount: Int
 }
