@@ -465,17 +465,16 @@ async function reduceIngredientStock(ids,stockUsed){
 }
 
 async function getTotalPrice(creator){
-    let cek = 0;
-    let discountAmount = 0;
+    console.log(creator)
+    let prices = 0;
     if (creator.menu.length<1) return creator.price_amount = 0;
     for (const price of creator.menu){
         const checkRecipes = await recipesModel.findById(price.recipe_id);
-        let total = checkRecipes.price * price.amount;
-        discountAmount = (cek*checkRecipes.is_special_offers.discount)/100;
-        cek += total;
+        let total = checkRecipes.is_special_offers.price_discount * price.amount;
+        prices += total;
         }
 
-        creator.price_amount = cek - discountAmount;
+        creator.price_amount = prices;
     return creator.price_amount;
 }
 
