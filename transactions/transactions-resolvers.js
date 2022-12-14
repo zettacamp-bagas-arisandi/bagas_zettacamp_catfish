@@ -465,7 +465,6 @@ async function reduceIngredientStock(ids,stockUsed){
 }
 
 async function getTotalPrice(creator){
-    console.log(creator)
     let prices = 0;
     if (creator.menu.length<1) return creator.price_amount = 0;
     for (const price of creator.menu){
@@ -564,13 +563,13 @@ async function IncrAmount(parent, {id}, context){
          )
          
         const transaction = await transactionsModel.findOne({$and:[{order_status: 'pending'}, {user_id: context.req.user_id}]});
+        console.log(transaction)
         let add = await transactionsModel.findByIdAndUpdate(transaction._id, 
             {
                 total_price: await getTotalPrice(transaction)
             },{new: true}
             )
        
-
         return {status: "Berhasil menambahkan Amount"};
     }catch(err){
         throw new GraphQLError(err)
