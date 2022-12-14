@@ -6,9 +6,15 @@ const recipeModel = require("../recipes/recipes-model");
 
 
 //////////////// QUERY ////////////////
-async function GetAllIngredients(parent, {name, status, stock, skip = 0, page = 1, limit = 5}){
+async function GetAllIngredients(parent, 
+    {
+        name, status, stock, skip = 0, page = 1, limit = 5,
+        sortName, sortStock
+    }
+    ){
      let result;
      /// kondisikan skip dan count
+     let count = await ingrModel.count();
      
      skip = (page-1)*limit;
   
@@ -30,7 +36,35 @@ async function GetAllIngredients(parent, {name, status, stock, skip = 0, page = 
             name:name
          });
         }
-     
+
+        if(sortName!== undefined){
+
+            if(sortName === true || sortName === null){
+                sortBy = -1
+            }else{
+                sortBy = 1
+            }
+
+            queryAgg.push({
+                $sort: {
+                    name: sortBy
+                }
+            })
+        }
+
+        if(sortStock!== undefined){
+            if(sortStock === true || sortStock === null){
+                sortBy = -1
+            }else{
+                sortBy = 1
+            }
+
+            queryAgg.push({
+                $sort: {
+                    stock: sortBy
+                }
+            })
+        }
     /// filter by stock
     if(stock > 0){
         query.$and.push({
@@ -61,7 +95,7 @@ async function GetAllIngredients(parent, {name, status, stock, skip = 0, page = 
         let countMatch = await ingrModel.aggregate([{
             $match: query
         }])
-        count = countMatch.length;
+       count = countMatch.length;
     }
     result = await ingrModel.aggregate(queryAgg);
     
@@ -165,6 +199,7 @@ async function DeleteIngredients(parent, {id}){
     if(id){
         let usedRecipes = [];
         const check = await findIngredientInRecipe(id);
+        const checkIngredient = await findById(id);
 
         /// Cari ingredientnnya dipakai gak
         const search = await recipeModel.find( {"ingredients.ingredient_id": mongoose.Types.ObjectId(id)});
@@ -176,7 +211,7 @@ async function DeleteIngredients(parent, {id}){
         }
 
         /// Check apakah ada true atau false
-        if (check.status === false) throw new GraphQLError(`${id} tidak bisa dihapus, terpakai di resep ${usedRecipes}`)
+        if (check.status === false) throw new GraphQLError(`${checkIngredient.name} tidak bisa dihapus, terpakai di resep ${usedRecipes}`)
         deleted = await ingrModel.deleteOne(mongoose.Types.ObjectId(id));
         return {status: `Ingredient berhasil dihapus!` };
     }else{

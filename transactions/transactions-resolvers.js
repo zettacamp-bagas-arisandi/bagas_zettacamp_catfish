@@ -96,7 +96,7 @@ async function GetAllTransactions(parent,
 
 
          /// menentukan asending atau descending
-         if(sortUserName === true || sortUserName === null){
+        if(sortUserName === true || sortUserName === null){
             sortBy = -1
         }else{
             sortBy = 1
@@ -312,7 +312,12 @@ async function addCart(parent, {input}, context ){
         let price = await recipesModel.findById(input.recipe_id)
         
         /// total price awal
-        add.total_price = price.price * input.amount
+        if(price.is_special_offers.discount >= 5){
+            add.total_price = price.is_special_offers.price_discount * input.amount;
+        }else{
+            add.total_price = (price.price*input.amount);
+        }
+
 
         add = new transactionsModel(add);
         await add.save();
@@ -465,12 +470,12 @@ async function getTotalPrice(creator){
     if (creator.menu.length<1) return creator.price_amount = 0;
     for (const price of creator.menu){
         const checkRecipes = await recipesModel.findById(price.recipe_id);
-            let total = checkRecipes.price * price.amount;
-            discountAmount = (cek*checkRecipes.is_special_offers.discount)/100;
-            cek += total;
+        let total = checkRecipes.price * price.amount;
+        discountAmount = (cek*checkRecipes.is_special_offers.discount)/100;
+        cek += total;
         }
 
-    creator.price_amount = cek - discountAmount;
+        creator.price_amount = cek - discountAmount;
     return creator.price_amount;
 }
 

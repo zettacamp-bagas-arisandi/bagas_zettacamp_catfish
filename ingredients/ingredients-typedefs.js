@@ -19,7 +19,8 @@ type deleted{
 }
 
 type Query {
-    GetAllIngredients(name: String, stock: Int, status: String, page: Int, limit: Int): Page_Ingredients
+    GetAllIngredients(name: String, stock: Int, status: String, page: Int, limit: Int
+        ,sortName: Boolean, sortStock: Boolean): Page_Ingredients
     GetOneIngredients(id:ID): Ingredients
 }
 

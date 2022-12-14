@@ -9,6 +9,7 @@ type Recipes{
     description: String
     image: String
     price: Int
+    sold: Int
     remain_order: Int
     is_special_offers: special_offers
 }
