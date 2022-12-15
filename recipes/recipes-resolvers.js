@@ -219,7 +219,7 @@ async function CreateRecipes(parent, { recipe_name, input, description, price, i
             if(!bahan) throw new GraphQLError(`${list.ingredient_id} tidak ada`);
         }
 
-         let calculate = 0;
+        let calculate = 0;
         if(discount){
             /// kalkulasi price after discount
             if(discount >= 5 && discount <= 75){
