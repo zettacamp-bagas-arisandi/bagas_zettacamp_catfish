@@ -255,6 +255,8 @@ async function GetOrder(parent, _, context){
     const menus = result.menu;
     for(let menu of menus){
         let recipe = await recipesModel.findById(menu.recipe_id);
+        if(recipe.remain_order < 1){console.log(`Saat ini ${recipe.recipe_name} sedang habis`);}
+        if(recipe.status !== 'active'){console.log(`Saat ini ${recipe.recipe_name} sedang tidak bisa dipesan`);}
         if(!recipe){throw new GraphQLError("Menu tidak ada dalam list")};
     }
     return result
@@ -388,16 +390,11 @@ async function deleteCart(parent, {id}, context ){
 }
 
 async function OrderNow(parent,{id}, context){
-    try{
-        let transaction = await transactionsModel.findById(id);
-        if(transaction.order_status !== 'pending') throw new GraphQLError('Order sudah selesai');
-        if(transaction.menu.length<1) throw new GraphQLError('Pilih Menu dulu dong baru order')
-        transaction = await validateStockIngredient(transaction,id, context);
-        return transaction;
-    }catch(err){
-        throw new GraphQLError(err)
-    }
-
+    let transaction = await transactionsModel.findById(id);
+    if(transaction.order_status !== 'pending') throw new GraphQLError('Order sudah selesai');
+    if(transaction.menu.length<1) throw new GraphQLError('Silahkan pilih menu sebelum order');
+    transaction = await validateStockIngredient(transaction,id, context);
+    return transaction;
 }
 
 async function EditNote(parent,{id, newNote}, context){
@@ -490,7 +487,7 @@ async function validateStockIngredient(creator, id, context){
 
             ingrMap.push(ingredients.ingredient_id);
             usedStock.push(ingredients.stock_used * menu.amount) 
-            if(ingredients.stock_used * menu.amount <= getIngredient.stock && getIngredient.status === 'active'){
+            if(ingredients.stock_used * menu.amount <= getIngredient.stock){
                 checkStatus.push(true)
             }else{
                 checkStatus.push(false)
@@ -513,8 +510,7 @@ async function validateStockIngredient(creator, id, context){
     }
         
     if(cekStock.length>0){
-        //  throw new GraphQLError(`Stok menu ini ${cekStock} tidak mencukupi`)
-        throw new GraphQLError(`Stok menu ini tidak mencukupi`)
+        throw new GraphQLError(`Stok menu ini tidak mencukupi`);
     }
 
     if (!checkStatus.includes(false)){

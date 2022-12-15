@@ -23,13 +23,6 @@ async function GetAllRecipes(parent, {recipe_name, skip = 0, status, is_hightlig
             $limit: limit
         }
      ];
-
-     /// jika bukan selain admin tampilkan yg active saja
-     if(context.req.user_role !== "admin"){
-        query.$and.push({
-            status: "active"
-        })
-     }
  
      /// filter by recipe name, jika ada akan di push ke query $and
     if(recipe_name){
@@ -196,7 +189,6 @@ async function GetAllRecipesNotLogin(parent, {recipe_name, skip = 0, status, is_
 
 };
 
-
 async function GetOneRecipes(parent, {id}){
     let result;
     /// Kondisi untuk parameter, jika ada akan find berdasarkan parameter
@@ -215,8 +207,8 @@ async function GetOneRecipes(parent, {id}){
 
 
 //////////////// MUTATION ////////////////
-async function CreateRecipes(parent, { recipe_name, input, description, price, image, status, discount = 0, sold = 0, category} ){
-        let check = await recipesModel.findOne({recipe_name: recipe_name});
+async function CreateRecipes(parent, { recipe_name, input, description, price, image, status = 'unpublish', discount = 0, sold = 0, category} ){
+        let check = await recipesModel.findOne({recipe_name: new RegExp("^" + recipe_name.trim() + "$", 'i')});
         if(check.status!=='deleted'){
             throw new GraphQLError(`${recipe_name} sudah ada!`);
         }
@@ -336,9 +328,7 @@ async function UpdateRecipes(parent, {id, recipe_name, input, stock_used, descri
     return update;
 }
 
-
 async function DeleteRecipes(parent, {id}){
-    try{
     let deleted;
     if(id){
         deleted = await recipesModel.findByIdAndUpdate(id,{
@@ -353,9 +343,6 @@ async function DeleteRecipes(parent, {id}){
     }
   
     return deleted;
-    }catch(err){
-        throw new GraphQLError(err)
-    }
 }
 
 //////////////// LOADER ////////////////
