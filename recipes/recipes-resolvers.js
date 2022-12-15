@@ -207,10 +207,10 @@ async function GetOneRecipes(parent, {id}){
 
 
 //////////////// MUTATION ////////////////
-async function CreateRecipes(parent, { recipe_name, input, description, price, image, status = 'unpublish', discount = 0, sold = 0, category} ){
-        let check = await recipesModel.findOne({recipe_name: new RegExp("^" + recipe_name.trim() + "$", 'i')});
-        if(check.status!=='deleted'){
-            throw new GraphQLError(`${recipe_name} sudah ada!`);
+async function CreateRecipes(parent, { recipe_name, input, description, price, image, status = 'unpublish', discount = 1, sold = 0, category} ){
+        let check = await recipesModel.findOne({ recipe_name: new RegExp("^" + recipe_name.trim() + "$", 'i') });
+        if(check){
+            if(check.status!=='deleted')throw new GraphQLError(`${recipe_name} sudah ada!`);
         }
         if(!input || input.length < 1){throw new GraphQLError("Ingredient tidak boleh kosong")};
         /// Validasi ingredients sesuai di database
@@ -219,12 +219,14 @@ async function CreateRecipes(parent, { recipe_name, input, description, price, i
             if(!bahan) throw new GraphQLError(`${list.ingredient_id} tidak ada`);
         }
 
-        /// kalkulasi price after discount
-        let calculate = 0;
-        if(discount >= 5 && discount <= 75){
-            calculate = price - (price * (discount/100))
-        }else{
-            calculate = getRecipes.price;
+         let calculate = 0;
+        if(discount){
+            /// kalkulasi price after discount
+            if(discount >= 5 && discount <= 75){
+                calculate = price - (price * (discount/100))
+            }else{
+                calculate = price;
+            }
         }
         
         const recipes = new recipesModel({

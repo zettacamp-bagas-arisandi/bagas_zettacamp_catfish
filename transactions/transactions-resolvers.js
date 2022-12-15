@@ -251,14 +251,15 @@ async function GetOneTransactions(parent, {id}){
 
 async function GetOrder(parent, _, context){
     let result =  await transactionsModel.findOne({order_status: 'pending', user_id: context.req.user_id});
-
+    let user = await modelUser.findById(context.req.user_id);
+  
     const menus = result.menu;
     for(let menu of menus){
         let recipe = await recipesModel.findById(menu.recipe_id);
         if(recipe.remain_order < 1){console.log(`Saat ini ${recipe.recipe_name} sedang habis`);}
         if(recipe.status !== 'active'){console.log(`Saat ini ${recipe.recipe_name} sedang tidak bisa dipesan`);}
         if(!recipe){throw new GraphQLError("Menu tidak ada dalam list")};
-    }
+    }   
     return result
     
 }
@@ -513,7 +514,8 @@ async function validateStockIngredient(creator, id, context){
         throw new GraphQLError(`Stok menu ini tidak mencukupi`);
     }
 
-    if (!checkStatus.includes(false)){
+    // if (!checkStatus.includes(false)){
+
         reduceBalance(creator.total_price, context.req.user_id)
         reduceIngredientStock(ingrMap,usedStock);
         creator.order_status = 'success';
@@ -526,9 +528,9 @@ async function validateStockIngredient(creator, id, context){
                   }
             })
         }
-    }else{
-        creator.order_status = 'failed';
-    }
+    // }else{
+    //     creator.order_status = 'failed';
+    // }
 
 
     /// update status order
