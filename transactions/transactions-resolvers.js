@@ -253,7 +253,6 @@ async function GetOrder(parent, _, context){
     let result =  await transactionsModel.findOne({order_status: 'pending', user_id: context.req.user_id});
     
     const menus = result.menu;
-    if(!menus){return {menu: []}};
     for(let menu of menus){
         let recipe = await recipesModel.findById(menu.recipe_id);
         if(recipe.remain_order < 1){console.log(`Saat ini ${recipe.recipe_name} sedang habis`);}
