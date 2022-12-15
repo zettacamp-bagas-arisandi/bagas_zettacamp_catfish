@@ -211,7 +211,7 @@ async function CreateRecipes(parent, { recipe_name, input, description, price, i
         let check = await recipesModel.findOne({ recipe_name: new RegExp("^" + recipe_name.trim() + "$", 'i') });
         if(check){
             if(check.status!=='deleted')throw new GraphQLError(`${recipe_name} sudah ada!`);
-        }
+        }else{
         if(!input || input.length < 1){throw new GraphQLError("Ingredient tidak boleh kosong")};
         /// Validasi ingredients sesuai di database
         for (let list of input){
@@ -247,6 +247,7 @@ async function CreateRecipes(parent, { recipe_name, input, description, price, i
    
     await recipes.save();   
     return recipes;
+    }
 
 }
 
