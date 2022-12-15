@@ -117,7 +117,7 @@ async function GetAllRecipesNotLogin(parent, {recipe_name, skip = 0, status, is_
   
     if(is_special_offers === true){
         query.$and.push({
-            sold: {$gt: 10}
+            sold: {$gte: 15}
         })
     }
 
