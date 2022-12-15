@@ -4,7 +4,6 @@ const recipeSchema = new mongoose.Schema({
     recipe_name: {
         type: String,
         required: true,
-        unique: true,
         trim: true,
         minLength: 3 
     },
